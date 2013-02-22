@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #include the urls from the polls app.
     url(r'^polls/', include('polls.urls')),
+   # url(r'^polls/$', 'polls.views.index'),
 )
