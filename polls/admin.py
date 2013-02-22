@@ -7,15 +7,15 @@ from django.contrib import admin
 #from polls.models import Poll, Choice
 from polls.models import Kiosk, BierPreisListe
 
-#class ChoiceInline(admin.TabularInline):
-#    model = Choice
-#    extra = 2
-#
-#class PollAdmin(admin.ModelAdmin):
-#    fieldsets = [
-#        (None, {'fields': ['question']}),
-#        (None, {'fields': ['pub_date']}),
-#    ]
-#    inlines = [ChoiceInline]
-#    
-#admin.site.register(Poll, PollAdmin)
+class BierPreisListeInline(admin.TabularInline):
+    model = BierPreisListe
+    extra = 2
+
+class KioskAdmin(admin.ModelAdmin):
+    fieldsets = [
+     (None, {'fields': ['name']}),
+        (None, {'fields': ['adresse']}),
+    ]
+    inlines = [BierPreisListeInline]
+    
+admin.site.register(Kiosk, KioskAdmin)
