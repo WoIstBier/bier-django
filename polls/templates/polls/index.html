@@ -1,0 +1,9 @@
+{% if latest_polls %}
+    <ul>
+    {% for poll in kioske %}
+        <li>{{ kiosk.name }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No kioske are available.</p>
+{% endif %}
