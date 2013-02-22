@@ -5,7 +5,7 @@ from django.http import HttpResponse
 
 
 def index(request):
-    kiosk_liste = Kiosk.objects.order_by(Kiosk.name)
+    kiosk_liste = Kiosk.objects.order_by('name')
     context = {'kioske': kiosk_liste}
     return render(request, 'polls/index.html', context)
 

@@ -12,5 +12,6 @@ class BierPreisListe(models.Model):
     kiosk = models.ForeignKey(Kiosk)
     name = models.CharField(max_length=200)
     preis = models.IntegerField()
+    date = models.DateTimeField();
     def __unicode__(self):
         return self.name
