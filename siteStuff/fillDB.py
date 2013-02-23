@@ -1,4 +1,5 @@
 from bier.models import Kiosk, BeerPrice, Beer
+import csv
 def fillIt():
     k1 = Kiosk(name='Lecker',street='kleppingstraße', number='3', zip_code = '44135', city='dortmund',owner='guenther')
     k1.save()
@@ -37,5 +38,11 @@ def fillIt():
     p8.save();
     p9.save();
     
+def readFromCSV():
+#    kiosk_data = csv.reader(file('kiosk.csv'))
+#    beerprice_data = csv.reader(file('beerprice.csv'))
+    beer_reader = csv.DictReader(open("beer.csv", "rb"))
+    for row in beer_reader:
+        beer = Beer(**row)
+        beer.save()
     
-             
