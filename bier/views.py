@@ -5,8 +5,8 @@ from django.http import HttpResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from polls.models import Kiosk
-from polls.serializers import KioskSerializer
+from bier.models import Kiosk
+from bier.serializers import KioskSerializer
 
 def index(request):
     kiosk_liste = Kiosk.objects.order_by('name')
