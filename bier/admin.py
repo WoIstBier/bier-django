@@ -5,7 +5,7 @@ Created on Feb 17, 2013
 '''
 from django.contrib import admin
 #from polls.models import Poll, Choice
-from polls.models import Kiosk, BierPreisListe
+from bier.models import Kiosk, BierPreisListe
 
 class BierPreisListeInline(admin.TabularInline):
     model = BierPreisListe

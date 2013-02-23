@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from polls import views
+from bier import views
 
 urlpatterns = patterns('',
     url(r'^polls/$', views.KioskList.as_view()),
