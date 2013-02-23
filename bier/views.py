@@ -1,5 +1,5 @@
 # Create your views here.
-from bier.models import Kiosk, BeerPrice
+from bier.models import Kiosk, Beer, BeerPrice
 from django.shortcuts import render_to_response, get_object_or_404, render
 from django.http import HttpResponse, Http404
 from rest_framework.views import APIView

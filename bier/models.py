@@ -1,4 +1,5 @@
 from django.db import models
+from geopy import geocoders
 
 # Create your models here.
 class Kiosk(models.Model):
@@ -13,14 +14,12 @@ class Kiosk(models.Model):
     
     def __unicode__(self):
         return self.name
-
-class BeerPrice(models.Model):
-    kiosk = models.ForeignKey(Kiosk)
-    beer = models.ForeignKey(Beer)
-    price = models.IntegerField()
-    date = models.DateTimeField();
-    def __unicode__(self):
-        return self.price
+    
+#    def save(self):
+#        add = "%s, %s, %s, %s" % (self.street, self.number , self.zip_code, self.city)
+#        g = geocoders.Google()
+#        place , (self.lat, self.long) = g.geocode(add)
+#        super(Kiosk, self).save() # Call the "real" save() method
 
 class Beer(models.Model):
     name  = models.CharField(max_length=100)
@@ -29,3 +28,11 @@ class Beer(models.Model):
 
     def __unicode__(self):
         return self.name
+    
+class BeerPrice(models.Model):
+    kiosk = models.ForeignKey(Kiosk)
+    beer = models.ForeignKey(Beer)
+    price = models.IntegerField()
+    date = models.DateTimeField();
+    def __unicode__(self):
+        return self.price
