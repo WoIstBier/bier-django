@@ -14,7 +14,7 @@ class BierPreisListeInline(admin.TabularInline):
 class KioskAdmin(admin.ModelAdmin):
     fieldsets = [
      (None, {'fields': ['name']}),
-        (None, {'fields': ['adresse']}),
+        (None, {'fields': ['address']}),
     ]
     inlines = [BierPreisListeInline]
     

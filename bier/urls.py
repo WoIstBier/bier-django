@@ -4,7 +4,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from bier import views
 
 urlpatterns = patterns('',
-    url(r'^bier/$', views.KioskList.as_view()),
+    url(r'^$', views.KioskList.as_view()),
     url(r'^bier/(?P<pk>[0-9]+)/$', views.KioskDetail.as_view()),
 #    url(r'^polls/(?P<kiosk_id>[0-9]+)/$', 'polls.views.biere'),
 #    url(r'^$', views.index, name='index'),
