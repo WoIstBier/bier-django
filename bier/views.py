@@ -1,5 +1,5 @@
 # Create your views here.
-from bier.models import Kiosk, BierPreisListe
+from bier.models import Kiosk, BeerPrice
 from django.shortcuts import render_to_response, get_object_or_404, render
 from django.http import HttpResponse, Http404
 from rest_framework.views import APIView
@@ -14,7 +14,7 @@ def index(request):
     return render(request, 'bier/index.html', context)
 
 def biere(request, kiosk_id):
-    p = BierPreisListe.objects.filter(id = kiosk_id)
+    p = BeerPrice.objects.filter(id = kiosk_id)
     return render_to_response('bier/biere.html', {'bier_list': p})
 
 def detail(request, poll_id):

@@ -5,10 +5,10 @@ Created on Feb 17, 2013
 '''
 from django.contrib import admin
 #from polls.models import Poll, Choice
-from bier.models import Kiosk, BierPreisListe
+from bier.models import Kiosk, BeerPrice
 
 class BierPreisListeInline(admin.TabularInline):
-    model = BierPreisListe
+    model = BeerPrice
     extra = 2
 
 class KioskAdmin(admin.ModelAdmin):
