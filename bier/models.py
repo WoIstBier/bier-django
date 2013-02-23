@@ -15,11 +15,11 @@ class Kiosk(models.Model):
     def __unicode__(self):
         return self.name
     
-#    def save(self):
-#        add = "%s, %s, %s, %s" % (self.street, self.number , self.zip_code, self.city)
-#        g = geocoders.Google()
-#        place , (self.lat, self.long) = g.geocode(add)
-#        super(Kiosk, self).save() # Call the "real" save() method
+    def save(self):
+        add = "%s, %s, %s, %s" % (self.street, self.number , self.zip_code, self.city)
+        g = geocoders.Google()
+        place , (self.geo_lat, self.geo_long) = g.geocode(add)
+        super(Kiosk, self).save() # Call the "real" save() method
 
 class Beer(models.Model):
     name  = models.CharField(max_length=100)
