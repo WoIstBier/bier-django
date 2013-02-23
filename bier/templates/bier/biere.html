@@ -1,0 +1,9 @@
+{% if bier_list %}
+    <ul>
+    {% for bier in bier_list %}
+       <li>{{ bier.name }} -- {{ bier.price }} cent</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No kiosk are available.</p>
+{% endif %}

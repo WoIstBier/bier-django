@@ -14,8 +14,8 @@ def index(request):
     return render(request, 'bier/index.html', context)
 
 def biere(request, kiosk_id):
-    p = BierPreisListe.objects.filter('id' == kiosk_id)
-    return render_to_response('bier/biere.html', {'biere': p})
+    p = BierPreisListe.objects.filter(id = kiosk_id)
+    return render_to_response('bier/biere.html', {'bier_list': p})
 
 def detail(request, poll_id):
     return HttpResponse("You're looking at poll %s." % poll_id)
