@@ -1,7 +1,7 @@
 {% if kioske %}
     <ul>
     {% for kiosk in kioske %}
-        <li>{{ kiosk.name }}</li>
+        <a href="/polls/{{kiosk.id}}/"><li>{{ kiosk.name }}</li>
     {% endfor %}
     </ul>
 {% else %}
