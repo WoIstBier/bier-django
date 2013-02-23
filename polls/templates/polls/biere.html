@@ -1,0 +1,9 @@
+{% if biere %}
+    <ul>
+    {% for bier in biere %}
+        <li>{{ bier.name }} -- {{ bier.name }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No kierse are available.</p>
+{% endif %}
