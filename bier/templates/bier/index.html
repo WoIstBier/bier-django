@@ -1,7 +1,7 @@
 {% if kioske %}
     <ul>
     {% for kiosk in kioske %}
-        <a href="/bier/{{kiosk.id}}/"><li>{{ kiosk.name }}</li>
+        <a href="/bier/{{kiosk.id}}/"><li>{{ kiosk.name }}</li> </a>
     {% endfor %}
     </ul>
 {% else %}

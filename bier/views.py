@@ -1,21 +1,46 @@
 # Create your views here.
-from bier.models import Kiosk, Beer, BeerPrice
-from django.shortcuts import render_to_response, get_object_or_404, render
-from django.http import HttpResponse, Http404
+from bier.models import Kiosk, BeerPrice, KioskImage, ImageForm, Image
+from bier.serializers import KioskSerializer
+from django.template import RequestContext
+
+from django.shortcuts import render_to_response
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from bier.models import Kiosk
-from bier.serializers import KioskSerializer
 
 def index(request):
     kiosk_liste = Kiosk.objects.order_by('name')
-    context = {'kioske': kiosk_liste}
-    return render(request, 'bier/index.html', context)
+    return render_to_response('bier/index.html', {'kioske': kiosk_liste })
 
 def biere(request, kiosk_id):
+    print('in bier view')
+    if request.method =='POST':
+        print('Post request')
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            print('form is valid')
+            imgModel = Image(image=request.FILES['image'], thumbnail=None)
+            imgModel.save()
+            k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , img=imgModel)
+            k.save()
+            return HttpResponseRedirect(reverse('bier.views.index'))
+        else:
+            print('form is invalid')
+    else:
+        form = ImageForm()
+        
+#    inner_qs = Blog.objects.filter(name__contains='Cheddar')
+#    entries = Entry.objects.filter(blog__in=inner_qs)
+
+#    r = Rating.objects.get( id=rating_id )
+#    c = r.candidate_set().all()
     p = BeerPrice.objects.filter(id = kiosk_id)
-    return render_to_response('bier/biere.html', {'bier_list': p})
+    k = KioskImage.objects.filter(kiosk__pk = kiosk_id)
+    imgSet = Image.objects.filter(pk__in =  k.values_list('img'))
+    c = RequestContext(request,  {'bier_list': p, 'form' : form, 'imgs': imgSet})
+    return render_to_response('bier/biere.html', c)
 
 def detail(request, poll_id):
     return HttpResponse("You're looking at poll %s." % poll_id)

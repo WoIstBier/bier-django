@@ -1,9 +1,29 @@
 {% if bier_list %}
     <ul>
     {% for bier in bier_list %}
-       <li>{{ bier.name }} -- {{ bier.price }} cent</li>
+       <li>{{ bier.beer.name }} -- {{ bier.price }} cent</li>
     {% endfor %}
     </ul>
+       
 {% else %}
-    <p>No kiosk are available.</p>
+    <p>No beers are available.</p>
 {% endif %}
+	<p>Image upload.</p>
+	<p> BLABLA </p>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	
+		<form  method="post" enctype="multipart/form-data"> {% csrf_token %}
+            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.image.label }} {{ form.image.help_text }}</p>
+            <p>
+                {{ form.image.errors }}
+                {{ form.image }}
+            </p>
+            <p><input type="submit" value="Upload" /></p>
+        </form>
+
+	<p>Bilder: </>
+	{% for img in imgs %}
+      <p> <a href="{{img.image.url}}"> <img src="{{img.image.url}}" alt="Ein Bild Bitch!"> </a></p>
+    {% endfor %}
+	
