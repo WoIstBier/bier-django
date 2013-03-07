@@ -3,6 +3,7 @@ from geopy import geocoders
 from django.forms import forms, ModelForm
 from django.core.files.base import ContentFile
 from django.core.files import File
+import datetime
 import os.path
 # Create your models here.
 class Kiosk(models.Model):
@@ -36,14 +37,23 @@ class BeerPrice(models.Model):
     kiosk = models.ForeignKey(Kiosk)
     beer = models.ForeignKey(Beer)
     price = models.IntegerField()
-    date = models.DateTimeField()
+    created = models.DateTimeField()
+    modified = models.DateTimeField()
+    
+    def save(self):
+        if self.pk is None:
+            self.created = datetime.datetime.today()
+        self.modified = datetime.datetime.today()
+        super(BeerPrice, self).save()
     
     def __unicode__(self):
         return self.price
     
 class Image(models.Model):
     image = models.ImageField(
-        upload_to='images/'
+        upload_to='images/',
+        max_length=500,
+        blank=True
     )
      
     thumbnail = models.ImageField(
@@ -104,6 +114,6 @@ class KioskImage(models.Model):
 
 class ImageForm(forms.Form):
     image = forms.FileField(
-        label='Select a file',
+        label='Waehle ein bild von deinem Computer',
         help_text='max. 2.5 megabytes'
     )

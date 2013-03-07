@@ -20,15 +20,15 @@ def fillIt():
     b3.save()
     b4.save()
     
-    p1 = BeerPrice(kiosk=k1, beer=b1 , price='80',date='2013-02-01')
-    p2 = BeerPrice(kiosk=k1, beer=b2 , price='90',date='2013-02-01')
-    p3 = BeerPrice(kiosk=k1, beer=b3 , price='70',date='2013-02-01')
-    p4 = BeerPrice(kiosk=k2, beer=b1 , price='80',date='2013-02-01')
-    p5 = BeerPrice(kiosk=k2, beer=b3 , price='80',date='2013-02-01')
-    p6 = BeerPrice(kiosk=k2, beer=b4 , price='80',date='2013-02-01')
-    p7 = BeerPrice(kiosk=k3, beer=b4 , price='80',date='2013-02-01')
-    p8 = BeerPrice(kiosk=k3, beer=b1 , price='80',date='2013-02-01')
-    p9 = BeerPrice(kiosk=k4, beer=b2 , price='80',date='2013-02-01')
+    p1 = BeerPrice(kiosk=k1, beer=b1 , price='80',created='2013-02-01')
+    p2 = BeerPrice(kiosk=k1, beer=b2 , price='90',created='2013-02-01')
+    p3 = BeerPrice(kiosk=k1, beer=b3 , price='70',created='2013-02-01')
+    p4 = BeerPrice(kiosk=k2, beer=b1 , price='80',created='2013-02-01')
+    p5 = BeerPrice(kiosk=k2, beer=b3 , price='80',created='2013-02-01')
+    p6 = BeerPrice(kiosk=k2, beer=b4 , price='80',created='2013-02-01')
+    p7 = BeerPrice(kiosk=k3, beer=b4 , price='80',created='2013-02-01')
+    p8 = BeerPrice(kiosk=k3, beer=b1 , price='80',created='2013-02-01')
+    p9 = BeerPrice(kiosk=k4, beer=b2 , price='80',created='2013-02-01')
     p1.save();
     p2.save();
     p3.save();

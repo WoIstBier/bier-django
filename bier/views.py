@@ -39,7 +39,7 @@ def biere(request, kiosk_id):
     p = BeerPrice.objects.filter(id = kiosk_id)
     k = KioskImage.objects.filter(kiosk__pk = kiosk_id)
     imgSet = Image.objects.filter(pk__in =  k.values_list('img'))
-    c = RequestContext(request,  {'bier_list': p, 'form' : form, 'imgs': imgSet})
+    c = RequestContext(request,  {'bier_list': p, 'form' : form, 'imgs': imgSet, 'kiosk': Kiosk.objects.get(pk=kiosk_id) })
     return render_to_response('bier/biere.html', c)
 
 def detail(request, poll_id):
