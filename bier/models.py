@@ -47,7 +47,7 @@ class BeerPrice(models.Model):
         super(BeerPrice, self).save()
     
     def __unicode__(self):
-        return self.price
+        return str(self.price)
 
 '''
 Model containing an image which automaticly creates a thumbnail when imagesize > maxSize
@@ -68,6 +68,8 @@ class Image(models.Model):
         null=True,
         blank=True
     )
+    def __unicode__(self):
+        return self.image.name
      
     def create_thumbnail(self):
         from PIL import Image
@@ -122,3 +124,6 @@ class ImageForm(forms.Form):
         label='Waehle ein bild von deinem Computer',
         help_text='max. 2.5 megabytes'
     )
+    def __unicode__(self):
+        return self.image.path
+    

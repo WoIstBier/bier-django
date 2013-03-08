@@ -5,12 +5,16 @@ Created on Feb 17, 2013
 '''
 from django.contrib import admin
 #from polls.models import Poll, Choice
-from bier.models import Kiosk, Beer, BeerPrice
+from bier.models import Kiosk, Beer, BeerPrice, KioskImage
 
 class BeerPriceInline(admin.TabularInline):
     model = BeerPrice
     extra = 2
 
+class KioskImageInline(admin.TabularInline):
+    model = KioskImage
+    extra = 2
+    
 class KioskAdmin(admin.ModelAdmin):
     fieldsets = [
      (None, {'fields': ['name']}),
@@ -22,6 +26,8 @@ class KioskAdmin(admin.ModelAdmin):
      (None, {'fields': ['geo_lat']}),
      (None, {'fields': ['geo_long']})  
     ]
-    inlines = [BeerPriceInline]
+    inlines = [BeerPriceInline, KioskImageInline]
+    
+
     
 admin.site.register(Kiosk, KioskAdmin)
