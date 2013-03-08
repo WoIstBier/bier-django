@@ -1,5 +1,7 @@
 import sys
-sys.path.append('/home/mackaiver/Development/workspace/bier/')
+import os
+#sys.path.append('/home/mackaiver/Development/workspace/bier/')
+sys.path.append(os.getcwd()+'/..')
 from siteStuff import settings
 from django.core.management import setup_environ
 setup_environ(settings)
