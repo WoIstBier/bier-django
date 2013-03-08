@@ -19,6 +19,5 @@ urlpatterns = patterns('',
     url(r'^bier/', include('bier.urls')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': MEDIA_ROOT,
-    }),
-    url(r'^$', 'bier.views.index'),
+    })
 )
