@@ -104,7 +104,7 @@ class Image(models.Model):
         # Force an UPDATE SQL query if we're editing the image to avoid integrity exception
         super(Image, self).save(force_update=force_update)
 
-
+''' This model connects images with kiosks'''
 class KioskImage(models.Model):
     kiosk = models.ForeignKey(Kiosk)
     img = models.ForeignKey(Image)

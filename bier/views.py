@@ -11,8 +11,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 def index(request):
+    return render_to_response('bier/index.html')
+
+def kiosk(request):
     kiosk_liste = Kiosk.objects.order_by('name')
-    return render_to_response('bier/index.html', {'kioske': kiosk_liste })
+    return render_to_response('bier/kiosk.html', {'kioske': kiosk_liste })
 
 def biere(request, kiosk_id):
     print('in bier view')
@@ -25,7 +28,7 @@ def biere(request, kiosk_id):
             imgModel.save()
             k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , img=imgModel)
             k.save()
-            return HttpResponseRedirect(reverse('bier.views.index'))
+            return HttpResponseRedirect(reverse('bier.views.kiosk'))
         else:
             print('form is invalid')
     else:
@@ -44,8 +47,8 @@ def biere(request, kiosk_id):
 
 def detail(request, poll_id):
     return HttpResponse("You're looking at poll %s." % poll_id)
-#def index(request):
-#    return HttpResponse("Hello, world. You're at the poll index.")
+#def kiosk(request):
+#    return HttpResponse("Hello, world. You're at the poll kiosk.")
 
 
 class KioskList(APIView):

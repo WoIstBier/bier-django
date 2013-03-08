@@ -1,0 +1,10 @@
+<h2> Startpunkt der Bier-App </h2>
+{% if kioske %}
+    <ul>
+    {% for kiosk in kioske %}
+        <a href="/bier/{{kiosk.id}}/"><li>{{ kiosk.name }}</li> </a>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No kiosk are available.</p>
+{% endif %}

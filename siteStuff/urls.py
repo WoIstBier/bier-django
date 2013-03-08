@@ -20,5 +20,5 @@ urlpatterns = patterns('',
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': MEDIA_ROOT,
     }),
-   # url(r'^polls/$', 'polls.views.index'),
+    url(r'^$', 'bier.views.index'),
 )
