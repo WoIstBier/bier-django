@@ -1,9 +1,9 @@
 <h2>Kiosk: </h2>
 <p> Name: {{kiosk.name}} </p>
 <p> Ort: {{kiosk.street}}  {{kiosk.number}} </p>
-<p>Bilder: </>
+<p>Bilder: <p/>
 {% for img in imgs %}
-  <p> <a href="{{img.image.url}}"> <img src="{{img.image.url}}" alt="Ein Bild Bitch!"> </a></p>
+  <p> <a href="{{img.image.url}}"> <img src="{{img.thumbnail.url}}" alt="Ein Bild Bitch!"> </a> </p>
 {% endfor %}
 
 <h3> Hat folgende biere: </h3>

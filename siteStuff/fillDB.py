@@ -1,3 +1,9 @@
+import sys
+sys.path.append('/home/mackaiver/Development/workspace/bier/')
+from siteStuff import settings
+from django.core.management import setup_environ
+setup_environ(settings)
+
 from bier.models import Kiosk, BeerPrice, Beer
 import csv
 def fillIt():
@@ -51,4 +57,12 @@ def readFromCSV():
         beer = Beer(**row)
         beer.save()
     
+    
+def main():
+    print("fillDB Skript started")
+    fillIt()
+    print("fillDb skript finished")
+
+if  __name__ =='__main__':
+    main()
              
