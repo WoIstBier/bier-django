@@ -1,7 +1,8 @@
 # Create your views here.
-from bier.models import Kiosk, BeerPrice, KioskImage, ImageForm, Image
-from bier.serializers import KioskSerializer
+from bier.models import Kiosk, BeerPrice, KioskImage, ImageForm, Image, Beer
+from bier.serializers import KioskSerializer, ImageSerializer
 from django.template import RequestContext
+
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -51,9 +52,35 @@ def detail(request, poll_id):
 #    return HttpResponse("Hello, world. You're at the poll kiosk.")
 
 
+
+class ImageList(APIView):
+    
+    def get(self, request, kiosk_id, format=None):
+        kImgSet = KioskImage.objects.filter(kiosk__pk = kiosk_id)
+        imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
+        serializer = ImageSerializer(imgSet, many=True)
+        return Response(serializer.data)
+
+#    def post(self, request,  format=None):
+#        serializer = ImageSerializer(data=request.DATA)
+#        if serializer.is_valid():
+#            serializer.save()
+#            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 class KioskList(APIView):
-    def get(self, request, format=None):
-        ks = Kiosk.objects.all()
+    def get(self, request, format=None, beerName = ''):
+        if beerName == '' :
+            ks = Kiosk.objects.all()
+        else:
+            beer = Beer.objects.filter(name = beerName)
+            p = BeerPrice.objects.filter(pk__in = beer.values_list('id') )
+            ks = Kiosk.objects.filter(pk__in = p.values_list('id'))
+#            pk__in =  k.values_list('img')
+            
         serializer = KioskSerializer(ks, many=True)
         return Response(serializer.data)
 
@@ -63,14 +90,38 @@ class KioskList(APIView):
 #            serializer.save()
 #            return Response(serializer.data, status=status.HTTP_201_CREATED)
 #        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#@api_view(['GET', 'PUT', 'DELETE'])
+#def kiosk_detail(request, kiosk_id):
+#    try:
+#        kiosk = Kiosk.objects.get(pk=kiosk_id)
+#    except kiosk.DoesNotExist:
+#        return Response(status=status.HTTP_404_NOT_FOUND)
+#
+#    if request.method == 'GET':
+#        serializer = KioskSerializer(kiosk)
+#        return Response(serializer.data)
+
+#    elif request.method == 'PUT':
+#        serializer = SnippetSerializer(snippet, data=request.DATA)
+#        if serializer.is_valid():
+#            serializer.save()
+#            return Response(serializer.data)
+#        else:
+#            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#    elif request.method == 'DELETE':
+#        snippet.delete()
+#        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class KioskDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, kiosk_id):
         try:
-            return Kiosk.objects.get(pk=pk)
+            return Kiosk.objects.get(pk=kiosk_id)
         except Kiosk.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
-        k = self.get_object(pk)
+    def get(self, request, kiosk_id, format=None):
+        k = self.get_object(kiosk_id)
         serializer = KioskSerializer(k)
         return Response(serializer.data)
