@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^(?P<kiosk_id>[0-9]+)/$', 'bier.views.biere'),
     url(r'^$', 'bier.views.kiosk', name='kiosk'),
     
-    url(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root': '/home/bier/html/static'})
+    
 
 )
 

@@ -19,5 +19,9 @@ urlpatterns = patterns('',
     url(r'^bier/', include('bier.urls')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': MEDIA_ROOT,
-    })
+    }),
+    url(r'^static/(?P<path>.*)$','django.views.static.serve',{
+        'document_root': '/home/bier/html/static'
+    }),
+    url(r'^$', 'bier.views.index', name='kiosk')
 )
