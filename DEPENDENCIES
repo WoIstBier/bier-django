@@ -1,0 +1,37 @@
+####
+#These packages have to be installed
+#Some of them might already be on your system
+# 10 Maerz
+####
+
+easy_install pip
+pip install mysql-connector-python=
+pip install mysql-utilities
+pip install django
+pip install geopy
+pip install pillow
+pip install djangorestframework
+pip install django-filter
+
+##### 
+#Some important stuff in settingy.py
+#####
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # Uncomment the next line to enable the admin:
+    'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+    'bier',
+    'rest_framework',
+    'django_filters'
+)
+
+REST_FRAMEWORK = {
+    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
+}

@@ -65,7 +65,6 @@ class Image(models.Model):
     thumbnail = models.ImageField(
         upload_to='images/thumbs/',
         max_length=500,
-        null=True,
         blank=True
     )
     def __unicode__(self):
