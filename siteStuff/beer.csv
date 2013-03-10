@@ -1,18 +1,12 @@
-name,brand,location
-Andreas,Pils,Dortmund
-Brinkhoff’s,ColaBier,Dortmund
-Brinkhoff’s,Radler,Dortmund
-Dortmunder Hansa,Hansa Pils,Dortmund
-Dortmunder Kronen,Kronen Pils,Dortmund
-Dortmunder Kronen,Kronen Export,Dortmund
-Dortmunder Stifts,Stifts Pils,Dortmund
-Dortmunder Thier,Thier Pils,Dortmund
-Dortmunder Union,Siegel Pils,Dortmund
-Felskrone,Malz,Dortmund
-Ritter,Ritter First,Dortmund
-Stades,Stades Leicht,Dortmund
-Wicküler,Wicküler Pilsener,Dortmund
+brand,name,location
+Brinkhoff's, Brinkhoff's Radler, Dortmund
+Hansa,Hansa Pils,Dortmund
+Hansa,Hansa Export,Dortmund
+Kronen,Kronen Pils,Dortmund
+Kronen,Kronen Export,Dortmund
+Stifts,Stifts Pils,Dortmund
+Thier,Thier Pils,Dortmund
+Union,Siegel Pils,Dortmund
 Hövels,Hövels Original,Dortmund
-Clarissen,Alt,Dortmund
-DBB Bergmann,Pils,Dortmund
-Fiege,Pils,Bochum
+Clarissen,Clarissen Alt,Dortmund
+Fiege, Fiege Pils,Bochum

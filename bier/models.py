@@ -12,7 +12,7 @@ class Kiosk(models.Model):
     zip_code = models.CharField(max_length=6)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=100)
-    owner = models.CharField('owners_name', max_length=100)
+    owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     
@@ -37,8 +37,8 @@ class BeerPrice(models.Model):
     kiosk = models.ForeignKey(Kiosk)
     beer = models.ForeignKey(Beer)
     price = models.IntegerField()
-    created = models.DateTimeField()
-    modified = models.DateTimeField()
+    created = models.DateTimeField(blank=True, null=True)
+    modified = models.DateTimeField(blank=True, null=True)
     
     def save(self):
         if self.pk is None:
