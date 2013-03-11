@@ -2,16 +2,29 @@
   <head>
     <title></title>
     <meta content="">
-    <style></style>
+    <style>
+	    h2 {text-transform: uppercase; font-weight: 200}
+    	div.content {padding: 1em 0 0 1em; margin 1em; width:60% ; min-height: 500px}
+    	img#main{width: 25%; padding: 0 2em 2em 0 ; float: left; height: 450px; width: 200px;}
+    	body{background-color: 	#F8F8FF; font-family: Century Gothic, sans-serif; } 
+    	span#text p {font-size: small; }
+    	span#text{width: 600; display: block}
+    </style>
   </head>
   <body>
-    <h2> Oh nein es kommt! </h2>
-    <p></p>
-    <img src=http://www.musik-hall-strauss.ch/wp-content/uploads/bier.jpg />
-        <p> </p>
-        <p> <a href="bier/" >Hier </a> gehts schonmal weiter fuer alle Offiziellen App-Tester </p>
-        <p> Kontaktieren koennt ihr uns zunaechst ueber bier -AltGr + Q-cepheus.uberspace.de und spaeter ueber die entsprechende domain </p>
-		<p> und <a href="admin/" > hier </a> gehts zum admin interface </p>
+	<div class="content" >
+		{% load static from staticfiles %}
+		<img id="main" src="{% static "images/bier_klein.jpg" %}" alt="Bier Photo. Hab ich in Holland gemacht" />
+    	<h2> Oh nein es kommt! </h2>
+    	<span id="text">
+	        <p> Hier entsteht die Webpräsenz der einzig wahren Bier-App.  </p>
+	        <p> Kontaktieren koennt ihr uns zunächst ueber bier"AltGr+Q"cepheus.uberspace.de und später ueber die entsprechende domain 
+	        	wenn wir uns endlich mal auf einen Namen geeinigt haben. Noch gibts hier nicht viel zu sehen. 
+	        	Das soll sich aber in absehbarer Zukunft ändern. Neben einigen Funktionalitäten die die App bieten wird, wird sich bestimmt auch jemand
+	        	dazu bereit erklären einen Dortmund/Bier-Blog zu verfassen.</p>
+			<p> Für alle Beta-Tester geht es  <a href="admin/" > hier </a> zum admin interface </p>
+		</span>
+	</div> 
   </body>
 </html>
 
