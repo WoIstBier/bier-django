@@ -13,8 +13,8 @@ urlpatterns = patterns('',
     url(r'^rest/image/$', views.ImageList.as_view() ),
     url(r'^rest/image/(?P<kiosk_id>[0-9]+)/$', views.ImageDetail.as_view() ),
     
-    url(r'^(?P<kiosk_id>[0-9]+)/$', 'bier.views.biere'),
-    url(r'^$', 'bier.views.kiosk', name='kiosk'),
+    url(r'^web/(?P<kiosk_id>[0-9]+)/$', 'bier.views.biere'),
+    url(r'^web/$', 'bier.views.kiosk', name='kiosk'),
     
     
 
