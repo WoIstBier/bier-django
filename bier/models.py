@@ -64,7 +64,7 @@ class BeerPrice(models.Model):
     kiosk = models.ForeignKey(Kiosk)
     beer = models.ForeignKey(Beer)
     price = models.IntegerField()
-    created = models.DateTimeField(blank=True)
+    created = models.DateTimeField(blank=True, null=True)
     modified = models.DateTimeField(blank=True, null=True)
     
     def save(self):
