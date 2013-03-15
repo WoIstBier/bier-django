@@ -55,6 +55,7 @@ class ImageAdmin(admin.ModelAdmin):
         ('Bild',               {'fields': ['image']}),
         ('Kleines Bild. (wird automatisch generiert)', {'fields': ['thumbnail']})
     ]
+    list_display = ('admin_img', 'image')
     model = Image
 
 admin.site.register(Image, ImageAdmin)

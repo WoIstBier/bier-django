@@ -84,7 +84,7 @@ Model containing an image which automaticly creates a thumbnail when imagesize >
 class Image(models.Model):
     maxWidth = 150;
     maxHeight = 150;
-    
+
     image = models.ImageField(
         upload_to='images/',
         max_length=500,
@@ -96,6 +96,18 @@ class Image(models.Model):
         max_length=500,
         blank=True
     )
+    #display image in admin view with this function
+    def admin_img(self):
+        if self.image:
+            return u'<img src="%s" />' % self.thumbnail.url
+        else:
+            return 'no image. WTF'
+    
+    admin_img.short_description = 'Thumb'
+    admin_img.allow_tags = True
+        
+    
+    
     def __unicode__(self):
         return self.image.name
      

@@ -96,10 +96,19 @@ class BeerDetail(APIView):
         serializer = BeerSerializer(k)
         return Response(serializer.data)
 
+
+
 class KioskList(generics.ListAPIView):
     model = Kiosk
     serializer_class = KioskSerializer
     filter_fields = ('id', 'name', 'owner', 'street')
+#    TODO: data checks and all fo that stuff not being done by the client
+    def put(self, request):
+        serializer = KioskSerializer(data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
         """
@@ -149,3 +158,10 @@ class KioskDetail(APIView):
         k = self.get_object(kiosk_id)
         serializer = KioskSerializer(k)
         return Response(serializer.data)
+    
+    def put(self, request,kiosk_id, format=None):
+        serializer = KioskSerializer(data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
