@@ -38,8 +38,9 @@ class BeerAdmin(admin.ModelAdmin):
         ('Name. z.B. Hansa Pils',               {'fields': ['name']}),
         ('Marke bzw. Brauerei z.B. Hansa', {'fields': ['brand']}),
         ('Heimat des Bieres',   {'fields': ['location']}),
+        ('Sorte des Bieres z.B. Weizen',   {'fields': ['brew']}),
     ]
-    list_display = ('brand', 'name', 'location')
+    list_display = ('brand', 'name', 'brew', 'location')
     
 class KioskImageAdmin(admin.ModelAdmin):
     fieldsets = [

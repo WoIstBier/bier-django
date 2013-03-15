@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from geopy import geocoders
 from django.forms import forms, ModelForm
@@ -7,11 +8,11 @@ import datetime
 import os.path
 # Create your models here.
 class Kiosk(models.Model):
-    street = models.CharField('street_name', max_length=100)
+    street = models.CharField('street_name', max_length=150)
     number = models.CharField('building_number', max_length=3)
     zip_code = models.CharField(max_length=6)
     city = models.CharField(max_length=30)
-    name = models.CharField('kiosk_name', max_length=100)
+    name = models.CharField('kiosk_name', max_length=160, blank=True)
     owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
@@ -19,13 +20,26 @@ class Kiosk(models.Model):
     def __unicode__(self):
         return self.name
     
-#    def save(self):
+    def save(self):
 #        add = "%s, %s, %s, %s" % (self.street, self.number , self.zip_code, self.city)
 #        g = geocoders.Google()
 #        place , (self.geo_lat, self.geo_long) = g.geocode(add)
-#        super(Kiosk, self).save() # Call the "real" save() method
+
+        if self.name == '' or self.name is None:
+            self.name = self.street + ' ' + str(self.number);
+        super(Kiosk, self).save() # Call the "real" save() method
 
 class Beer(models.Model):
+    BREW_CHOICES = (
+        ('pils', 'Pils'),
+        ('export', 'Export'),
+        ('weizen', 'Weizen'),
+        ('dunkel', 'Dunkel'),
+        ('export', 'Hell'),
+        ('lager', 'Lager'),
+        ('koelsch', 'Kölsch')
+    )
+    brew = models.CharField(max_length=20, choices=BREW_CHOICES, default='pils')
     name  = models.CharField(max_length=100)
     brand = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
@@ -34,16 +48,31 @@ class Beer(models.Model):
         return self.name
     
 class BeerPrice(models.Model):
+    KLEIN = 0.33
+    NORMAL = 0.5
+    SIZE_CHOICES = (
+        (0.25, 'belgisch klein 0.25'),
+        (0.33, 'klein 0.33'),
+        (0.375, 'lambic 0.33'),
+        (0.5, 'normal 0.5'),
+        (0.5, 'italien normal 0.5'),
+        (0.7, 'suedasien 0.7'),
+        (0.8, 'australien groß 0.8'),
+        (1.0, 'groß 1.0'),
+    )
+    size = models.FloatField(max_length=1, choices=SIZE_CHOICES, default = NORMAL )
     kiosk = models.ForeignKey(Kiosk)
     beer = models.ForeignKey(Beer)
     price = models.IntegerField()
-    created = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True, null=True)
     
     def save(self):
         if self.pk is None:
             self.created = datetime.datetime.today()
         self.modified = datetime.datetime.today()
+        if self.size is None:
+            self.size = 0.5
         super(BeerPrice, self).save()
     
     def __unicode__(self):
