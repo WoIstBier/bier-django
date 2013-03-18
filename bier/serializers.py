@@ -1,8 +1,23 @@
 from models import Kiosk, Image, Beer, KioskImage
 from rest_framework import serializers
+from pygeocoder import Geocoder
 
 
 class KioskSerializer(serializers.ModelSerializer):
+    exists = False
+    def save(self):
+        k = self.object
+        
+        address = "%s %s, %s, Deutschland" % (k.street, k.number, k.city)
+        result = Geocoder.geocode(address)
+        # chekc if address is valid and add street name from google to get rid of spelling differences
+        ks = Kiosk.objects.all().filter(street = result[0].route, number= result[0].street_number);
+        if ks.exists() :
+            exists = True
+            return
+        if result[0].valid_address :
+            self.object.save(location = result)
+
     class Meta:
         model = Kiosk
         

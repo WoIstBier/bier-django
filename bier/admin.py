@@ -29,7 +29,8 @@ class KioskAdmin(admin.ModelAdmin):
      (None, {'fields': ['city']}),
      (None, {'fields': ['owner']}), 
      (None, {'fields': ['geo_lat']}),
-     (None, {'fields': ['geo_long']})  
+     (None, {'fields': ['geo_long']}), 
+     (None, {'fields': ['is_valid_address']})  
     ]
     inlines = [BeerPriceInline, KioskImageInline]
     

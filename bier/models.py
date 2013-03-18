@@ -1,32 +1,42 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from geopy import geocoders
+#from geopy import geocoders
 from django.forms import forms, ModelForm
 from django.core.files.base import ContentFile
 from django.core.files import File
+from pygeocoder import Geocoder
 import datetime
 import os.path
 # Create your models here.
 class Kiosk(models.Model):
     street = models.CharField('street_name', max_length=150)
     number = models.CharField('building_number', max_length=3)
-    zip_code = models.CharField(max_length=6)
+    zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
     owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
+    is_valid_address = models.BooleanField('google_says_valid', default=False )
     
     def __unicode__(self):
         return self.name
     
-    def save(self):
-#        add = "%s, %s, %s, %s" % (self.street, self.number , self.zip_code, self.city)
-#        g = geocoders.Google()
-#        place , (self.geo_lat, self.geo_long) = g.geocode(add)
-
+    def save(self, location = None , *args, **kwargs):
+        address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
+        if not location:
+            location = Geocoder.geocode(address)
+        # chekc if address is valid and add street name from google to get rid of spelling differences
+        self.is_valid_address = location[0].valid_address
+        if (self.is_valid_address):
+            self.street = location[0].route
+        # add zip code
+        self.zip_code = location[0].postal_code
+        (self.geo_lat, self.geo_long) = location[0].coordinates
+        # in case name is not set. generate it
         if self.name == '' or self.name is None:
             self.name = self.street + ' ' + str(self.number);
+
         super(Kiosk, self).save() # Call the "real" save() method
 
 class Beer(models.Model):
@@ -64,13 +74,13 @@ class BeerPrice(models.Model):
     kiosk = models.ForeignKey(Kiosk)
     beer = models.ForeignKey(Beer)
     price = models.IntegerField()
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now = True, blank=True, null=True)
     
     def save(self):
-        if self.pk is None:
-            self.created = datetime.datetime.today()
-        self.modified = datetime.datetime.today()
+#        if self.pk is None:
+#            self.created = datetime.datetime.today()
+#        self.modified = datetime.datetime.today()
         if self.size is None:
             self.size = 0.5
         super(BeerPrice, self).save()
@@ -99,7 +109,7 @@ class Image(models.Model):
     #display image in admin view with this function
     def admin_img(self):
         if self.image:
-            return u'<img src="%s" />' % self.thumbnail.url
+            return u'<img src="%s" alt="Bild" />' % self.thumbnail.url
         else:
             return 'no image. WTF'
     

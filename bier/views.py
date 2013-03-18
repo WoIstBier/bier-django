@@ -9,6 +9,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ParseError
+from pygeocoder import Geocoder
 
 
 
@@ -68,6 +69,7 @@ class ImageDetail(APIView):
         
         
     def post(self, request, kiosk_id):
+        #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
         serializer = ImageSerializer(data = request.DATA , files=request.FILES, context={'kiosk_id': kiosk_id, 'request' : request})
 #        print('request data:  ' + str(request.DATA['image']) + '\n')
         print('files: ' + str(request.FILES['image']) + '\n')
@@ -102,12 +104,21 @@ class KioskList(generics.ListAPIView):
     model = Kiosk
     serializer_class = KioskSerializer
     filter_fields = ('id', 'name', 'owner', 'street')
-#    TODO: data checks and all fo that stuff not being done by the client
+#    TODO: data checks. prevent duplicates
     def put(self, request):
         serializer = KioskSerializer(data=request.DATA)
         if serializer.is_valid():
+            street = request.DATA.get('street')
+            number = request.DATA.get('number')
+           
             serializer.save()
+            if serializer.exists:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            if not serializer.object.is_valid_address:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+          
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
