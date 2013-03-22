@@ -4,22 +4,6 @@ from pygeocoder import Geocoder
 
 
 class KioskSerializer(serializers.ModelSerializer):
-    exists = False
-    def save(self):
-        k = self.object
-        #address = "%s %s, %s, Deutschland" % (k.street, k.number, k.city)
-        #result = Geocoder.geocode(address)
-        # chekc if address is valid and add street name from google to get rid of spelling differences
-        k.save(commit=False)
-        
-        if k.is_valid_address:
-            ks = Kiosk.objects.all().filter(street = k.street, number= k.number);
-            if ks.exists() :
-                self.double_entry = True
-                return
-            self.object.save()
-            
-
     class Meta:
         model = Kiosk
         

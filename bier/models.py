@@ -18,30 +18,39 @@ class Kiosk(models.Model):
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
+    doubleEntry= False
     
     def __unicode__(self):
         return self.name
     
-    def save(self, *args, **kwargs):
+    def save(self):
         address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
         try:
             location = Geocoder.geocode(address)
         except Exception, e:
             self.is_valid_address = False
-            return
+            return self
         # chekc if address is valid and add street name from google to get rid of spelling differences
         self.is_valid_address = location[0].valid_address
         if (self.is_valid_address):
             self.street = location[0].route
+            self.city = location[0].locality    
+            q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
+            if q.exists():
+                self.doubleEntry=True
+                return self
             #self.city = location[0].city
             # add zip code
-        self.zip_code = location[0].postal_code
-        (self.geo_lat, self.geo_long) = location[0].coordinates
-        # in case name is not set. generate it
-        if self.name == '' or self.name is None:
-            self.name = self.street + ' ' + str(self.number);
-    
-        super(Kiosk, self).save() # Call the "real" save() method
+            self.zip_code = location[0].postal_code
+            (self.geo_lat, self.geo_long) = location[0].coordinates
+            # in case name is not set. generate it
+            if self.name == '' or self.name is None:
+                self.name = self.street + ' ' + str(self.number);
+
+            return super(Kiosk, self).save() # Call the "real" save() method
+        else:
+            return self
+        
 
 class Beer(models.Model):
     BREW_CHOICES = (

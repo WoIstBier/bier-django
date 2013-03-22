@@ -171,13 +171,8 @@ class KioskList(generics.ListAPIView):
     def put(self, request):
         serializer = KioskSerializer(data=request.DATA)
         if serializer.is_valid():
-            street = request.DATA.get('street')
-            number = request.DATA.get('number')
-           
-            serializer.save()
-            if serializer.exists:
-                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-            if not serializer.object.is_valid_address:
+            k = serializer.save()
+            if k.doubleEntry or not k.is_valid_address:
                 return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
           
             return Response(serializer.data, status=status.HTTP_201_CREATED)
