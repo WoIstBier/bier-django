@@ -22,21 +22,25 @@ class Kiosk(models.Model):
     def __unicode__(self):
         return self.name
     
-    def save(self, location = None , *args, **kwargs):
+    def save(self, *args, **kwargs):
         address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
-        if not location:
+        try:
             location = Geocoder.geocode(address)
+        except Exception, e:
+            self.is_valid_address = False
+            return
         # chekc if address is valid and add street name from google to get rid of spelling differences
         self.is_valid_address = location[0].valid_address
         if (self.is_valid_address):
             self.street = location[0].route
-        # add zip code
+            #self.city = location[0].city
+            # add zip code
         self.zip_code = location[0].postal_code
         (self.geo_lat, self.geo_long) = location[0].coordinates
         # in case name is not set. generate it
         if self.name == '' or self.name is None:
             self.name = self.street + ' ' + str(self.number);
-
+    
         super(Kiosk, self).save() # Call the "real" save() method
 
 class Beer(models.Model):

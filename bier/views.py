@@ -50,29 +50,58 @@ def biere(request, kiosk_id):
 '''
 Here come the views for the rest api
 '''
-
-class ImageList(generics.ListAPIView):
-    model = Image
-    serializer_class = ImageSerializer
-    
-class ImageDetail(APIView):
-    model = Image
-    serializer_class = ImageSerializer
-#    filter_fields=('id', 'image.name')
-    def get(self, request, kiosk_id):
-        kiosk = Kiosk.objects.get(pk = kiosk_id)
-        kImgSet = KioskImage.objects.filter(kiosk = kiosk)
-        imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
+class SnippetList(APIView):
+    """
+    List all snippets, or create a new snippet.
+    """
+#     def get(self, request, format=None):
+#         snippets = Snippet.objects.all()
+#         serializer = SnippetSerializer(snippets, many=True)
+#         return Response(serializer.data)
+# 
+#     def post(self, request, format=None):
+#         serializer = SnippetSerializer(data=request.DATA)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ImageList(APIView):
+    def get(self, request, format = None):
+        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+        if kiosk_id is not None:
+            try:
+                long(kiosk_id)
+            except ValueError:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            try:
+                kiosk = Kiosk.objects.get(pk = kiosk_id)
+            except Kiosk.DoesNotExist:
+                raise Http404 
+            kImgSet = KioskImage.objects.filter(kiosk__id = kiosk_id)
+            imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
+            if imgSet.count()== 0:
+                return Response(status = status.HTTP_204_NO_CONTENT)
+        else:
+            imgSet = Image.objects.all()
+            
         serializer = ImageSerializer(imgSet, many=True)
         return Response(serializer.data)
-        
-        
-        
-    def post(self, request, kiosk_id):
+    
+    def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
+        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+        if kiosk_id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        #self.checkArgs(kiosk_id)
+        try:
+            long(kiosk_id)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            kiosk = Kiosk.objects.get(pk = kiosk_id)
+        except Kiosk.DoesNotExist:
+            raise Http404 
         serializer = ImageSerializer(data = request.DATA , files=request.FILES, context={'kiosk_id': kiosk_id, 'request' : request})
-#        print('request data:  ' + str(request.DATA['image']) + '\n')
-        print('files: ' + str(request.FILES['image']) + '\n')
         if serializer.is_valid():
             serializer.save()
             imageId = serializer.object.id
@@ -80,23 +109,57 @@ class ImageDetail(APIView):
             k.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def checkArgs(self, parameter):
+        try:
+            long(parameter)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            kiosk = Kiosk.objects.get(pk = parameter)
+        except Kiosk.DoesNotExist:
+            raise Http404
+    
+# class ImageDetail(APIView):
+#     model = Image
+#     serializer_class = ImageSerializer
+#     def get_object(self, image_id):
+#         try:
+#             return Image.objects.get(pk=image_id)
+#         except Image.DoesNotExist:
+#             raise Http404
+# #    filter_fields=('id', 'image.name')
+#     def get(self, request, image_id=None):
+#         if image_id:
+#             k = self.get_object(image_id)
+#             serializer = ImageSerializer(k)
+#         return Response(serializer.data)
+        
+class ImageDetail(generics.RetrieveAPIView):
+    model = Image
+    serializer_class = ImageSerializer       
+
 
 class BeerList(generics.ListAPIView):
     model = Beer
     serializer_class = BeerSerializer
     filter_fields=('name', 'brand', 'location')
+class BeerDetail(generics.RetrieveAPIView):
+    model=Beer
+    serializer_class = BeerSerializer
+    
 
-class BeerDetail(APIView):
-    def get_object(self, beer_id):
-        try:
-            return Beer.objects.get(pk=beer_id)
-        except Beer.DoesNotExist:
-            raise Http404
-        
-    def get(self, request, beer_id):
-        k = self.get_object(beer_id)
-        serializer = BeerSerializer(k)
-        return Response(serializer.data)
+# class BeerDetail(APIView):
+#     def get_object(self, beer_id):
+#         try:
+#             return Beer.objects.get(pk=beer_id)
+#         except Beer.DoesNotExist:
+#             raise Http404
+#         
+#     def get(self, request, beer_id):
+#         k = self.get_object(beer_id)
+#         serializer = BeerSerializer(k)
+#         return Response(serializer.data)
 
 
 
