@@ -18,7 +18,7 @@ class Kiosk(models.Model):
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
-    doubleEntry= False
+    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     
     def __unicode__(self):
         return self.name
@@ -39,6 +39,7 @@ class Kiosk(models.Model):
             if q.exists():
                 self.doubleEntry=True
                 return self
+            self.doubleEntry = False
             #self.city = location[0].city
             # add zip code
             self.zip_code = location[0].postal_code
@@ -69,6 +70,14 @@ class Beer(models.Model):
 
     def __unicode__(self):
         return self.name
+    
+class Comment(models.Model):
+    name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
+    comment = models.CharField(max_length=400)
+    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name+str(self.created)
     
 class BeerPrice(models.Model):
     KLEIN = 0.33
@@ -105,8 +114,8 @@ class BeerPrice(models.Model):
 Model containing an image which automaticly creates a thumbnail when imagesize > maxSize
 '''
 class Image(models.Model):
-    maxWidth = 150;
-    maxHeight = 150;
+    maxWidth = 640;
+    maxHeight = 480;
 
     image = models.ImageField(
         upload_to='images/',
@@ -177,6 +186,13 @@ class KioskImage(models.Model):
     def __unicode__(self):
         return self.kiosk.name + self.img.image.path
 
+''' This model connects images with kiosks'''
+class KioskComments(models.Model):
+    kiosk = models.ForeignKey(Kiosk)
+    comment = models.ForeignKey(Comment)
+    
+    def __unicode__(self):
+        return self.kiosk.name + self.comment.name
 #class ImageForm(ModelForm):
 #    class Meta:
 #        model = Image

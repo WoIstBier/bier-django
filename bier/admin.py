@@ -5,18 +5,21 @@ Created on Feb 17, 2013
 '''
 from django.contrib import admin
 #from polls.models import Poll, Choice
-from bier.models import Kiosk, Beer, BeerPrice, KioskImage, Image
+from bier.models import Kiosk, Beer, BeerPrice, KioskImage, Image, KioskComments, Comment
 
 class ImageInline(admin.TabularInline):
     model = Image
 
 class BeerPriceInline(admin.TabularInline):
-    
     model = BeerPrice
     extra = 2
 
 class KioskImageInline(admin.TabularInline):
     model = KioskImage
+    extra = 1
+    
+class KioskCommentInline(admin.TabularInline):
+    model = KioskComments
     extra = 1
     
     
@@ -32,7 +35,7 @@ class KioskAdmin(admin.ModelAdmin):
      (None, {'fields': ['geo_long']}), 
      (None, {'fields': ['is_valid_address']})  
     ]
-    inlines = [BeerPriceInline, KioskImageInline]
+    inlines = [BeerPriceInline, KioskImageInline, KioskCommentInline]
     
 class BeerAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -58,8 +61,19 @@ class ImageAdmin(admin.ModelAdmin):
     ]
     list_display = ('admin_img', 'image')
     model = Image
+    
+class CommentAdmin(admin.ModelAdmin):
+#     fieldsets = [
+#         ('Name des Autors',               {'fields': ['name']}),
+#         ('Erstellungsdatum', {'fields': ['created']}),
+#         ('Text', {'fields': ['comment']})
+#     ]
+    fields = ['name', 'comment']
+#     list_display = ('name', 'created', 'comment')
+    model = Comment
 
 admin.site.register(Image, ImageAdmin)
+admin.site.register(Comment, CommentAdmin)
 #admin.site.register(KioskImage, KioskImageAdmin)
 admin.site.register(Kiosk, KioskAdmin)
 admin.site.register(Beer, BeerAdmin)

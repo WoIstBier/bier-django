@@ -1,12 +1,14 @@
-from models import Kiosk, Image, Beer, KioskImage
+from models import Kiosk, Image, Beer, Comment
 from rest_framework import serializers
-from pygeocoder import Geocoder
 
 
 class KioskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kiosk
         
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
 
 class ImageSerializer(serializers.ModelSerializer):
     imageUrl = serializers.CharField(source='image.url', read_only=True)
