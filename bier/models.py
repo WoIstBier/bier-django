@@ -19,7 +19,7 @@ class Kiosk(models.Model):
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
-    
+    doubleEntry=False
     def __unicode__(self):
         return self.name
     
