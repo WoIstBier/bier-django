@@ -93,8 +93,8 @@ class BeerPrice(models.Model):
         (1.0, 'groß 1.0'),
     )
     size = models.FloatField(max_length=1, choices=SIZE_CHOICES, default = NORMAL )
-    kiosk = models.ForeignKey(Kiosk)
-    beer = models.ForeignKey(Beer)
+    kiosk = models.ForeignKey(Kiosk, related_name='related_kiosk')
+    beer = models.ForeignKey(Beer, related_name='related_beer')
     price = models.IntegerField()
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     modified = models.DateTimeField(auto_now = True, blank=True, null=True)

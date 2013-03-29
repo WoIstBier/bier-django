@@ -1,6 +1,6 @@
 # Create your views here.
 from bier.models import Kiosk, BeerPrice, KioskImage, ImageForm, Image, Beer, Comment, KioskComments
-from bier.serializers import KioskSerializer, ImageSerializer, BeerSerializer, CommentSerializer
+from bier.serializers import KioskSerializer, ImageSerializer, BeerSerializer, CommentSerializer, BeerPriceSerializer
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -51,7 +51,7 @@ Here come the views for the rest api
 '''
 
 ''' Some helper Functions'''
-def checkKioskArgs(self, kiosk_id):
+def check_kiosk_args(self, kiosk_id):
     try:
         long(kiosk_id)
     except ValueError:
@@ -63,7 +63,7 @@ def checkKioskArgs(self, kiosk_id):
     
 
 def getObjectsForKioskId(self, relationClass,resultClass,  attributeName, kiosk_id):
-    checkKioskArgs(self, kiosk_id)
+    check_kiosk_args(self, kiosk_id)
     relationSet = relationClass.objects.filter(kiosk__id = kiosk_id)
     return resultClass.objects.filter(pk__in =  relationSet.values_list(attributeName))
     
@@ -73,7 +73,7 @@ class ImageList(APIView):
     def get(self, request, format = None):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is not None:
-#             checkKioskArgs(kiosk_id)
+#             check_kiosk_args(kiosk_id)
 #             kImgSet = KioskImage.objects.filter(kiosk__id = kiosk_id)
 #             imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
             imgSet = getObjectsForKioskId(self, KioskImage, Image,  'img', kiosk_id)
@@ -90,8 +90,8 @@ class ImageList(APIView):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        #self.checkKioskArgs(kiosk_id)
-        checkKioskArgs(self, kiosk_id)
+        #self.check_kiosk_args(kiosk_id)
+        check_kiosk_args(self, kiosk_id)
         serializer = ImageSerializer(data = request.DATA , files=request.FILES, context={'kiosk_id': kiosk_id, 'request' : request})
         if serializer.is_valid():
             serializer.save()
@@ -127,7 +127,7 @@ class CommentList(generics.ListAPIView):
     
     def put(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        checkKioskArgs(self, kiosk_id);
+        check_kiosk_args(self, kiosk_id);
         serializer = CommentSerializer(data=request.DATA)
         if serializer.is_valid():
             com = serializer.save()
@@ -143,11 +143,42 @@ class CommentDetail(generics.CreateAPIView):
     
   
 ''' views for beers'''
+class BeerPriceList(generics.ListAPIView):
+    model = BeerPrice
+    serializer_class = BeerPriceSerializer
+    filter_fields=['kiosk__id']
+    #     def get(self, request, format = None):
+#         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+#         if kiosk_id is not None:
+#             check_kiosk_args(self, kiosk_id)
+#             beer_price_set = BeerPrice.objects.filter(kiosk__id = kiosk_id)
+#             if beer_price_set.count()== 0:
+#                 return Response(status = status.HTTP_204_NO_CONTENT)
+#         else:
+#             beer_price_set = BeerPrice.objects.all()
+#             
+#         serializer = BeerSerializer(beer_price_set, many=True,  context={'request': request})
+#         return Response(serializer.data)
+    
+    
 
 class BeerList(generics.ListAPIView):
     model = Beer
     serializer_class = BeerSerializer
-    filter_fields=('name', 'brand', 'location')
+    filter_fields=['name', 'brand', 'location', 'brew']
+    def get(self, request, format = None):
+        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+        if kiosk_id is not None:
+            beerSet = getObjectsForKioskId(self, BeerPrice, Beer, 'beer', kiosk_id)
+            if beerSet.count()== 0:
+                return Response(status = status.HTTP_204_NO_CONTENT)
+        else:
+            beerSet = Beer.objects.all()
+             
+        serializer = BeerSerializer(beerSet, many=True)
+        return Response(serializer.data)
+    
+    
 class BeerDetail(generics.RetrieveAPIView):
     model=Beer
     serializer_class = BeerSerializer

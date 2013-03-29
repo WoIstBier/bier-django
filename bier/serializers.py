@@ -1,4 +1,4 @@
-from models import Kiosk, Image, Beer, Comment
+from models import Kiosk, Image, Beer, Comment, BeerPrice
 from rest_framework import serializers
 
 
@@ -33,8 +33,18 @@ class ImageSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = Image
-        
+
+
+
 class BeerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beer
         
+        
+class BeerPriceSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='beer.name', read_only=True)
+    location = serializers.CharField(source='beer.location', read_only=True)
+    brand= serializers.CharField(source='beer.brand', read_only=True)
+    class Meta:
+        model = BeerPrice 
+        fields = ('price', 'size', 'name', 'brand', 'location') 
