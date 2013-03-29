@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from models import Kiosk, Image, Beer, Comment, BeerPrice
 from rest_framework import serializers
 
