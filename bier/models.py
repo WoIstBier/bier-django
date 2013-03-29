@@ -1,33 +1,57 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from geopy import geocoders
+#from geopy import geocoders
 from django.forms import forms, ModelForm
 from django.core.files.base import ContentFile
 from django.core.files import File
+from pygeocoder import Geocoder
 import datetime
 import os.path
 # Create your models here.
 class Kiosk(models.Model):
     street = models.CharField('street_name', max_length=150)
     number = models.CharField('building_number', max_length=3)
-    zip_code = models.CharField(max_length=6)
+    zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
     owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
+    is_valid_address = models.BooleanField('google_says_valid', default=False )
+    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     
     def __unicode__(self):
         return self.name
     
     def save(self):
-#        add = "%s, %s, %s, %s" % (self.street, self.number , self.zip_code, self.city)
-#        g = geocoders.Google()
-#        place , (self.geo_lat, self.geo_long) = g.geocode(add)
+        address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
+        try:
+            location = Geocoder.geocode(address)
+        except Exception, e:
+            self.is_valid_address = False
+            return self
+        # chekc if address is valid and add street name from google to get rid of spelling differences
+        self.is_valid_address = location[0].valid_address
+        if (self.is_valid_address):
+            self.street = location[0].route
+            self.city = location[0].locality    
+            q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
+            if q.exists():
+                self.doubleEntry=True
+                return self
+            self.doubleEntry = False
+            #self.city = location[0].city
+            # add zip code
+            self.zip_code = location[0].postal_code
+            (self.geo_lat, self.geo_long) = location[0].coordinates
+            # in case name is not set. generate it
+            if self.name == '' or self.name is None:
+                self.name = self.street + ' ' + str(self.number);
 
-        if self.name == '' or self.name is None:
-            self.name = self.street + ' ' + str(self.number);
-        super(Kiosk, self).save() # Call the "real" save() method
+            return super(Kiosk, self).save() # Call the "real" save() method
+        else:
+            return self
+        
 
 class Beer(models.Model):
     BREW_CHOICES = (
@@ -47,6 +71,14 @@ class Beer(models.Model):
     def __unicode__(self):
         return self.name
     
+class Comment(models.Model):
+    name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
+    comment = models.CharField(max_length=400)
+    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name+str(self.created)
+    
 class BeerPrice(models.Model):
     KLEIN = 0.33
     NORMAL = 0.5
@@ -61,16 +93,16 @@ class BeerPrice(models.Model):
         (1.0, 'groß 1.0'),
     )
     size = models.FloatField(max_length=1, choices=SIZE_CHOICES, default = NORMAL )
-    kiosk = models.ForeignKey(Kiosk)
-    beer = models.ForeignKey(Beer)
+    kiosk = models.ForeignKey(Kiosk, related_name='related_kiosk')
+    beer = models.ForeignKey(Beer, related_name='related_beer')
     price = models.IntegerField()
-    created = models.DateTimeField(blank=True, null=True)
-    modified = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
+    modified = models.DateTimeField(auto_now = True, blank=True, null=True)
     
     def save(self):
-        if self.pk is None:
-            self.created = datetime.datetime.today()
-        self.modified = datetime.datetime.today()
+#        if self.pk is None:
+#            self.created = datetime.datetime.today()
+#        self.modified = datetime.datetime.today()
         if self.size is None:
             self.size = 0.5
         super(BeerPrice, self).save()
@@ -82,9 +114,9 @@ class BeerPrice(models.Model):
 Model containing an image which automaticly creates a thumbnail when imagesize > maxSize
 '''
 class Image(models.Model):
-    maxWidth = 150;
-    maxHeight = 150;
-    
+    maxWidth = 640;
+    maxHeight = 480;
+
     image = models.ImageField(
         upload_to='images/',
         max_length=500,
@@ -96,6 +128,18 @@ class Image(models.Model):
         max_length=500,
         blank=True
     )
+    #display image in admin view with this function
+    def admin_img(self):
+        if self.image:
+            return u'<img src="%s" alt="Bild" />' % self.thumbnail.url
+        else:
+            return 'no image. WTF'
+    
+    admin_img.short_description = 'Thumb'
+    admin_img.allow_tags = True
+        
+    
+    
     def __unicode__(self):
         return self.image.name
      
@@ -142,6 +186,13 @@ class KioskImage(models.Model):
     def __unicode__(self):
         return self.kiosk.name + self.img.image.path
 
+''' This model connects images with kiosks'''
+class KioskComments(models.Model):
+    kiosk = models.ForeignKey(Kiosk)
+    comment = models.ForeignKey(Comment)
+    
+    def __unicode__(self):
+        return self.kiosk.name + self.comment.name
 #class ImageForm(ModelForm):
 #    class Meta:
 #        model = Image
