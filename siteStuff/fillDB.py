@@ -8,6 +8,8 @@ setup_environ(settings)
 
 from bier.models import Kiosk, BeerPrice, Beer
 import csv
+
+#this is deprecated by now I think
 def fillIt():
     print('Building some kioske')
     k1 = Kiosk(name='Lecker',street='kleppingstrasse', number='3', zip_code = '44135', city='dortmund',owner='guenther')

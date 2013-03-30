@@ -5,8 +5,9 @@ from django.forms import forms, ModelForm
 from django.core.files.base import ContentFile
 from django.core.files import File
 from pygeocoder import Geocoder
-import datetime
 import os.path
+import logging
+log = logging.getLogger(__name__)
 # Create your models here.
 class Kiosk(models.Model):
     street = models.CharField('street_name', max_length=150)
@@ -25,6 +26,7 @@ class Kiosk(models.Model):
     
     def save(self):
         address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
+        log.debug("Adress String for google is: %s %s, %s, Deutschland" % (self.street, self.number, self.city) )
         try:
             location = Geocoder.geocode(address)
         except Exception, e:
@@ -38,6 +40,7 @@ class Kiosk(models.Model):
             q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
             if q.exists():
                 self.doubleEntry=True
+                log.info("Someone tried to add an existing kiosk: %s" % address )
                 return self
             self.doubleEntry = False
             #self.city = location[0].city
@@ -47,7 +50,7 @@ class Kiosk(models.Model):
             # in case name is not set. generate it
             if self.name == '' or self.name is None:
                 self.name = self.street + ' ' + str(self.number);
-
+            log.info("Creating new Kiosk: %s" % self.name )
             return super(Kiosk, self).save() # Call the "real" save() method
         else:
             return self
