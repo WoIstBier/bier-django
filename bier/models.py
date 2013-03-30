@@ -7,6 +7,7 @@ from django.core.files import File
 from pygeocoder import Geocoder
 import os.path
 import logging
+import re
 log = logging.getLogger(__name__)
 # Create your models here.
 class Kiosk(models.Model):
@@ -26,7 +27,11 @@ class Kiosk(models.Model):
     
     def save(self):
         address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
-        log.debug("Adress String for google is: %s %s, %s, Deutschland" % (self.street, self.number, self.city) )
+        address = address.replace(unicode('ä',"utf-8"), "ae")
+        address = address.replace(unicode('ö',"utf-8"), "oe")
+        address = address.replace(unicode('ü',"utf-8"), "ue")
+        address = address.replace(unicode('ß',"utf-8"), "ss")
+        log.debug("Adress String for google is: %s %s, %s, Deutschland. Cleaned up its: %s" % (self.street, self.number, self.city, address) )
         try:
             location = Geocoder.geocode(address)
         except Exception, e:
