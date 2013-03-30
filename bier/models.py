@@ -31,7 +31,8 @@ class Kiosk(models.Model):
             location = Geocoder.geocode(address)
         except Exception, e:
             self.is_valid_address = False
-            return self
+            log.debug("Google did not return any results for %s" % address )
+            return None
         # chekc if address is valid and add street name from google to get rid of spelling differences
         self.is_valid_address = location[0].valid_address
         if (self.is_valid_address):
@@ -41,7 +42,7 @@ class Kiosk(models.Model):
             if q.exists():
                 self.doubleEntry=True
                 log.info("Someone tried to add an existing kiosk: %s" % address )
-                return self
+                return None
             self.doubleEntry = False
             #self.city = location[0].city
             # add zip code
@@ -53,7 +54,8 @@ class Kiosk(models.Model):
             log.info("Creating new Kiosk: %s" % self.name )
             return super(Kiosk, self).save() # Call the "real" save() method
         else:
-            return self
+            log.debug("Google thinks  %s    is not a valid address"  % address )
+            return None
         
 
 class Beer(models.Model):

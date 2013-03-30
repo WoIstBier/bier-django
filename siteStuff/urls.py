@@ -7,7 +7,7 @@ admin.autodiscover()
 import logging
 log = logging.getLogger(__name__)
 import socket
-if not socket.gethostname().startswith('bier.cepheus'):
+if  socket.gethostname().startswith('localhost'):
     LOCALHOST = True
 else: 
     LOCALHOST = False
