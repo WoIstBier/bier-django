@@ -3,6 +3,7 @@ Created on Feb 17, 2013
 
 @author: mackaiver
 '''
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 #from polls.models import Poll, Choice
 from bier.models import Kiosk, Beer, BeerPrice, KioskImage, Image, KioskComments, Comment
