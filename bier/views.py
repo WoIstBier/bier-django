@@ -10,7 +10,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import ParseError
-
+import logging
+log = logging.getLogger(__name__)
 
 
 
@@ -126,7 +127,7 @@ class CommentList(generics.ListAPIView):
         serializer = CommentSerializer(commentSet, many=True)
         return Response(serializer.data)
     
-    def put(self, request):
+    def post(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         check_kiosk_args(self, kiosk_id);
         serializer = CommentSerializer(data=request.DATA)
@@ -144,24 +145,27 @@ class CommentDetail(generics.CreateAPIView):
     
   
 ''' views for beers'''
-class BeerPriceList(generics.ListAPIView):
+class BeerPriceList(generics.ListCreateAPIView):
     model = BeerPrice
     serializer_class = BeerPriceSerializer
-    filter_fields=['kiosk__id']
-    #     def get(self, request, format = None):
-#         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-#         if kiosk_id is not None:
-#             check_kiosk_args(self, kiosk_id)
-#             beer_price_set = BeerPrice.objects.filter(kiosk__id = kiosk_id)
-#             if beer_price_set.count()== 0:
-#                 return Response(status = status.HTTP_204_NO_CONTENT)
-#         else:
-#             beer_price_set = BeerPrice.objects.all()
-#             
-#         serializer = BeerSerializer(beer_price_set, many=True,  context={'request': request})
-#         return Response(serializer.data)
-    
-    
+    def get(self, request, format = None):
+        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+        if kiosk_id is not None:
+            check_kiosk_args(self, kiosk_id)
+            beer_price_set = BeerPrice.objects.filter(kiosk__id = kiosk_id)
+            if beer_price_set.count()== 0:
+                return Response(status = status.HTTP_204_NO_CONTENT)
+        else:
+            beer_price_set = BeerPrice.objects.all()
+             
+        serializer = BeerPriceSerializer(beer_price_set, many=True)
+        return Response(serializer.data)
+
+
+class BeerPriceDetail(generics.RetrieveUpdateAPIView):
+    model=BeerPrice
+    serializer_class = BeerPriceSerializer
+
 
 class BeerList(generics.ListAPIView):
     model = Beer
@@ -189,9 +193,9 @@ class BeerDetail(generics.RetrieveAPIView):
 class KioskList(generics.ListAPIView):
     model = Kiosk
     serializer_class = KioskSerializer
-    filter_fields = ('id', 'name', 'owner', 'street')
+    filter_fields = ('id', 'name', 'owner', 'street','city','zip_code')
 #    TODO: data checks. prevent duplicates
-    def put(self, request):
+    def post(self, request):
         serializer = KioskSerializer(data=request.DATA)
         if serializer.is_valid():
             k = serializer.save()
@@ -200,6 +204,7 @@ class KioskList(generics.ListAPIView):
           
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
+        log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
@@ -251,9 +256,9 @@ class KioskDetail(APIView):
         serializer = KioskSerializer(k)
         return Response(serializer.data)
     
-    def put(self, request,kiosk_id, format=None):
-        serializer = KioskSerializer(data=request.DATA)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request,kiosk_id, format=None):
+#         serializer = KioskSerializer(data=request.DATA)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -7,7 +7,8 @@ admin.autodiscover()
 import logging
 log = logging.getLogger(__name__)
 import socket
-if  socket.gethostname().startswith('localhost'):
+print(str(socket.gethostname()))
+if  socket.gethostname().startswith('Novalee'):
     LOCALHOST = True
 else: 
     LOCALHOST = False
@@ -30,10 +31,10 @@ urlpatterns = patterns('',
 
 if LOCALHOST:
     append= patterns( '',  
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+        url(r'^bier/media/(?P<path>.*)$', 'django.views.static.serve', {
             'document_root': MEDIA_ROOT,
         }),
-        url(r'^static/(?P<path>.*)$','django.views.static.serve',{
+        url(r'^bier/static/(?P<path>.*)$','django.views.static.serve',{
             'document_root': STATIC_ROOT, 
         })
     )

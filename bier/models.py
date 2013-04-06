@@ -7,7 +7,6 @@ from django.core.files import File
 from pygeocoder import Geocoder
 import os.path
 import logging
-import re
 log = logging.getLogger(__name__)
 # Create your models here.
 class Kiosk(models.Model):
@@ -16,6 +15,7 @@ class Kiosk(models.Model):
     zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
+    description = models.CharField('decription', max_length=600, blank=True, null = True)
     owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
@@ -78,6 +78,7 @@ class Beer(models.Model):
     brand = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
 
+
     def __unicode__(self):
         return self.name
     
@@ -95,9 +96,9 @@ class BeerPrice(models.Model):
     SIZE_CHOICES = (
         (0.25, 'belgisch klein 0.25'),
         (0.33, 'klein 0.33'),
-        (0.375, 'lambic 0.33'),
+        (0.375, 'lambic 0.375'),
         (0.5, 'normal 0.5'),
-        (0.5, 'italien normal 0.5'),
+        (0.6, 'italien normal 0.6'),
         (0.7, 'suedasien 0.7'),
         (0.8, 'australien groß 0.8'),
         (1.0, 'groß 1.0'),
@@ -108,14 +109,8 @@ class BeerPrice(models.Model):
     price = models.IntegerField()
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     modified = models.DateTimeField(auto_now = True, blank=True, null=True)
-    
-    def save(self):
-#        if self.pk is None:
-#            self.created = datetime.datetime.today()
-#        self.modified = datetime.datetime.today()
-        if self.size is None:
-            self.size = 0.5
-        super(BeerPrice, self).save()
+    class Meta:
+        unique_together = ("beer","kiosk", "size")
     
     def __unicode__(self):
         return str(self.price)
