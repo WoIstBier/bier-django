@@ -21,47 +21,53 @@ class Kiosk(models.Model):
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
-    doubleEntry=False
+#     doubleEntry=False
+    
     def __unicode__(self):
         return self.name
     
-    def save(self):
-        address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
-        address = address.replace(unicode('ä',"utf-8"), "ae")
-        address = address.replace(unicode('ö',"utf-8"), "oe")
-        address = address.replace(unicode('ü',"utf-8"), "ue")
-        address = address.replace(unicode('ß',"utf-8"), "ss")
-        log.debug("Adress String for google is: %s %s, %s, Deutschland. Cleaned up its: %s" % (self.street, self.number, self.city, address) )
-        try:
-            location = Geocoder.geocode(address)
-        except Exception, e:
-            self.is_valid_address = False
-            log.debug("Google did not return any results for %s" % address )
-            return None
-        # chekc if address is valid and add street name from google to get rid of spelling differences
-        self.is_valid_address = location[0].valid_address
-        if (self.is_valid_address):
-            self.street = location[0].route
-            self.city = location[0].locality    
-            q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
-            if q.exists():
-                self.doubleEntry=True
-                log.info("Someone tried to add an existing kiosk: %s" % address )
-                return None
-            self.doubleEntry = False
-            #self.city = location[0].city
-            # add zip code
-            self.zip_code = location[0].postal_code
-            (self.geo_lat, self.geo_long) = location[0].coordinates
-            # in case name is not set. generate it
-            if self.name == '' or self.name is None:
+    def save(self, *args, **kwargs):
+        if self.name == '' or self.name is None:
                 self.name = self.street + ' ' + str(self.number);
-            log.info("Creating new Kiosk: %s" % self.name )
-            return super(Kiosk, self).save() # Call the "real" save() method
-        else:
-            log.debug("Google thinks  %s    is not a valid address"  % address )
-            return None
         
+        super(Kiosk, self).save();
+#     def save(self):
+#         address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
+#         address = address.replace(unicode('ä',"utf-8"), "ae")
+#         address = address.replace(unicode('ö',"utf-8"), "oe")
+#         address = address.replace(unicode('ü',"utf-8"), "ue")
+#         address = address.replace(unicode('ß',"utf-8"), "ss")
+#         log.debug("Adress String for google is: %s %s, %s, Deutschland. Cleaned up its: %s" % (self.street, self.number, self.city, address) )
+#         try:
+#             location = Geocoder.geocode(address)
+#         except Exception, e:
+#             self.is_valid_address = False
+#             log.debug("Google did not return any results for %s" % address )
+#             return None
+#         # chekc if address is valid and add street name from google to get rid of spelling differences
+#         self.is_valid_address = location[0].valid_address
+#         if (self.is_valid_address):
+#             self.street = location[0].route
+#             self.city = location[0].locality    
+#             q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
+#             if q.exists():
+#                 self.doubleEntry=True
+#                 log.info("Someone tried to add an existing kiosk: %s" % address )
+#                 return None
+#             self.doubleEntry = False
+#             #self.city = location[0].city
+#             # add zip code
+#             self.zip_code = location[0].postal_code
+#             (self.geo_lat, self.geo_long) = location[0].coordinates
+#             # in case name is not set. generate it
+#             if self.name == '' or self.name is None:
+#                 self.name = self.street + ' ' + str(self.number);
+#             log.info("Creating new Kiosk: %s" % self.name )
+#             return super(Kiosk, self).save() # Call the "real" save() method
+#         else:
+#             log.debug("Google thinks  %s    is not a valid address"  % address )
+#             return None
+#         
 
 class Beer(models.Model):
     BREW_CHOICES = (

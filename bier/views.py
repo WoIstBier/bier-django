@@ -124,7 +124,7 @@ class CommentList(generics.ListAPIView):
         else:
             commentSet = Comment.objects.all()
             
-        serializer = CommentSerializer(commentSet, many=True)
+        serializer = CommentSerializer(commentSet.order_by('-created'), many=True)
         return Response(serializer.data)
     
     def post(self, request):
@@ -158,7 +158,7 @@ class BeerPriceList(generics.ListCreateAPIView):
         else:
             beer_price_set = BeerPrice.objects.all()
              
-        serializer = BeerPriceSerializer(beer_price_set, many=True)
+        serializer = BeerPriceSerializer(beer_price_set.order_by('beer__name'), many=True)
         return Response(serializer.data)
 
 
@@ -190,22 +190,22 @@ class BeerDetail(generics.RetrieveAPIView):
     
 
 ''' views for kiosk'''
-class KioskList(generics.ListAPIView):
+class KioskList(generics.ListCreateAPIView):
     model = Kiosk
     serializer_class = KioskSerializer
     filter_fields = ('id', 'name', 'owner', 'street','city','zip_code')
 #    TODO: data checks. prevent duplicates
-    def post(self, request):
-        serializer = KioskSerializer(data=request.DATA)
-        if serializer.is_valid():
-            k = serializer.save()
-            if k.doubleEntry or not k.is_valid_address:
-                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-          
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request):
+#         serializer = KioskSerializer(data=request.DATA)
+#         if serializer.is_valid():
+#             k = serializer.save()
+#             if k.doubleEntry or not k.is_valid_address:
+#                 return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+#           
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         
+#         log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
         """
