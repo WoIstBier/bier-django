@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     url(r'^rest/beer/(?P<pk>[0-9]+)$', views.BeerDetail.as_view()),
 
     url(r'^rest/beerprice/$', views.BeerPriceList.as_view() ),
-    
+    url(r'^rest/beerprice/(?P<pk>[0-9]+)$', views.BeerPriceDetail.as_view()),
     
     url(r'^rest/kiosk/$', views.KioskList.as_view()),
     url(r'^rest/kiosk/(?P<kiosk_id>[0-9]+)/$', views.KioskDetail.as_view() ),
