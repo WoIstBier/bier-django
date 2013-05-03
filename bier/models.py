@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 #from geopy import geocoders
-from django.forms import forms, ModelForm
-from django.core.files.base import ContentFile
+from django.forms import forms
 from django.core.files import File
-from pygeocoder import Geocoder
 import os.path
 import logging
 log = logging.getLogger(__name__)
-# Create your models here.
+
+'''Model for a Kiosk. 
+zip_code, geo info and valid addres flag will be supplied by the client with a google lookup
+There is a custom save method in the admin model in case a kiosk will be saved from the admin page
+'''
 class Kiosk(models.Model):
     street = models.CharField('street_name', max_length=150)
-    number = models.CharField('building_number', max_length=3)
+    number = models.IntegerField('building_number') 
     zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
@@ -26,48 +28,13 @@ class Kiosk(models.Model):
     def __unicode__(self):
         return self.name
     
+    
+    '''Custom save method to create a name for the kiosk if no name was supplied'''
     def save(self, *args, **kwargs):
         if self.name == '' or self.name is None:
                 self.name = self.street + ' ' + str(self.number);
-        
         super(Kiosk, self).save();
-#     def save(self):
-#         address = "%s %s, %s, Deutschland" % (self.street, self.number, self.city)
-#         address = address.replace(unicode('ä',"utf-8"), "ae")
-#         address = address.replace(unicode('ö',"utf-8"), "oe")
-#         address = address.replace(unicode('ü',"utf-8"), "ue")
-#         address = address.replace(unicode('ß',"utf-8"), "ss")
-#         log.debug("Adress String for google is: %s %s, %s, Deutschland. Cleaned up its: %s" % (self.street, self.number, self.city, address) )
-#         try:
-#             location = Geocoder.geocode(address)
-#         except Exception, e:
-#             self.is_valid_address = False
-#             log.debug("Google did not return any results for %s" % address )
-#             return None
-#         # chekc if address is valid and add street name from google to get rid of spelling differences
-#         self.is_valid_address = location[0].valid_address
-#         if (self.is_valid_address):
-#             self.street = location[0].route
-#             self.city = location[0].locality    
-#             q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
-#             if q.exists():
-#                 self.doubleEntry=True
-#                 log.info("Someone tried to add an existing kiosk: %s" % address )
-#                 return None
-#             self.doubleEntry = False
-#             #self.city = location[0].city
-#             # add zip code
-#             self.zip_code = location[0].postal_code
-#             (self.geo_lat, self.geo_long) = location[0].coordinates
-#             # in case name is not set. generate it
-#             if self.name == '' or self.name is None:
-#                 self.name = self.street + ' ' + str(self.number);
-#             log.info("Creating new Kiosk: %s" % self.name )
-#             return super(Kiosk, self).save() # Call the "real" save() method
-#         else:
-#             log.debug("Google thinks  %s    is not a valid address"  % address )
-#             return None
-#         
+
 
 class Beer(models.Model):
     BREW_CHOICES = (
@@ -95,7 +62,11 @@ class Comment(models.Model):
 
     def __unicode__(self):
         return self.name+str(self.created)
-    
+
+''' 
+This class connects beers with kiosks and add information about pricing and aisze of the bottle
+the score field is basicly cents per liter which makes it possible to find the cheapest beer per liter
+'''
 class BeerPrice(models.Model):
     KLEIN = 0.33
     NORMAL = 0.5
@@ -113,10 +84,16 @@ class BeerPrice(models.Model):
     kiosk = models.ForeignKey(Kiosk, related_name='related_kiosk')
     beer = models.ForeignKey(Beer, related_name='related_beer')
     price = models.IntegerField()
+    score = models.FloatField(max_length=1, default = 1 )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     modified = models.DateTimeField(auto_now = True, blank=True, null=True)
     class Meta:
         unique_together = ("beer","kiosk", "size")
+    
+    def save(self):
+        self.score = self.price / self.size
+        super(BeerPrice, self).save() # Call the "real" save() method
+        
     
     def __unicode__(self):
         return str(self.price)
@@ -125,8 +102,8 @@ class BeerPrice(models.Model):
 Model containing an image which automaticly creates a thumbnail when imagesize > maxSize
 '''
 class Image(models.Model):
-    maxWidth = 640;
-    maxHeight = 480;
+    maxWidth = 32;
+    maxHeight = 32;
 
     image = models.ImageField(
         upload_to='images/',
@@ -142,7 +119,7 @@ class Image(models.Model):
     #display image in admin view with this function
     def admin_img(self):
         if self.image:
-            return u'<img src="%s" alt="Bild" />' % self.thumbnail.url
+            return u'<image src="%s" alt="Bild" />' % self.thumbnail.url
         else:
             return 'no image. WTF'
     
@@ -192,10 +169,10 @@ class Image(models.Model):
 ''' This model connects images with kiosks'''
 class KioskImage(models.Model):
     kiosk = models.ForeignKey(Kiosk)
-    img = models.ForeignKey(Image)
+    image = models.ForeignKey(Image)
     
     def __unicode__(self):
-        return self.kiosk.name + self.img.image.path
+        return self.kiosk.name 
 
 ''' This model connects images with kiosks'''
 class KioskComments(models.Model):
@@ -204,10 +181,10 @@ class KioskComments(models.Model):
     
     def __unicode__(self):
         return self.kiosk.name + self.comment.name
+
 #class ImageForm(ModelForm):
 #    class Meta:
 #        model = Image
-
 
 class ImageForm(forms.Form):
     image = forms.FileField(
