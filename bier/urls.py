@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     url(r'^rest/beerprice/$', views.BeerPriceList.as_view() ),
     url(r'^rest/beerprice/(?P<pk>[0-9]+)$', views.BeerPriceDetail.as_view()),
     
-    url(r'^rest/kiosk/$', views.KioskList.as_view()),
+    url(r'^rest/kiosk/$', views.SimpleKioskList.as_view()),
     url(r'^rest/kiosk/(?P<kiosk_id>[0-9]+)/$', views.KioskDetail.as_view() ),
     
     url(r'^rest/image/$', views.ImageList.as_view() ),
@@ -23,6 +23,12 @@ urlpatterns = patterns('',
     
     url(r'^web/(?P<kiosk_id>[0-9]+)/$', 'bier.views.biere'),
     url(r'^web/$', 'bier.views.kiosk', name='kiosk'),
+    
+    
+    url(r'^rest/kioskEntry/(?P<primaryKey>[0-9]+)/$', views.KioskListItem.as_view()),
+    url(r'^rest/kioskEntry/$', views.KioskList.as_view()), 
+    
+    url(r'^rest/kioskDetails/(?P<primaryKey>[0-9]+)/$', views.KioskDetailView.as_view()),
 
 )
 

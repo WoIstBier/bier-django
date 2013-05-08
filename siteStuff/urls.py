@@ -31,10 +31,10 @@ urlpatterns = patterns('',
 
 if LOCALHOST:
     append= patterns( '',  
-        url(r'^bier/media/(?P<path>.*)$', 'django.views.static.serve', {
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
             'document_root': MEDIA_ROOT,
         }),
-        url(r'^bier/static/(?P<path>.*)$','django.views.static.serve',{
+        url(r'^static/(?P<path>.*)$','django.views.static.serve',{
             'document_root': STATIC_ROOT, 
         })
     )

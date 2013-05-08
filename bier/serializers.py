@@ -26,34 +26,43 @@ class ImageSerializer(serializers.ModelSerializer):
 class BeerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beer
-        
-        
+
+
+
 class BeerPriceSerializer(serializers.ModelSerializer):
     beer_name = serializers.CharField(source='beer.name', read_only=True)
     beer_location = serializers.CharField(source='beer.location', read_only=True)
     beer_brand= serializers.CharField(source='beer.brand', read_only=True)
     
-#     def restore_object(self, attrs, instance=None):
-#         """
-#         Create or update a new snippet instance, given a dictionary
-#         of deserialized field values.
-# 
-#         Note that if we don't define this method, then deserializing
-#         data will simply return a dictionary of items.
-#         """
-#         if instance:
-#             # Update existing instance
-#             log.warn("BeerPriceSerializer tries to update an instance. Ok so far.")
-# #             instance.title = attrs.get('title', instance.title)
-# #             instance.code = attrs.get('code', instance.code)
-# #             instance.linenos = attrs.get('linenos', instance.linenos)
-# #             instance.language = attrs.get('language', instance.language)
-# #             instance.style = attrs.get('style', instance.style)
-# #             return instance
-# 
-#         # Create new instance
-#         return BeerPrice(**attrs)
-    
-    
     class Meta:
         model = BeerPrice 
+
+class KioskDetailSerializer(serializers.Serializer):
+    image = ImageSerializer(source='images', many=True)
+    beerPrice = BeerPriceSerializer(source='beerPrice', many=True)
+    comments = CommentSerializer(source='comments', many=True)
+    kiosk = KioskSerializer(source='kiosk')
+    
+
+'''
+Non-Modell Serializer
+We dont need to restore objects since this is a read only serializer
+'''
+class KioskListItemSerializer(serializers.Serializer):
+    kioskName = serializers.CharField(source='kiosk.name', read_only=True)
+    kioskStreet = serializers.CharField(source='kiosk.street', read_only=True)
+    kioskCity = serializers.CharField(source='kiosk.city', read_only=True)
+    kioskPostalCode = serializers.IntegerField(source='kiosk.zip_code', read_only=True)
+    kioskNumber = serializers.IntegerField(source='kiosk.number', read_only=True) 
+    beerName = serializers.CharField(source='beerPrice.beer.name', read_only=True)
+    beerBrew = serializers.CharField(source='beerPrice.beer.brew', read_only=True)
+    beerSize = serializers.FloatField(source='beerPrice.size', read_only=True)
+    beerPrice = serializers.IntegerField(source='beerPrice.price', read_only=True)
+    thumb_path = serializers.CharField(source='thumb.image.path', read_only=True)
+    distance = serializers.FloatField(source='distance', read_only=True)
+#     kiosk = KioskSerializer(source='kiosk')
+#     image = ImageSerializer(source='thumb')
+#     beerPrice = BeerPriceSerializer(source='beerPrice')
+    
+#     thumb = ImageSerializer()
+    
