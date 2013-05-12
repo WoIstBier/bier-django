@@ -196,17 +196,17 @@ class SimpleKioskList(generics.ListCreateAPIView):
     serializer_class = KioskSerializer
     filter_fields = ('id', 'name', 'owner', 'street','city','zip_code')
 #    TODO: data checks. prevent duplicates
-#     def post(self, request):
-#         serializer = KioskSerializer(data=request.DATA)
-#         if serializer.is_valid():
-#             k = serializer.save()
-#             if k.doubleEntry or not k.is_valid_address:
-#                 return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-#           
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         
-#         log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        serializer = KioskSerializer(data=request.DATA)
+        if serializer.is_valid():
+            k = serializer.save()
+            if k.doubleEntry or not k.is_valid_address:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+           
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+         
+        log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
         """
@@ -319,7 +319,7 @@ class ListItem(object):
     returns a listitem object  given a specific kiosk and the lat,long values of the client
     so it can calculate the distance between kiosk and client to write into the listitem object
 '''
-def getListItemFromKiosk(kiosk, lat = None, lon = None):
+def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     img = None
     beerPrice = None
     imageSet = getObjectsForKioskId(KioskImage, Image, 'image',  kiosk.id)
@@ -328,6 +328,10 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None):
 
     beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
     if beerPriceSet.exists():
+        if beer is not None:
+            beerPriceSet = beerPriceSet.filter(beer__name__icontains = beer)
+            if not beerPriceSet.exists():
+                return None
         beerPrice = beerPriceSet[0]
     if lat is not None and lon is not None:
         distance = calculate_distance(float(kiosk.geo_lat), float(kiosk.geo_long), lat, lon)
@@ -347,58 +351,55 @@ class KioskList(APIView):
     def get(self, request):
         #get parameters from httprequest
         #in case url contains bullshit for lat,long or radius this will throw a value exception
+        #default values 5km radius 
+        g_lat = 51.52
+        g_long = 7.46
+        radius = 5.0
+        beer = None
+        #check url parameter 
         try:
-            #default values 5km radius 
-            g_lat = 51.52
-            g_long = 7.46
-            radius = 5.0
-            
-            #check url parameter 
             if request.QUERY_PARAMS.get('geo_lat', None) is not None:
                 g_lat = float(request.QUERY_PARAMS.get('geo_lat', None))
             if request.QUERY_PARAMS.get('geo_long', None) is not None:
                 g_long = float(request.QUERY_PARAMS.get('geo_long', None))
             if request.QUERY_PARAMS.get('radius', None) is not None:
                 radius = float(request.QUERY_PARAMS.get('radius', None))
-            
-            #value by which to sort the entries
-            sort = request.QUERY_PARAMS.get('sort', None)
-            if sort is None:
-                sort = 'distance'            
-            
-            #radius from km to degrees
-            R = 6371 # earth radius
-            #from a length to radians. see definition of a radian
-            radius = radius/R
-            # now convert radians to degrees
-            radius = radius*180/math.pi
-            
-            
-            #get all kiosk within the bounding box
-            if g_long is not None and g_lat is not None:
-                queryResult = Kiosk.objects.filter(geo_lat__lte = g_lat + radius, geo_long__lte = g_long + radius, geo_lat__gte = g_lat - radius, geo_long__gte = g_long - radius)
-            else:
-                queryResult = Kiosk.objects.all()
-                   
-        except ValueError:
-            raise HttpResponseBadRequest
+            if request.QUERY_PARAMS.get('beer', None) is not None:
+                beer = request.QUERY_PARAMS.get('beer', None)
+        except :
+            return HttpResponseBadRequest('bad parameter string')
+        #radius from km to degrees
+        R = 6371 # earth radius
+        #from a length to radians. see definition of a radian
+        radius = radius/R
+        # now convert radians to degrees
+        radius = radius*180/math.pi
+        
+        
+        #get all kiosk within the bounding box
+        queryResult = Kiosk.objects.filter(geo_lat__lte = g_lat + radius, geo_long__lte = g_long + radius, geo_lat__gte = g_lat - radius, geo_long__gte = g_long - radius)
+        
+               
+  
         #build a kiosklistem for every kiosk we fetched and return it through the serializer
         l = list()
         for kiosk in queryResult:
-            l.append(getListItemFromKiosk(kiosk, g_lat, g_long))
+            item = getListItemFromKiosk(kiosk, g_lat, g_long, beer)
+            if item is not None:
+                l.append(item)
         
         #sort the list by the key returned by the lambda function. distance is the default
-        legalSortKeys=['price', 'distance', 'street', 'beer']
-        if not sort in legalSortKeys:
-            sort = "distance"
-        if sort == "distance":
-            l.sort(key=lambda item: item.distance  , reverse=False)
-        elif sort == "price":
-            l.sort(key=lambda item: item.beerPrice.score  , reverse=False)
-        elif sort == "street":
-            l.sort(key=lambda item: item.kiosk.street  , reverse=False)
-        elif sort == "beer":
-            l.sort(key=lambda item: item.beerPrice.beer.name  , reverse=False)
+#         legalSortKeys=['price', 'distance', 'street', 'beer']
+#         if not sort in legalSortKeys:
+#             sort = "distance"
+#         if sort == "distance":
+#             l.sort(key=lambda item: item.distance  , reverse=False)
+#         elif sort == "price":
+#             l.sort(key=lambda item: item.beerPrice.score  , reverse=False)
+#         elif sort == "street":
+#             l.sort(key=lambda item: item.kiosk.street  , reverse=False)
+#         elif sort == "beer":
+#             l.sort(key=lambda item: item.beerPrice.beer.name  , reverse=False)
         
         serializer = KioskListItemSerializer(l, many=True)
         return Response(serializer.data)

@@ -5,7 +5,7 @@
 ####
 
 easy_install pip
-pip install mysql-connector-python=
+pip install mysql-connector-python
 pip install mysql-utilities
 pip install django
 #pip install geopy not in use anymore
