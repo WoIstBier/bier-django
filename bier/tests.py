@@ -3,9 +3,6 @@ These will pass when you run "manage.py test".
 
 """
 from django.test import TestCase
-from bier.models import Kiosk
-from bier.models import Beer
-from bier.models import BeerPrice
 
 prefix = '/bier/rest/'
 
