@@ -33,7 +33,7 @@ class Kiosk(models.Model):
     def save(self, *args, **kwargs):
         if self.name == '' or self.name is None:
                 self.name = self.street + ' ' + str(self.number);
-        super(Kiosk, self).save();
+        super(Kiosk, self).save(*args, **kwargs);
 
 
 class Beer(models.Model):
@@ -90,9 +90,9 @@ class BeerPrice(models.Model):
     class Meta:
         unique_together = ("beer","kiosk", "size")
     
-    def save(self):
+    def save(self,*args, **kwargs):
         self.score = self.price / self.size
-        super(BeerPrice, self).save() # Call the "real" save() method
+        super(BeerPrice, self).save(*args, **kwargs) # Call the "real" save() method
         
     
     def __unicode__(self):

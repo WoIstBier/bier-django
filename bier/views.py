@@ -79,7 +79,7 @@ class ImageList(APIView):
 #             check_kiosk_args(kiosk_id)
 #             kImgSet = KioskImage.objects.filter(kiosk__id = kiosk_id)
 #             imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
-            imgSet = getObjectsForKioskId(self, KioskImage, Image,  'image', kiosk_id)
+            imgSet = getObjectsForKioskId(KioskImage, Image,  'image', kiosk_id)
             if imgSet.count()== 0:
                 return Response(status = status.HTTP_204_NO_CONTENT)
         else:
@@ -94,7 +94,7 @@ class ImageList(APIView):
         if kiosk_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         #self.check_kiosk_args(kiosk_id)
-        check_kiosk_args(self, kiosk_id)
+        check_kiosk_args(kiosk_id)
         serializer = ImageSerializer(data = request.DATA , files=request.FILES, context={'kiosk_id': kiosk_id, 'request' : request})
         if serializer.is_valid():
             serializer.save()
@@ -119,7 +119,7 @@ class CommentList(generics.ListAPIView):
     def get(self, request, format = None):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is not None:
-            commentSet = getObjectsForKioskId(self, KioskComments, Comment, 'comment', kiosk_id)
+            commentSet = getObjectsForKioskId( KioskComments, Comment, 'comment', kiosk_id)
             if commentSet.count()== 0:
                 return Response(status = status.HTTP_204_NO_CONTENT)
         else:
@@ -130,7 +130,7 @@ class CommentList(generics.ListAPIView):
     
     def post(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        check_kiosk_args(self, kiosk_id);
+        check_kiosk_args(kiosk_id);
         serializer = CommentSerializer(data=request.DATA)
         if serializer.is_valid():
             com = serializer.save()
@@ -152,7 +152,7 @@ class BeerPriceList(generics.ListCreateAPIView):
     def get(self, request, format = None):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is not None:
-            check_kiosk_args(self, kiosk_id)
+            check_kiosk_args(kiosk_id)
             beer_price_set = BeerPrice.objects.filter(kiosk__id = kiosk_id)
             if beer_price_set.count()== 0:
                 return Response(status = status.HTTP_204_NO_CONTENT)

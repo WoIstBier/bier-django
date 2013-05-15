@@ -38,8 +38,8 @@ class BeerPriceSerializer(serializers.ModelSerializer):
         model = BeerPrice 
 
 class KioskDetailSerializer(serializers.Serializer):
-    image = ImageSerializer(source='images', many=True)
-    beerPrice = BeerPriceSerializer(source='beerPrice', many=True)
+    images = ImageSerializer(source='images', many=True)
+    beerPrices = BeerPriceSerializer(source='beerPrice', many=True)
     comments = CommentSerializer(source='comments', many=True)
     kiosk = KioskSerializer(source='kiosk')
     
@@ -49,6 +49,7 @@ Non-Modell Serializer
 We dont need to restore objects since this is a read only serializer
 '''
 class KioskListItemSerializer(serializers.Serializer):
+    kioskId = serializers.IntegerField(source='kiosk.id', read_only=True)
     kioskName = serializers.CharField(source='kiosk.name', read_only=True)
     kioskStreet = serializers.CharField(source='kiosk.street', read_only=True)
     kioskCity = serializers.CharField(source='kiosk.city', read_only=True)
