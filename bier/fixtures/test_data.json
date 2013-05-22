@@ -1,0 +1,346 @@
+[
+{
+    "pk": 1, 
+    "model": "bier.kiosk", 
+    "fields": {
+        "city": "Dortmund", 
+        "description": "", 
+        "created": "2013-04-06T17:01:07Z", 
+        "number": 118, 
+        "geo_lat": "51.5244502000", 
+        "geo_long": "7.4626928000", 
+        "street": "Mallinckrodtstra\u00dfe", 
+        "is_valid_address": true, 
+        "owner": "", 
+        "zip_code": "44145", 
+        "name": "Mallinckrodtstra\u00dfe 118"
+    }
+},
+{
+    "pk": 2, 
+    "model": "bier.kiosk", 
+    "fields": {
+        "city": "Dortmund", 
+        "description": "", 
+        "created": "2013-04-06T19:40:50Z", 
+        "number": 329, 
+        "geo_lat": "51.5242362000", 
+        "geo_long": "7.4453596000", 
+        "street": "Mallinckrodtstra\u00dfe", 
+        "is_valid_address": true, 
+        "owner": "", 
+        "zip_code": "44147", 
+        "name": "Mallinckrodtstra\u00dfe 329"
+    }
+},
+{
+    "pk": 3, 
+    "model": "bier.kiosk", 
+    "fields": {
+        "city": "Dortmund", 
+        "description": "", 
+        "created": "2013-04-07T14:34:41Z", 
+        "number": 156, 
+        "geo_lat": "51.5313197000", 
+        "geo_long": "7.4551890000", 
+        "street": "Uhlandstra\u00dfe", 
+        "is_valid_address": true, 
+        "owner": "", 
+        "zip_code": "44147", 
+        "name": "Uhlandstra\u00dfe 156"
+    }
+},
+{
+    "pk": 4, 
+    "model": "bier.kiosk", 
+    "fields": {
+        "city": "Dortmund", 
+        "description": "", 
+        "created": "2013-04-07T14:39:45Z", 
+        "number": 20, 
+        "geo_lat": "51.5204558000", 
+        "geo_long": "7.4645884000", 
+        "street": "M\u00fcnsterstra\u00dfe", 
+        "is_valid_address": true, 
+        "owner": "", 
+        "zip_code": "44145", 
+        "name": "M\u00fcnsterstra\u00dfe 20"
+    }
+},
+{
+    "pk": 8, 
+    "model": "bier.kiosk", 
+    "fields": {
+        "city": "Dortmund", 
+        "description": "", 
+        "created": "2013-05-01T11:16:24Z", 
+        "number": 12, 
+        "geo_lat": "51.5128002000", 
+        "geo_long": "7.4521473000", 
+        "street": "Lange Stra\u00dfe", 
+        "is_valid_address": true, 
+        "owner": "", 
+        "zip_code": "44137", 
+        "name": "Lange Stra\u00dfe 12"
+    }
+},
+{
+    "pk": 1, 
+    "model": "bier.beer", 
+    "fields": {
+        "brew": "pils", 
+        "brand": "Hansa", 
+        "name": "Hansa Pils", 
+        "location": "Dortmund"
+    }
+},
+{
+    "pk": 2, 
+    "model": "bier.beer", 
+    "fields": {
+        "brew": "export", 
+        "brand": "Kronen", 
+        "name": "Kronen Export", 
+        "location": "Dortmund"
+    }
+},
+{
+    "pk": 3, 
+    "model": "bier.beer", 
+    "fields": {
+        "brew": "pils", 
+        "brand": "Moritz Fiege", 
+        "name": "Fiege Pils", 
+        "location": "Bochum"
+    }
+},
+{
+    "pk": 4, 
+    "model": "bier.beer", 
+    "fields": {
+        "brew": "pils", 
+        "brand": "Kronen", 
+        "name": "Kronen Pils", 
+        "location": "Dortmund"
+    }
+},
+{
+    "pk": 1, 
+    "model": "bier.comment", 
+    "fields": {
+        "comment": "sbshshsjsj", 
+        "name": "vajsb", 
+        "created": "2013-05-15T18:51:38Z"
+    }
+},
+{
+    "pk": 2, 
+    "model": "bier.comment", 
+    "fields": {
+        "comment": "mehr Holz bitte", 
+        "name": "teat", 
+        "created": "2013-05-15T18:57:40Z"
+    }
+},
+{
+    "pk": 7, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-04-28T17:52:54Z", 
+        "price": 50, 
+        "kiosk": 1, 
+        "modified": "2013-04-28T17:52:54Z", 
+        "beer": 4, 
+        "score": 1.0, 
+        "size": 0.33
+    }
+},
+{
+    "pk": 8, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-04-28T17:52:54Z", 
+        "price": 50, 
+        "kiosk": 1, 
+        "modified": "2013-04-28T17:52:54Z", 
+        "beer": 3, 
+        "score": 1.0, 
+        "size": 0.25
+    }
+},
+{
+    "pk": 9, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-04-28T17:54:25Z", 
+        "price": 40, 
+        "kiosk": 1, 
+        "modified": "2013-04-28T17:54:25Z", 
+        "beer": 3, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 10, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-04-28T17:54:25Z", 
+        "price": 80, 
+        "kiosk": 1, 
+        "modified": "2013-04-28T17:54:25Z", 
+        "beer": 2, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 11, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-04-28T18:54:21Z", 
+        "price": 100, 
+        "kiosk": 2, 
+        "modified": "2013-04-28T18:54:21Z", 
+        "beer": 3, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 12, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-04-28T18:54:21Z", 
+        "price": 63, 
+        "kiosk": 2, 
+        "modified": "2013-05-15T18:57:47Z", 
+        "beer": 1, 
+        "score": 126.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 13, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-01T11:16:58Z", 
+        "price": 220, 
+        "kiosk": 8, 
+        "modified": "2013-05-01T11:16:58Z", 
+        "beer": 1, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 14, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-01T11:16:58Z", 
+        "price": 14, 
+        "kiosk": 8, 
+        "modified": "2013-05-01T17:42:35Z", 
+        "beer": 3, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 15, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-01T17:41:14Z", 
+        "price": 50, 
+        "kiosk": 3, 
+        "modified": "2013-05-01T17:41:14Z", 
+        "beer": 1, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 16, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-01T17:41:28Z", 
+        "price": 40, 
+        "kiosk": 4, 
+        "modified": "2013-05-01T17:41:28Z", 
+        "beer": 1, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 17, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-12T13:03:13Z", 
+        "price": 51, 
+        "kiosk": 4, 
+        "modified": "2013-05-12T13:03:13Z", 
+        "beer": 2, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 18, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-12T13:03:13Z", 
+        "price": 55, 
+        "kiosk": 4, 
+        "modified": "2013-05-12T13:03:13Z", 
+        "beer": 4, 
+        "score": 1.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 19, 
+    "model": "bier.beerprice", 
+    "fields": {
+        "created": "2013-05-15T18:58:37Z", 
+        "price": 200, 
+        "kiosk": 8, 
+        "modified": "2013-05-15T18:58:37Z", 
+        "beer": 2, 
+        "score": 400.0, 
+        "size": 0.5
+    }
+},
+{
+    "pk": 1, 
+    "model": "bier.image", 
+    "fields": {
+        "image": "images/image_1.jpg", 
+        "thumbnail": "images/thumbs/image_thumb_2.jpg"
+    }
+},
+{
+    "pk": 1, 
+    "model": "bier.kioskimage", 
+    "fields": {
+        "image": 1, 
+        "kiosk": 1
+    }
+},
+{
+    "pk": 1, 
+    "model": "bier.kioskcomments", 
+    "fields": {
+        "comment": 1, 
+        "kiosk": 1
+    }
+},
+{
+    "pk": 2, 
+    "model": "bier.kioskcomments", 
+    "fields": {
+        "comment": 2, 
+        "kiosk": 2
+    }
+}
+]
