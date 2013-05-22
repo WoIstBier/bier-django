@@ -23,7 +23,6 @@ class Kiosk(models.Model):
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
-#     doubleEntry=False
     
     def __unicode__(self):
         return self.name
@@ -35,6 +34,9 @@ class Kiosk(models.Model):
                 self.name = self.street + ' ' + str(self.number);
         super(Kiosk, self).save(*args, **kwargs);
 
+    class Meta:
+        unique_together = ("city","street", "number", "zip_code")
+#     doubleEntry=False
 
 class Beer(models.Model):
     BREW_CHOICES = (

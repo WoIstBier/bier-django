@@ -55,6 +55,8 @@ Here come the views for the rest api
 
 ''' Some helper Functions'''
 def check_kiosk_args(kiosk_id):
+    if kiosk_id == None:
+        raise HttpResponseBadRequest
     try:
         long(kiosk_id)
     except ValueError:
@@ -200,49 +202,10 @@ class SimpleKioskList(generics.ListCreateAPIView):
         serializer = KioskSerializer(data=request.DATA)
         if serializer.is_valid():
             k = serializer.save()
-            if k.doubleEntry or not k.is_valid_address:
-                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-           
             return Response(serializer.data, status=status.HTTP_201_CREATED)
          
         log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def get_queryset(self):
-        """
-        Filter Kiosks by beer that is being sold there
-        """
-        legal_arguments = ('id', 'name', 'owner', 'street') + ('beer_name', 'beer_brand', 'brand_location')
-        
-        for param in self.request.QUERY_PARAMS:
-            if param not in legal_arguments:
-                #bad request
-                raise ParseError(detail=None)
-            
-        beerName = self.request.QUERY_PARAMS.get('beer_name', None)
-        beerBrand = self.request.QUERY_PARAMS.get('beer_brand', None)
-        beerLocation = self.request.QUERY_PARAMS.get('brand_location', None)
-        if beerName is None and beerBrand is None and beerLocation is None:
-            ks = Kiosk.objects.all()
-            return ks
-        p = BeerPrice.objects.none()
-        if beerName:
-            p = BeerPrice.objects.filter(beer__name = beerName )
-        if beerBrand:
-            p2 =  BeerPrice.objects.filter(beer__brand = beerBrand )
-            if p.exists():
-                p = p & p2
-            else:
-                p = p2 
-        if beerLocation:
-            pLoc = BeerPrice.objects.filter(beer__location = beerLocation )
-            if p:
-                p = p & pLoc
-            else:
-                p = pLoc
-
-        ks = Kiosk.objects.filter(pk__in = p.values_list('kiosk'))
-        return ks
     
 
 class KioskDetail(APIView):
