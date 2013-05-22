@@ -17,7 +17,7 @@ class Kiosk(models.Model):
     zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
-    description = models.CharField('decription', max_length=600, blank=True, null = True)
+    description = models.CharField('description', max_length=600, blank=True, null = True)
     owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)

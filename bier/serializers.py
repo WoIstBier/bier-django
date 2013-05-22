@@ -54,6 +54,8 @@ class KioskListItemSerializer(serializers.Serializer):
     kioskStreet = serializers.CharField(source='kiosk.street', read_only=True)
     kioskCity = serializers.CharField(source='kiosk.city', read_only=True)
     kioskPostalCode = serializers.IntegerField(source='kiosk.zip_code', read_only=True)
+    kioskLatitude = serializers.IntegerField(source='kiosk.geo_lat', read_only=True) 
+    kioskLongtitude = serializers.IntegerField(source='kiosk.geo_long', read_only=True)
     kioskNumber = serializers.IntegerField(source='kiosk.number', read_only=True) 
     beerName = serializers.CharField(source='beerPrice.beer.name', read_only=True)
     beerBrew = serializers.CharField(source='beerPrice.beer.brew', read_only=True)
