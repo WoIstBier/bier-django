@@ -9,7 +9,6 @@ from django.template import RequestContext
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import ParseError
 import math
 import logging
 log = logging.getLogger(__name__)
@@ -56,19 +55,21 @@ Here come the views for the rest api
 ''' Some helper Functions'''
 def check_kiosk_args(kiosk_id):
     if kiosk_id == None:
-        raise HttpResponseBadRequest
+        return False
     try:
         long(kiosk_id)
     except ValueError:
-        raise HttpResponseBadRequest
+        return False
+    return True
+    
+def check_if_kiosk_exists(kiosk_id):
     try:
         Kiosk.objects.get(pk = kiosk_id)
     except Kiosk.DoesNotExist:
-        raise Http404
-    
+        return False
+    return True
 
 def getObjectsForKioskId(relationClass,resultClass,  attributeName, kiosk_id):
-    check_kiosk_args(kiosk_id)
     relationSet = relationClass.objects.filter(kiosk__id = kiosk_id)
     return resultClass.objects.filter(pk__in =  relationSet.values_list(attributeName))
     
@@ -78,6 +79,8 @@ class ImageList(APIView):
     def get(self, request, format = None):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is not None:
+            if not check_kiosk_args(kiosk_id):
+                return HttpResponseBadRequest("Kiosk id arguments was malformed")
 #             check_kiosk_args(kiosk_id)
 #             kImgSet = KioskImage.objects.filter(kiosk__id = kiosk_id)
 #             imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
@@ -93,10 +96,11 @@ class ImageList(APIView):
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if kiosk_id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         #self.check_kiosk_args(kiosk_id)
-        check_kiosk_args(kiosk_id)
+        if not check_kiosk_args(kiosk_id):
+            return HttpResponseBadRequest("Kiosk id arguments was malformed")
+        if not check_if_kiosk_exists(kiosk_id):
+            return Response("Kiosk mit dieser Id gibts nicht", status=status.HTTP_400_BAD_REQUEST)
         serializer = ImageSerializer(data = request.DATA , files=request.FILES, context={'kiosk_id': kiosk_id, 'request' : request})
         if serializer.is_valid():
             serializer.save()
@@ -132,7 +136,10 @@ class CommentList(generics.ListAPIView):
     
     def post(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        check_kiosk_args(kiosk_id);
+        if not check_kiosk_args(kiosk_id):
+            return HttpResponseBadRequest("Kiosk id arguments was malformed")
+        if not check_if_kiosk_exists(kiosk_id):
+            return Response("Kiosk mit dieser Id gibts nicht", status=status.HTTP_400_BAD_REQUEST)
         serializer = CommentSerializer(data=request.DATA)
         if serializer.is_valid():
             com = serializer.save()
@@ -234,6 +241,8 @@ class KioskDetailContainer(object):
         self.beerPrice = beerPrice
         self.images = images
         self.comments = comments
+        
+        
 ''' this will get the kiosk with the given id from the database and pulls all the necessary info from the connected tables''' 
 class KioskDetailView(APIView):
     
