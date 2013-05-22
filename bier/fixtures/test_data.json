@@ -108,14 +108,14 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T16:54:57Z", 
-        "number": "24a", 
+        "number": "24", 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Bergmannstra\u00dfe", 
         "is_valid_address": false, 
         "owner": "", 
         "zip_code": "44145", 
-        "name": "Bergmannstra\u00dfe 24a"
+        "name": "Bergmannstra\u00dfe 24"
     }
 },
 {
@@ -1500,16 +1500,26 @@
     "pk": 18, 
     "model": "bier.image", 
     "fields": {
+<<<<<<< HEAD
         "image": "images/bergmannstrasse24a_9.jpg", 
         "thumbnail": "images/thumbs/bergmannstrasse24a_9_thumb.jpg"
+=======
+        "image": "images/bergmannstrasse24_9.jpg", 
+        "thumbnail": "images/thumbs/bergmannstrasse24_9_thumb.jpg"
+>>>>>>> f46e0fce7a55b876e0ced6caa69de729cca02e13
     }
 },
 {
     "pk": 19, 
     "model": "bier.image", 
     "fields": {
+<<<<<<< HEAD
         "image": "images/bergmannstrasse24a_9_-_quad.jpg", 
         "thumbnail": "images/thumbs/bergmannstrasse24a_9_-_quad_thumb.jpg"
+=======
+        "image": "images/bergmannstrasse24_9_-_quad.jpg", 
+        "thumbnail": "images/thumbs/bergmannstrasse24_9_-_quad_thumb.jpg"
+>>>>>>> f46e0fce7a55b876e0ced6caa69de729cca02e13
     }
 },
 {
