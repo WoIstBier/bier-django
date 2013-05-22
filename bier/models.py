@@ -17,13 +17,12 @@ class Kiosk(models.Model):
     zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
-    description = models.CharField('decription', max_length=600, blank=True, null = True)
+    description = models.CharField('description', max_length=600, blank=True, null = True)
     owner = models.CharField('owners_name', max_length=100, blank=True, null=True)
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
-#     doubleEntry=False
     
     def __unicode__(self):
         return self.name
@@ -33,8 +32,11 @@ class Kiosk(models.Model):
     def save(self, *args, **kwargs):
         if self.name == '' or self.name is None:
                 self.name = self.street + ' ' + str(self.number);
-        super(Kiosk, self).save();
+        super(Kiosk, self).save(*args, **kwargs);
 
+    class Meta:
+        unique_together = ("city","street", "number", "zip_code")
+#     doubleEntry=False
 
 class Beer(models.Model):
     BREW_CHOICES = (
@@ -90,9 +92,9 @@ class BeerPrice(models.Model):
     class Meta:
         unique_together = ("beer","kiosk", "size")
     
-    def save(self):
+    def save(self,*args, **kwargs):
         self.score = self.price / self.size
-        super(BeerPrice, self).save() # Call the "real" save() method
+        super(BeerPrice, self).save(*args, **kwargs) # Call the "real" save() method
         
     
     def __unicode__(self):

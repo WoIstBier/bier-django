@@ -25,8 +25,8 @@ urlpatterns = patterns('',
     url(r'^web/$', 'bier.views.kiosk', name='kiosk'),
     
     
-    url(r'^rest/kioskEntry/(?P<primaryKey>[0-9]+)/$', views.KioskListItem.as_view()),
-    url(r'^rest/kioskEntry/$', views.KioskList.as_view()), 
+    url(r'^rest/kioskList/(?P<primaryKey>[0-9]+)/$', views.KioskListItem.as_view()),
+    url(r'^rest/kioskList/$', views.KioskList.as_view()), 
     
     url(r'^rest/kioskDetails/(?P<primaryKey>[0-9]+)/$', views.KioskDetailView.as_view()),
 
