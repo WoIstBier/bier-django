@@ -11,6 +11,7 @@ import json
 
 
 prefix = '/bier/rest/'
+fixtures = ['test_data.json']
 
 
 
@@ -18,7 +19,7 @@ def get_proper_response_index(testcase, suffix):
         i=1
         resp = testcase.client.get(prefix + suffix + '/' + str(i), follow = 1)
        
-        while resp.status_code is not 200:
+        while resp.status_code is not 200 and i < 100:
             if resp.status_code is 405:
                 break
             i+=1
@@ -38,6 +39,8 @@ def basic_status_code(testcase, suffix):
     testcase.assertEqual(resp2.status_code, 200, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
     testcase.assertJSONEqual(resp1.content, resp2.content, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
 class kioskListTests(TestCase):
+    fixtures = ['test_data.json']
+
     def test_status_codes(self):
         basic_status_code(self, 'kioskList')
 
@@ -103,23 +106,9 @@ class kioskListTests(TestCase):
         
 class KioskDetailsTests(TestCase):
     fixtures = ['test_data.json']
-    def get_proper_response_index(self):
-        i=1
-        resp = self.client.get(prefix + 'kioskDetails/' + str(i) + '/')
-           
-        while resp.status_code == 404 and i < 20:
-            i+=1
-            resp = self.client.get(prefix + 'kioskDetails/' + str(i) + '/')
-        return i
-     
+
     def test_status_codes(self):
-        resp1 = self.client.get(prefix + 'kioskDetails/' + str(self.get_proper_response_index()) + '/')
-        self.assertEqual(resp1.status_code, 200)
-        resp2 = self.client.get(prefix + 'kioskDetails/' + str(self.get_proper_response_index()) + '/', {'ignore_text': 'ignore', 'ignore_num': '123'})
-        self.assertEqual(resp2.status_code, 200)
-        self.assertJSONEqual(resp1.content, resp2.content, 'The given ignore keys have not been ignored by the server! The two given responses are not equal.')
         proper_id = get_proper_response_index(self, 'kioskDetails')
-        
         basic_status_code(self, 'kioskDetails/' + str(proper_id))
         
         resp1 = self.client.get(prefix + 'kioskDetails/' + str(proper_id - 1) + '/')
@@ -140,17 +129,15 @@ class KioskDetailsTests(TestCase):
         
 class BeerTests(TestCase):
     fixtures = ['test_data.json']
+
     def test_status_codes(self):
-        resp1 = self.client.get(prefix + 'beer/')
-        self.assertEqual(resp1.status_code, 200)
-        resp2 = self.client.get(prefix + 'beer/', {'ignore_text': 'ignore', 'ignore_num': '123'})
-        self.assertEqual(resp2.status_code, 200)
-        self.assertJSONEqual(resp1.content, resp2.content, 'The given ignore keys have not been ignored by the server! The two given responses are not equal.')
         basic_status_code(self, 'beer')
         
         
         
 class BeerPriceTests(TestCase):    
+    fixtures = ['test_data.json']
+
     def test_status_codes(self):
         basic_status_code(self, 'beerprice')
         
@@ -180,6 +167,8 @@ class BeerPriceTests(TestCase):
         self.assertEqual(resp.status_code, 400, 'POST request with a beer price of one cent was successful. expected: ' + str(400) + ' response: ' + str(resp.status_code))
         
 class KioskTests(TestCase):
+    fixtures = ['test_data.json']
+
     def test_status_codes(self):
         basic_status_code(self, 'kiosk')
         
@@ -202,6 +191,8 @@ class KioskTests(TestCase):
         self.assertEqual(resp.status_code, 400, 'POST request with duplicate data was successfull.')
         
 class ImageTests(TestCase):
+    fixtures = ['test_data.json']
+
     def test_status_code(self):
         basic_status_code(self, 'image')
         
@@ -223,6 +214,8 @@ class ImageTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         
 class CommentTests(TestCase):
+    fixtures = ['test_data.json']
+
     def test_status_code(self):
         basic_status_code(self, 'comment')
         
