@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from django.test import TestCase
 from django.test import Client
 import json
@@ -42,16 +41,18 @@ class kioskListTests(TestCase):
         self.assertEqual(resp2.status_code, 200, msg)
         msg += 'The two responses are not equal.'
         self.assertJSONEqual(resp1.content, resp2.content, msg)
+        resp1 = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
+        self.assertEqual(resp1.status_code, 200)
+        resp1 = self.client.get(prefix + 'kioskList/', {'geo_lat': '5a1.5' , 'geo_long': '7b.5', 'radius': 'c5'})
+        self.assertEqual(resp1.status_code, 400)
         
-        resp2 = self.client.get(prefix + 'kioskList/', {'geo_lat': '5a1.5' , 'geo_long': '7b.5', 'radius': 'c5'})
-        self.assertEqual(resp2.status_code, 400)
         
     ''' parameters for non existing beers. or lookup kiosks at tatooine'''
     def test_distance_and_empty_response(self):
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 0.2 , 'geo_long': -176.5, 'radius': 5})
         self.assertEqual(resp.content, '[]', 'We got a kiosk on Baker Island!')
         #request with a non-existent beer
-        response  = self.client.get(prefix + 'kioskList/?beer=gibtsnichtbier')
+        response  = self.client.get(prefix + 'kioskList/', {'beer': 'gibtsnichtbier'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '[]')
         #mos espa coordinates tunisia
@@ -62,7 +63,6 @@ class kioskListTests(TestCase):
         response  = self.client.get(prefix + "kioskList/?radius=0.01&geo_lat=51.53533&geo_long=7.48700")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '[]')
-        #self.assertNotEqual(resp.content, '[]', 'The kioskList returned an empty response for Baker Island!')
 
     def test_response_content(self):
           
@@ -84,10 +84,11 @@ class kioskListTests(TestCase):
             self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.") 
 
         resp = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
-        
-#         BeerPrice.objects.filter()
-#        TODO: filter the kiosk by brand an compare to given response
-        
+
+        cont_dict = json.loads(resp.content)
+        for kiosk in cont_dict:
+            self.assertTrue(kiosk.get('beerName').__contains__('Hansa'))
+            
 class KioskDetailsTests(TestCase):
     fixtures = ['test_data.json']
 
@@ -134,12 +135,19 @@ class BeerPriceTests(TestCase):
         self.assertEqual(resp.status_code, 201, msg)
         
         cont_dict = json.loads(resp.content) 
-#         b = BeerPrice.objects.filter(pk = cont_dict.get('id'))
+
         b = BeerPrice.objects.get(pk = cont_dict.get('id'))
-        keys = ['id', 'size',  'price', 'score', 'created', 'modified']
         
-#         for key in keys:
-#             self.assertEqual(cont_dict.get(key), getattr(b, key))
+        keys = ['id', 'size',  'price', 'score']
+        
+        for key in keys:
+            self.assertEqual(str(cont_dict.get(key)), str(getattr(b, key)))
+        
+        b_created = str(getattr(b, 'created'))[:10] + 'T' + str(getattr(b, 'created'))[11:23] + 'Z'
+        b_modified = str(getattr(b, 'modified'))[:10] + 'T' + str(getattr(b, 'modified'))[11:23] + 'Z'
+
+        self.assertEqual(cont_dict.get('created'), b_created)
+        self.assertEqual(cont_dict.get('modified'), b_modified)
         
         self.assertEqual(cont_dict.get('kiosk'), proper_kiosk_id, 'The beerprice was not posted to the given kiosk!')
         self.assertEqual(cont_dict.get('beer'), proper_beer_id, 'The beerprice was not posted with the given beer!')
@@ -167,11 +175,14 @@ class KioskTests(TestCase):
         cont_dict = json.loads(resp.content)
         k = Kiosk.objects.get(pk = cont_dict.get('id'))
         
-        keys = ['street', 'number', 'zip_code', 'city', 'name', 'description', 'owner', 'geo_lat', 'geo_long', 'is_valid_address', 'created']
+        keys = ['street', 'number', 'zip_code', 'city', 'name', 'description', 'owner', 'geo_lat', 'geo_long', 'is_valid_address']
         
-#         for key in keys:
-#             self.assertEqual(cont_dict.get(key), getattr(k, key))
-            
+        for key in keys:
+            self.assertEqual(str(cont_dict.get(key)), str(getattr(k, key)))
+        
+        k_created = str(getattr(k, 'created'))[:10] + 'T' + str(getattr(k, 'created'))[11:23] + 'Z'
+        self.assertEqual(cont_dict.get('created'), k_created)
+        
         resp = self.client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345', 
                                                     'number': '123', 'geo_lat': '51.51', 'geo_long': '7.51'})
         self.assertEqual(resp.status_code, 400, 'POST request with duplicate data was successfull.')
@@ -188,7 +199,7 @@ class ImageTests(TestCase):
         from StringIO import StringIO
         
         file_obj = StringIO()
-        image    = PIL.open('./bier/fixtures/test.jpeg')
+        image = PIL.open('./bier/fixtures/test.jpeg')
         image.save(file_obj, 'jpeg')
         file_obj.name = 'test.png'
         file_obj.seek(0)
@@ -204,10 +215,10 @@ class ImageTests(TestCase):
         
         keys = ['id', 'image', 'thumbnail']
         
-#         for key in keys:
-#             self.assertEqual(cont_dict.get(key), getattr(i, key))
+        for key in keys:
+            self.assertEqual(cont_dict.get(key), getattr(i, key))
 
-        #resp = self.client.get(str(cont_dict.get('thumbUrl')))
+        resp = self.client.get(str(cont_dict.get('thumbUrl')))
         #self.assertEqual(resp.status_code, 200)
         
 class CommentTests(TestCase):
@@ -227,9 +238,10 @@ class CommentTests(TestCase):
         cont_dict = json.loads(resp.content)
         c = Comment.objects.get(pk = cont_dict.get('id'))
         
-        keys = ['id', 'name', 'comment', 'created']
+        keys = ['id', 'name', 'comment']
         
-#         for key in keys:
-#             self.assertEqual(cont_dict.get(key),str(getattr(k, key)) )
+        for key in keys:
+            self.assertEqual(str(cont_dict.get(key)),str(getattr(c, key)))
         
-        
+        c_created = str(getattr(c, 'created'))[:10] + 'T' + str(getattr(c, 'created'))[11:23] + 'Z'
+        self.assertEqual(cont_dict.get('created'), c_created)
