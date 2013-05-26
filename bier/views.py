@@ -29,7 +29,7 @@ def biere(request, kiosk_id):
         form = ImageForm(request.POST, request.FILES)
         if form.is_valid():
             print('form is valid')
-            imgModel = Image(image=request.FILES['image'], thumbnail=None)
+            imgModel = Image(image=request.FILES['image'])
             imgModel.save()
             k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , image=imgModel)
             k.save()

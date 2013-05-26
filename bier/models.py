@@ -2,8 +2,7 @@
 from django.db import models
 #from geopy import geocoders
 from django.forms import forms
-from django.core.files import File
-import os.path
+from django_thumbs.db.models import ImageWithThumbsField
 import logging
 log = logging.getLogger(__name__)
 
@@ -106,22 +105,13 @@ Model containing an image which automaticly creates a thumbnail when imagesize >
 class Image(models.Model):
     maxWidth = 32;
     maxHeight = 32;
-
-    image = models.ImageField(
-        upload_to='images/',
-        max_length=500,
-        blank=True
-    )
-     
-    thumbnail = models.ImageField(
-        upload_to='images/thumbs/',
-        max_length=500,
-        blank=True
-    )
+    
+    image = ImageWithThumbsField(upload_to='images/', sizes=((640, 480),(150,150),(64,64)), max_length=300,  blank=True)
+    
     #display image in admin view with this function
     def admin_img(self):
         if self.image:
-            return u'<image src="%s" alt="Bild" />' % self.thumbnail.url
+            return u'<image src="%s" alt="Bild" />' % self.image.url_150x150
         else:
             return 'no image. WTF'
     
@@ -133,40 +123,40 @@ class Image(models.Model):
     def __unicode__(self):
         return self.image.name
      
-    def create_thumbnail(self):
-        from PIL import Image
-#        print('HALLO PFAD:: ' + self.image.path  + '  url:  ' + self.image.url + '  name: ' + self.image.name)
-        imgFile = Image.open(self.image)
-        #Convert to RGB
-        if imgFile.mode not in ('L', 'RGB'):
-            imgFile = imgFile.convert('RGB')
-        # get path to thumbFile
-        thumb_path = self.get_default_thumbnail_filename(self.image.path)
-        imgFile = imgFile.copy()
-        # if picture is too big create a thumbnail 
-        if imgFile.size[0] > self.maxWidth or imgFile.size[1] > self.maxHeight:
-            imgFile.thumbnail((self.maxWidth,self.maxHeight), Image.ANTIALIAS)
-#        print('Saving to:  ' + thumb_path)
-        imgFile.save(thumb_path, 'JPEG', qualitiy=95)
-        f = open(thumb_path)
-        myfile = File(f)
-#       save thumbnail to thumbnail field but dont call the save method again. or youl get a inifinite save loop ya know 
-        self.thumbnail.save(thumb_path, myfile, save=False )
+#     def create_thumbnail(self):
+#         from PIL import Image
+# #        print('HALLO PFAD:: ' + self.image.path  + '  url:  ' + self.image.url + '  name: ' + self.image.name)
+#         imgFile = Image.open(self.image)
+#         #Convert to RGB
+#         if imgFile.mode not in ('L', 'RGB'):
+#             imgFile = imgFile.convert('RGB')
+#         # get path to thumbFile
+#         thumb_path = self.get_default_thumbnail_filename(self.image.path)
+#         imgFile = imgFile.copy()
+#         # if picture is too big create a thumbnail 
+#         if imgFile.size[0] > self.maxWidth or imgFile.size[1] > self.maxHeight:
+#             imgFile.thumbnail((self.maxWidth,self.maxHeight), Image.ANTIALIAS)
+# #        print('Saving to:  ' + thumb_path)
+#         imgFile.save(thumb_path, 'JPEG', qualitiy=95)
+#         f = open(thumb_path)
+#         myfile = File(f)
+# #       save thumbnail to thumbnail field but dont call the save method again. or youl get a inifinite save loop ya know 
+#         self.thumbnail.save(thumb_path, myfile, save=False )
     
-    def get_default_thumbnail_filename(self, filename):
-        path, full_name = os.path.split(filename)
-        name, ext = os.path.splitext(full_name)
-        return path + '/images/thumbs/' + name + '_thumb' + ext
-
-    def save(self, *args, **kwargs):
-        self.create_thumbnail()
-        force_update = False
-        # If the instance already has been saved, it has an id and we set
-        # force_update to True
-        if self.id:
-            force_update = True
-        # Force an UPDATE SQL query if we're editing the image to avoid integrity exception
-        super(Image, self).save(force_update=force_update)
+#     def get_default_thumbnail_filename(self, filename):
+#         path, full_name = os.path.split(filename)
+#         name, ext = os.path.splitext(full_name)
+#         return path + '/images/thumbs/' + name + '_thumb' + ext
+# 
+#     def save(self, *args, **kwargs):
+#         self.create_thumbnail()
+#         force_update = False
+#         # If the instance already has been saved, it has an id and we set
+#         # force_update to True
+#         if self.id:
+#             force_update = True
+#         # Force an UPDATE SQL query if we're editing the image to avoid integrity exception
+#         super(Image, self).save(force_update=force_update)
 
 ''' This model connects images with kiosks'''
 class KioskImage(models.Model):

@@ -15,8 +15,8 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
 
 class ImageSerializer(serializers.ModelSerializer):
-    imageUrl = serializers.CharField(source='image.url', read_only=True)
-    thumbUrl = serializers.CharField(source='thumbnail.url', read_only=True)
+    imageUrl = serializers.CharField(source='image.url_640x480', read_only=True)
+    thumbUrl = serializers.CharField(source='image.url_64x64', read_only=True)
     
     class Meta:
         model = Image
@@ -61,7 +61,7 @@ class KioskListItemSerializer(serializers.Serializer):
     beerBrew = serializers.CharField(source='beerPrice.beer.brew', read_only=True)
     beerSize = serializers.FloatField(source='beerPrice.size', read_only=True)
     beerPrice = serializers.IntegerField(source='beerPrice.price', read_only=True)
-    thumb_path = serializers.CharField(source='thumb.image.path', read_only=True)
+    thumb_path = serializers.CharField(source='thumb.image.url_64x64', read_only=True)
     distance = serializers.FloatField(source='distance', read_only=True)
 #     kiosk = KioskSerializer(source='kiosk')
 #     image = ImageSerializer(source='thumb')

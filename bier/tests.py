@@ -222,7 +222,7 @@ class ImageTests(TestCase):
         cont_dict = json.loads(resp.content)
         i = Image.objects.get(pk = cont_dict.get('id'))
         
-        keys = ['id', 'image', 'thumbnail']
+        keys = ['id', 'image']
         
         for key in keys:
             self.assertEqual(cont_dict.get(key), getattr(i, key))

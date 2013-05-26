@@ -97,8 +97,7 @@ class KioskImageAdmin(admin.ModelAdmin):
     
 class ImageAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Bild',               {'fields': ['image']}),
-        ('Kleines Bild. (wird automatisch generiert)', {'fields': ['thumbnail']})
+        ('Bild',               {'fields': ['image']})
     ]
     list_display = ('admin_img', 'image')
     model = Image
