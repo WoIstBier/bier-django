@@ -178,8 +178,8 @@ class KioskImage(models.Model):
 
 ''' This model connects images with kiosks'''
 class KioskComments(models.Model):
-    kiosk = models.ForeignKey(Kiosk)
-    comment = models.ForeignKey(Comment)
+    kiosk = models.ForeignKey(Kiosk, default=-1)
+    comment = models.ForeignKey(Comment, default=-1)
     
     def __unicode__(self):
         return self.kiosk.name + self.comment.name

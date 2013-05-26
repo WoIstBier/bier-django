@@ -290,6 +290,7 @@ class ListItem(object):
 '''
     returns a listitem object  given a specific kiosk and the lat,long values of the client
     so it can calculate the distance between kiosk and client to write into the listitem object
+    if a beer argument is supplied only kioskItems containg that beer will be returned
 '''
 def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     img = None
@@ -305,6 +306,9 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
             if not beerPriceSet.exists():
                 return None
         beerPrice = beerPriceSet[0]
+    else:
+        if beer is not None:
+            return None
     if lat is not None and lon is not None:
         distance = calculate_distance(float(kiosk.geo_lat), float(kiosk.geo_long), lat, lon)
         return ListItem(kiosk=kiosk, thumb=img, beerPrice = beerPrice, distance = distance )
@@ -372,7 +376,6 @@ class KioskList(APIView):
 #             l.sort(key=lambda item: item.kiosk.street  , reverse=False)
 #         elif sort == "beer":
 #             l.sort(key=lambda item: item.beerPrice.beer.name  , reverse=False)
-        
         serializer = KioskListItemSerializer(l, many=True)
         return Response(serializer.data)
         
