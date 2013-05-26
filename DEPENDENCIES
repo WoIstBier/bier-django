@@ -1,7 +1,7 @@
 ####
 #These packages have to be installed
 #Some of them might already be on your system
-# 10 Maerz
+# Last updated 26 Mai
 ####
 
 easy_install pip
@@ -13,6 +13,7 @@ pip install pygeocoder
 pip install pillow
 pip install djangorestframework
 pip install django-filter
+pip install django-thumbs
 
 ##### 
 #Some important stuff in settingy.py
@@ -28,6 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'easy_thumbnails',
     'bier',
     'rest_framework',
     'django_filters'
