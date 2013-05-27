@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
-from bier.models import Kiosk, BeerPrice, KioskImage, ImageForm, Image, Beer, Comment, KioskComments
+from bier.models import Kiosk, BeerPrice, Image, Beer, Comment
 from bier.serializers import KioskSerializer, ImageSerializer, BeerSerializer, CommentSerializer, BeerPriceSerializer, KioskListItemSerializer, KioskDetailSerializer
-from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import render_to_response
-from django.template import RequestContext
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,29 +20,29 @@ def kiosk(request):
     kiosk_liste = Kiosk.objects.order_by('name')
     return render_to_response('bier/kiosk.html', {'kioske': kiosk_liste })
 
-def biere(request, kiosk_id):
-    print('in bier view')
-    if request.method =='POST':
-        print('Post request')
-        form = ImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            print('form is valid')
-            imgModel = Image(image=request.FILES['image'])
-            imgModel.save()
-            k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , image=imgModel)
-            k.save()
-            return HttpResponseRedirect(reverse('bier.views.kiosk'))
-        else:
-            print('form is invalid')
-    else:
-        form = ImageForm()
-        
-    p = BeerPrice.objects.filter(id = kiosk_id)
-    k = KioskImage.objects.filter(kiosk__pk = kiosk_id)
-    imgSet = Image.objects.filter(pk__in =  k.values_list('image'))
-    c = RequestContext(request,  {'bier_list': p, 'form' : form, 'imgs': imgSet, 'kiosk': Kiosk.objects.get(pk=kiosk_id) })
-    return render_to_response('bier/biere.html', c)
-
+# def biere(request, kiosk_id):
+#     print('in bier view')
+#     if request.method =='POST':
+#         print('Post request')
+#         form = ImageForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             print('form is valid')
+#             imgModel = Image(image=request.FILES['image'])
+#             imgModel.save()
+#             k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , image=imgModel)
+#             k.save()
+#             return HttpResponseRedirect(reverse('bier.views.kiosk'))
+#         else:
+#             print('form is invalid')
+#     else:
+#         form = ImageForm()
+#         
+#     p = BeerPrice.objects.filter(id = kiosk_id)
+#     k = KioskImage.objects.filter(kiosk__pk = kiosk_id)
+#     imgSet = Image.objects.filter(pk__in =  k.values_list('image'))
+#     c = RequestContext(request,  {'bier_list': p, 'form' : form, 'imgs': imgSet, 'kiosk': Kiosk.objects.get(pk=kiosk_id) })
+#     return render_to_response('bier/biere.html', c)
+# 
 
 
 
@@ -69,44 +67,57 @@ def check_if_kiosk_exists(kiosk_id):
         return False
     return True
 
-def getObjectsForKioskId(relationClass,resultClass,  attributeName, kiosk_id):
-    relationSet = relationClass.objects.filter(kiosk__id = kiosk_id)
-    return resultClass.objects.filter(pk__in =  relationSet.values_list(attributeName))
+def getSetForKioskId(model, serializer, kiosk_id):
+    if kiosk_id is None:
+            commentSet = model.objects.all()
+    else: 
+            if not check_kiosk_args(kiosk_id):
+                return HttpResponseBadRequest("Kiosk id arguments was malformed")
+    
+            commentSet = model.objects.filter(kiosk__pk = kiosk_id)
+            if commentSet.count()== 0:
+                return Response(status = status.HTTP_204_NO_CONTENT)
+    serializer = serializer(commentSet, many=True)
+    return Response(serializer.data)  
+    
     
 ''' views for images'''
 class ImageList(APIView):
         
-    def get(self, request, format = None):
+    def get(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+        url = dict()
+        urls = list()
         if kiosk_id is not None:
             if not check_kiosk_args(kiosk_id):
                 return HttpResponseBadRequest("Kiosk id arguments was malformed")
 #             check_kiosk_args(kiosk_id)
 #             kImgSet = KioskImage.objects.filter(kiosk__id = kiosk_id)
 #             imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
-            imgSet = getObjectsForKioskId(KioskImage, Image,  'image', kiosk_id)
+            imgSet = Image.objects.filter(kiosk__pk = kiosk_id)
             if imgSet.count()== 0:
                 return Response(status = status.HTTP_204_NO_CONTENT)
         else:
             imgSet = Image.objects.all()
             
-        serializer = ImageSerializer(imgSet, many=True)
-        return Response(serializer.data)
+        for img in imgSet:
+            url["thumbnail_url"] = img.image['thumbnail'].url
+            url["gallery_url"] = img.image['gallery'].url
+            urls.append(url)
+        
+        return Response(urls)
     
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        #self.check_kiosk_args(kiosk_id)
-        if not check_kiosk_args(kiosk_id):
-            return HttpResponseBadRequest("Kiosk id arguments was malformed")
-        if not check_if_kiosk_exists(kiosk_id):
-            return Response("Kiosk mit dieser Id gibts nicht", status=status.HTTP_400_BAD_REQUEST)
-        serializer = ImageSerializer(data = request.DATA , files=request.FILES, context={'kiosk_id': kiosk_id, 'request' : request})
+#         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+#         #self.check_kiosk_args(kiosk_id)
+#         if not check_kiosk_args(kiosk_id):
+#             return HttpResponseBadRequest("Kiosk id arguments was malformed")
+#         if not check_if_kiosk_exists(kiosk_id):
+#             return Response("Kiosk mit dieser Id gibts nicht", status=status.HTTP_400_BAD_REQUEST)
+        serializer = ImageSerializer(data = request.DATA , files=request.FILES)
         if serializer.is_valid():
             serializer.save()
-            imageId = serializer.object.id
-            k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , image=Image.objects.get(pk = imageId))
-            k.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -122,29 +133,14 @@ class CommentList(generics.ListAPIView):
     model = Comment
     serializer_class = CommentSerializer
     filter_fields=('name', 'created')
-    def get(self, request, format = None):
+    def get(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if kiosk_id is not None:
-            commentSet = getObjectsForKioskId( KioskComments, Comment, 'comment', kiosk_id)
-            if commentSet.count()== 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
-        else:
-            commentSet = Comment.objects.all()
-            
-        serializer = CommentSerializer(commentSet.order_by('-created'), many=True)
-        return Response(serializer.data)
+        return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
     
     def post(self, request):
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if not check_kiosk_args(kiosk_id):
-            return HttpResponseBadRequest("Kiosk id arguments was malformed")
-        if not check_if_kiosk_exists(kiosk_id):
-            return Response("Kiosk mit dieser Id gibts nicht", status=status.HTTP_400_BAD_REQUEST)
         serializer = CommentSerializer(data=request.DATA)
         if serializer.is_valid():
-            com = serializer.save()
-            k = KioskComments(kiosk = Kiosk.objects.get(pk=kiosk_id) , comment = com)
-            k.save()
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -158,18 +154,9 @@ class CommentDetail(generics.CreateAPIView):
 class BeerPriceList(generics.ListCreateAPIView):
     model = BeerPrice
     serializer_class = BeerPriceSerializer
-    def get(self, request, format = None):
+    def get(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if kiosk_id is not None:
-            check_kiosk_args(kiosk_id)
-            beer_price_set = BeerPrice.objects.filter(kiosk__id = kiosk_id)
-            if beer_price_set.count()== 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
-        else:
-            beer_price_set = BeerPrice.objects.all()
-             
-        serializer = BeerPriceSerializer(beer_price_set.order_by('beer__name'), many=True)
-        return Response(serializer.data)
+        return getSetForKioskId(BeerPrice, BeerPriceSerializer, kiosk_id)
 
 
 class BeerPriceDetail(generics.RetrieveUpdateAPIView):
@@ -181,10 +168,12 @@ class BeerList(generics.ListAPIView):
     model = Beer
     serializer_class = BeerSerializer
     filter_fields=['name', 'brand', 'location', 'brew']
-    def get(self, request, format = None):
+    def get(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is not None:
-            beerSet = getObjectsForKioskId(self, BeerPrice, Beer, 'beer', kiosk_id)
+            if not check_kiosk_args(kiosk_id):
+                return HttpResponseBadRequest("Kiosk id arguments was malformed")
+            beerSet = Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
             if beerSet.count()== 0:
                 return Response(status = status.HTTP_204_NO_CONTENT)
         else:
@@ -204,16 +193,15 @@ class SimpleKioskList(generics.ListCreateAPIView):
     model = Kiosk
     serializer_class = KioskSerializer
     filter_fields = ('id', 'name', 'owner', 'street','city','zip_code')
-#    TODO: data checks. prevent duplicates
     def post(self, request):
         serializer = KioskSerializer(data=request.DATA)
         if serializer.is_valid():
-            k = serializer.save()
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-         
+          
         log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+     
 
 class KioskDetail(APIView):
     def get_object(self, kiosk_id):
@@ -222,17 +210,11 @@ class KioskDetail(APIView):
         except Kiosk.DoesNotExist:
             raise Http404
 
-    def get(self, request, kiosk_id, format=None):
+    def get(self, request, kiosk_id):
         k = self.get_object(kiosk_id)
         serializer = KioskSerializer(k)
         return Response(serializer.data)
     
-#     def put(self, request,kiosk_id, format=None):
-#         serializer = KioskSerializer(data=request.DATA)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ''' An object to hold all the info the kiosk detail view on the client needs. this will be passed to the serializer'''
 class KioskDetailContainer(object):
@@ -254,8 +236,8 @@ class KioskDetailView(APIView):
 
     def get(self, request, primaryKey):
         kiosk = self.get_object(primaryKey)
-        imageSet = getObjectsForKioskId(KioskImage, Image, 'image',  kiosk.id)
-        commentSet = getObjectsForKioskId(KioskComments, Comment, 'comment',  kiosk.id)
+        imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
+        commentSet = Comment.objects.filter(kiosk__pk = kiosk.id)
         beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
         l = KioskDetailContainer(kiosk, beerPrice=beerPriceSet, images=imageSet, comments=commentSet)
         serializer = KioskDetailSerializer(l)
@@ -295,9 +277,9 @@ class ListItem(object):
 def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     img = None
     beerPrice = None
-    imageSet = getObjectsForKioskId(KioskImage, Image, 'image',  kiosk.id)
+    imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
     if imageSet.exists():
-        img = imageSet[0]
+        img = imageSet[0].image['thumbnail'].url
 
     beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
     if beerPriceSet.exists():
@@ -321,8 +303,6 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     in case the parameter contain bullshit values this will raise a ERROR400 bad request to the client
 ''' 
 class KioskList(APIView):
-
-
 
     def get(self, request):
         #get parameters from httprequest
@@ -351,11 +331,8 @@ class KioskList(APIView):
         # now convert radians to degrees
         radius = radius*180/math.pi
         
-        
         #get all kiosk within the bounding box
         queryResult = Kiosk.objects.filter(geo_lat__lte = g_lat + radius, geo_long__lte = g_long + radius, geo_lat__gte = g_lat - radius, geo_long__gte = g_long - radius)
-        
-               
   
         #build a kiosklistem for every kiosk we fetched and return it through the serializer
         l = list()
@@ -364,18 +341,6 @@ class KioskList(APIView):
             if item is not None:
                 l.append(item)
         
-        #sort the list by the key returned by the lambda function. distance is the default
-#         legalSortKeys=['price', 'distance', 'street', 'beer']
-#         if not sort in legalSortKeys:
-#             sort = "distance"
-#         if sort == "distance":
-#             l.sort(key=lambda item: item.distance  , reverse=False)
-#         elif sort == "price":
-#             l.sort(key=lambda item: item.beerPrice.score  , reverse=False)
-#         elif sort == "street":
-#             l.sort(key=lambda item: item.kiosk.street  , reverse=False)
-#         elif sort == "beer":
-#             l.sort(key=lambda item: item.beerPrice.beer.name  , reverse=False)
         serializer = KioskListItemSerializer(l, many=True)
         return Response(serializer.data)
         

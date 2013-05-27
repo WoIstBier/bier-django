@@ -20,11 +20,6 @@ urlpatterns = patterns('',
     url(r'^rest/comment/$', views.CommentList.as_view() ),
     url(r'^rest/comment/(?P<pk>[0-9]+)/$', views.CommentDetail.as_view() ),
     
-    
-    url(r'^web/(?P<kiosk_id>[0-9]+)/$', 'bier.views.biere'),
-    url(r'^web/$', 'bier.views.kiosk', name='kiosk'),
-    
-    
     url(r'^rest/kioskList/(?P<primaryKey>[0-9]+)/$', views.KioskListItem.as_view()),
     url(r'^rest/kioskList/$', views.KioskList.as_view()), 
     

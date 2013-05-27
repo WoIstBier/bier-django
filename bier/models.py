@@ -2,7 +2,7 @@
 from django.db import models
 #from geopy import geocoders
 from django.forms import forms
-from django_thumbs.db.models import ImageWithThumbsField
+from easy_thumbnails.fields import ThumbnailerImageField
 import logging
 log = logging.getLogger(__name__)
 
@@ -60,6 +60,7 @@ class Comment(models.Model):
     name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
     comment = models.CharField(max_length=400)
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
+    kiosk = models.ForeignKey(Kiosk)
 
     def __unicode__(self):
         return self.name+str(self.created)
@@ -103,15 +104,13 @@ class BeerPrice(models.Model):
 Model containing an image which automaticly creates a thumbnail when imagesize > maxSize
 '''
 class Image(models.Model):
-    maxWidth = 32;
-    maxHeight = 32;
-    
-    image = ImageWithThumbsField(upload_to='images/', sizes=((640, 480),(150,150),(64,64)), max_length=300,  blank=True)
+    image = ThumbnailerImageField(upload_to='images/',  max_length=300,  blank=True)
+    kiosk = models.ForeignKey(Kiosk)
     
     #display image in admin view with this function
     def admin_img(self):
         if self.image:
-            return u'<image src="%s" alt="Bild" />' % self.image.url_150x150
+            return u'<image src="%s" alt="Bild" />' % self.image['medium'].url
         else:
             return 'no image. WTF'
     
@@ -158,21 +157,21 @@ class Image(models.Model):
 #         # Force an UPDATE SQL query if we're editing the image to avoid integrity exception
 #         super(Image, self).save(force_update=force_update)
 
-''' This model connects images with kiosks'''
-class KioskImage(models.Model):
-    kiosk = models.ForeignKey(Kiosk)
-    image = models.ForeignKey(Image)
-    
-    def __unicode__(self):
-        return self.kiosk.name 
+# ''' This model connects images with kiosks'''
+# class KioskImage(models.Model):
+#     kiosk = models.ForeignKey(Kiosk)
+#     image = models.ForeignKey(Image, null=False)
+#     
+#     def __unicode__(self):
+#         return self.kiosk.name 
 
-''' This model connects images with kiosks'''
-class KioskComments(models.Model):
-    kiosk = models.ForeignKey(Kiosk, default=-1)
-    comment = models.ForeignKey(Comment, default=-1)
-    
-    def __unicode__(self):
-        return self.kiosk.name + self.comment.name
+# ''' This model connects images with kiosks'''
+# class KioskComments(models.Model):
+#     kiosk = models.ForeignKey(Kiosk)
+#     comment = models.ForeignKey(Comment)
+#     
+#     def __unicode__(self):
+#         return self.kiosk.name + self.comment.name
 
 #class ImageForm(ModelForm):
 #    class Meta:

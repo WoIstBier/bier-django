@@ -6,11 +6,11 @@
         "city": "Dortmund", 
         "description": "", 
         "created": null, 
-        "number": "156", 
-        "geo_lat": "51.5311840000", 
-        "geo_long": "7.4553310000", 
+        "number": 156, 
+        "geo_lat": "51.5313197000", 
+        "geo_long": "7.4551890000", 
         "street": "Uhlandstra\u00dfe", 
-        "is_valid_address": false, 
+        "is_valid_address": true, 
         "owner": "", 
         "zip_code": "44147", 
         "name": "Uhlandstra\u00dfe 156"
@@ -23,7 +23,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-03-29T20:22:22Z", 
-        "number": "329", 
+        "number": 329, 
         "geo_lat": "51.5242362000", 
         "geo_long": "7.4453596000", 
         "street": "Mallinckrodtstra\u00dfe", 
@@ -40,7 +40,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-03-29T20:37:28Z", 
-        "number": "118", 
+        "number": 118, 
         "geo_lat": "51.5244502000", 
         "geo_long": "7.4626928000", 
         "street": "Mallinckrodtstra\u00dfe", 
@@ -57,7 +57,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-03-30T13:20:54Z", 
-        "number": "39", 
+        "number": 39, 
         "geo_lat": "51.5165933000", 
         "geo_long": "7.4653962000", 
         "street": "Br\u00fcckstra\u00dfe", 
@@ -74,7 +74,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-03-30T19:59:48Z", 
-        "number": "201", 
+        "number": 201, 
         "geo_lat": "51.5140900000", 
         "geo_long": "7.4978900000", 
         "street": "Kaiserstra\u00dfe", 
@@ -91,7 +91,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-15T20:31:30Z", 
-        "number": "20", 
+        "number": 20, 
         "geo_lat": "51.5183680000", 
         "geo_long": "7.4691892000", 
         "street": "Bornstra\u00dfe", 
@@ -108,11 +108,11 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T16:54:57Z", 
-        "number": "24", 
-        "geo_lat": null, 
-        "geo_long": null, 
+        "number": 24, 
+        "geo_lat": "51.5282551000", 
+        "geo_long": "7.4661860000", 
         "street": "Bergmannstra\u00dfe", 
-        "is_valid_address": false, 
+        "is_valid_address": true, 
         "owner": "", 
         "zip_code": "44145", 
         "name": "Bergmannstra\u00dfe 24"
@@ -125,7 +125,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:40:32Z", 
-        "number": "13", 
+        "number": 13, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Herderstrasse", 
@@ -142,7 +142,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:41:53Z", 
-        "number": "28", 
+        "number": 28, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Herderstra\u00dfe", 
@@ -159,7 +159,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:42:47Z", 
-        "number": "14", 
+        "number": 14, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Haydnstra\u00dfe", 
@@ -176,7 +176,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:43:07Z", 
-        "number": "50", 
+        "number": 50, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Schillerstra\u00dfe", 
@@ -193,7 +193,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:44:29Z", 
-        "number": "151", 
+        "number": 151, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Mallinckrodtstra\u00dfe", 
@@ -210,7 +210,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:45:11Z", 
-        "number": "101", 
+        "number": 101, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Mallinckrodtstra\u00dfe", 
@@ -227,7 +227,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:45:40Z", 
-        "number": "41", 
+        "number": 41, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Haydnstra\u00dfe", 
@@ -244,7 +244,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:46:28Z", 
-        "number": "149", 
+        "number": 149, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "M\u00fcnsterstra\u00dfe", 
@@ -261,7 +261,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:47:08Z", 
-        "number": "26", 
+        "number": 26, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Schubertstra\u00dfe", 
@@ -278,11 +278,11 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:47:48Z", 
-        "number": "15", 
-        "geo_lat": null, 
-        "geo_long": null, 
+        "number": 15, 
+        "geo_lat": "51.5272355000", 
+        "geo_long": "7.4639079000", 
         "street": "Lortzingstra\u00dfe", 
-        "is_valid_address": false, 
+        "is_valid_address": true, 
         "owner": "", 
         "zip_code": "44145", 
         "name": "Lortzingstra\u00dfe 15"
@@ -295,7 +295,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:48:38Z", 
-        "number": "6", 
+        "number": 6, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Lortzingstra\u00dfe", 
@@ -312,7 +312,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:49:01Z", 
-        "number": "42", 
+        "number": 42, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Burgholzstra\u00dfe", 
@@ -329,7 +329,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:49:55Z", 
-        "number": "25", 
+        "number": 25, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Braunschweigerstra\u00dfe", 
@@ -346,7 +346,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:51:24Z", 
-        "number": "166", 
+        "number": 166, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "M\u00fcnsterstra\u00dfe", 
@@ -363,7 +363,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:52:03Z", 
-        "number": "126", 
+        "number": 126, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Uhlandstra\u00dfe", 
@@ -380,7 +380,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:53:07Z", 
-        "number": "251", 
+        "number": 251, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "M\u00fcnsterstra\u00dfe", 
@@ -397,7 +397,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:53:53Z", 
-        "number": "34", 
+        "number": 34, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Gut-Heil-Strasse", 
@@ -414,7 +414,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:54:25Z", 
-        "number": "144", 
+        "number": 144, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Uhlandstrasse", 
@@ -431,7 +431,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:54:51Z", 
-        "number": "215", 
+        "number": 215, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Sch\u00fctzenstra\u00dfe", 
@@ -448,7 +448,7 @@
         "city": "Dortmund", 
         "description": "", 
         "created": "2013-04-22T17:55:15Z", 
-        "number": "169", 
+        "number": 169, 
         "geo_lat": null, 
         "geo_long": null, 
         "street": "Uhlandstrasse", 
@@ -465,7 +465,7 @@
         "city": "Musterstadt", 
         "description": "", 
         "created": "2013-05-15T22:10:26Z", 
-        "number": "123", 
+        "number": 123, 
         "geo_lat": "50.5100000000", 
         "geo_long": "7.4900000000", 
         "street": "Musterstra\u00dfe", 
@@ -1099,180 +1099,20 @@
     "pk": 1, 
     "model": "bier.comment", 
     "fields": {
-        "comment": "\u00fcmlaut im Kommentar ", 
-        "name": "kai", 
-        "created": "2013-03-29T21:58:53Z"
+        "comment": "hallo ihr fixer", 
+        "kiosk": 6, 
+        "name": "Anonymer Alkoholiker", 
+        "created": "2013-05-27T16:05:03Z"
     }
 },
 {
     "pk": 2, 
     "model": "bier.comment", 
     "fields": {
-        "comment": "\u00f6\u00f6h kein Plan ", 
-        "name": "\u00fcbergeil", 
-        "created": "2013-03-29T22:01:10Z"
-    }
-},
-{
-    "pk": 3, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "toller Kiosk.", 
-        "name": "kai", 
-        "created": "2013-03-30T00:14:48Z"
-    }
-},
-{
-    "pk": 4, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "der ber\u00fchmte bruckstrassen Kiosk. legend\u00e4r! ", 
-        "name": "kai der hai", 
-        "created": "2013-03-30T13:29:00Z"
-    }
-},
-{
-    "pk": 5, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "noch EU Kommentar ", 
-        "name": "kai", 
-        "created": "2013-03-30T13:33:09Z"
-    }
-},
-{
-    "pk": 6, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "Kommentar ", 
-        "name": "hoest", 
-        "created": "2013-03-30T13:35:00Z"
-    }
-},
-{
-    "pk": 7, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "Blabla", 
-        "name": "ich", 
-        "created": "2013-03-30T14:11:00Z"
-    }
-},
-{
-    "pk": 8, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "hier wohnt der Kaiser.", 
-        "name": "kai", 
-        "created": "2013-04-08T21:46:09Z"
-    }
-},
-{
-    "pk": 9, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "is auch teuer und so.", 
-        "name": "kai", 
-        "created": "2013-04-10T17:26:43Z"
-    }
-},
-{
-    "pk": 10, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "mehr Test input", 
-        "name": "nutzer", 
-        "created": "2013-04-10T17:32:19Z"
-    }
-},
-{
-    "pk": 11, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "lecker!", 
-        "name": "hans a", 
-        "created": "2013-04-15T20:32:30Z"
-    }
-},
-{
-    "pk": 12, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "ein Test komme gar.", 
-        "name": "test", 
-        "created": "2013-04-19T15:07:53Z"
-    }
-},
-{
-    "pk": 13, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "djdjdjdjdjdjf", 
-        "name": "shdhd", 
-        "created": "2013-04-19T15:10:55Z"
-    }
-},
-{
-    "pk": 14, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "ein leckere kuchen", 
-        "name": "ganymed", 
-        "created": "2013-04-19T15:11:59Z"
-    }
-},
-{
-    "pk": 15, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "fuhgd mir Drehung.", 
-        "name": "fdfgh", 
-        "created": "2013-04-19T15:12:30Z"
-    }
-},
-{
-    "pk": 16, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "leckere rests", 
-        "name": "mehr", 
-        "created": "2013-04-19T15:16:34Z"
-    }
-},
-{
-    "pk": 17, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "mehr Test ", 
-        "name": "sjhs", 
-        "created": "2013-04-19T15:17:56Z"
-    }
-},
-{
-    "pk": 18, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "jetzt mit Drehung ", 
-        "name": "tgoeszeb", 
-        "created": "2013-04-19T15:18:13Z"
-    }
-},
-{
-    "pk": 19, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "twstewb das dingyyy", 
-        "name": "restee", 
-        "created": "2013-04-21T13:19:30Z"
-    }
-},
-{
-    "pk": 20, 
-    "model": "bier.comment", 
-    "fields": {
-        "comment": "Zander", 
-        "name": "Zander", 
-        "created": "2013-04-22T17:26:43Z"
+        "comment": "hallo ihr fixer", 
+        "kiosk": 6, 
+        "name": "Anonymer Alkoholiker", 
+        "created": "2013-05-27T16:06:16Z"
     }
 },
 {
@@ -1497,651 +1337,11 @@
     }
 },
 {
-    "pk": 18, 
+    "pk": 1, 
     "model": "bier.image", 
     "fields": {
-        "image": "images/bergmannstrasse24_9.jpg", 
-        "thumbnail": "images/thumbs/bergmannstrasse24_9_thumb.jpg"
-    }
-},
-{
-    "pk": 19, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/bergmannstrasse24_9_-_quad.jpg", 
-        "thumbnail": "images/thumbs/bergmannstrasse24_9_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 20, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/burgholzstrasse42_8.jpg", 
-        "thumbnail": "images/thumbs/burgholzstrasse42_8_thumb.jpg"
-    }
-},
-{
-    "pk": 21, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/gutheilstrasse34_13_-_quad.jpg", 
-        "thumbnail": "images/thumbs/gutheilstrasse34_13_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 22, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/gutheilstrasse34_13.jpg", 
-        "thumbnail": "images/thumbs/gutheilstrasse34_13_thumb.jpg"
-    }
-},
-{
-    "pk": 23, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/haydnstrasse14_3.jpg", 
-        "thumbnail": "images/thumbs/haydnstrasse14_3_thumb.jpg"
-    }
-},
-{
-    "pk": 24, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/haydnstrasse41_5_-_quad.jpg", 
-        "thumbnail": "images/thumbs/haydnstrasse41_5_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 25, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/haydnstrasse41_5.jpg", 
-        "thumbnail": "images/thumbs/haydnstrasse41_5_thumb.jpg"
-    }
-},
-{
-    "pk": 26, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/herderstrasse13_1_-_quad.jpg", 
-        "thumbnail": "images/thumbs/herderstrasse13_1_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 27, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/herderstrasse13_1.jpg", 
-        "thumbnail": "images/thumbs/herderstrasse13_1_thumb.jpg"
-    }
-},
-{
-    "pk": 28, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/herderstrasse28_2.jpg", 
-        "thumbnail": "images/thumbs/herderstrasse28_2_thumb.jpg"
-    }
-},
-{
-    "pk": 29, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/lortzingstrasse15_7.jpg", 
-        "thumbnail": "images/thumbs/lortzingstrasse15_7_thumb.jpg"
-    }
-},
-{
-    "pk": 30, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/mallinckrodtstrasse118_4.jpg", 
-        "thumbnail": "images/thumbs/mallinckrodtstrasse118_4_thumb.jpg"
-    }
-},
-{
-    "pk": 31, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/muensterstrasse_166_12_-_quad.jpg", 
-        "thumbnail": "images/thumbs/muensterstrasse_166_12_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 32, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/muensterstrasse251_10_-_quad.jpg", 
-        "thumbnail": "images/thumbs/muensterstrasse251_10_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 33, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/muensterstrasse251_10.jpg", 
-        "thumbnail": "images/thumbs/muensterstrasse251_10_thumb.jpg"
-    }
-},
-{
-    "pk": 34, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/muensterstrasse149_6_-_quad.jpg", 
-        "thumbnail": "images/thumbs/muensterstrasse149_6_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 35, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/muensterstrasse149_6.jpg", 
-        "thumbnail": "images/thumbs/muensterstrasse149_6_thumb.jpg"
-    }
-},
-{
-    "pk": 38, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/uhlandstrasse126_11_-_quad.jpg", 
-        "thumbnail": "images/thumbs/uhlandstrasse126_11_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 39, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/uhlandstrasse126_11.jpg", 
-        "thumbnail": "images/thumbs/uhlandstrasse126_11_thumb.jpg"
-    }
-},
-{
-    "pk": 40, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/uhlandstrasse126_15_-_quad.jpg", 
-        "thumbnail": "images/thumbs/uhlandstrasse126_15_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 41, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/uhlandstrasse126_15.jpg", 
-        "thumbnail": "images/thumbs/uhlandstrasse126_15_thumb.jpg"
-    }
-},
-{
-    "pk": 42, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/uhlandstrasse169_14_-_quad.jpg", 
-        "thumbnail": "images/thumbs/uhlandstrasse169_14_-_quad_thumb.jpg"
-    }
-},
-{
-    "pk": 43, 
-    "model": "bier.image", 
-    "fields": {
-        "image": "images/uhlandstrasse169_14.jpg", 
-        "thumbnail": "images/thumbs/uhlandstrasse169_14_thumb.jpg"
-    }
-},
-{
-    "pk": 19, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 18, 
-        "kiosk": 34
-    }
-},
-{
-    "pk": 20, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 19, 
-        "kiosk": 34
-    }
-},
-{
-    "pk": 25, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 30, 
-        "kiosk": 10
-    }
-},
-{
-    "pk": 26, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 41, 
-        "kiosk": 6
-    }
-},
-{
-    "pk": 27, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 40, 
-        "kiosk": 6
-    }
-},
-{
-    "pk": 28, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 27, 
-        "kiosk": 35
-    }
-},
-{
-    "pk": 29, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 26, 
-        "kiosk": 35
-    }
-},
-{
-    "pk": 30, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 28, 
-        "kiosk": 36
-    }
-},
-{
-    "pk": 31, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 23, 
-        "kiosk": 37
-    }
-},
-{
-    "pk": 32, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 25, 
-        "kiosk": 41
-    }
-},
-{
-    "pk": 33, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 24, 
-        "kiosk": 41
-    }
-},
-{
-    "pk": 34, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 35, 
-        "kiosk": 42
-    }
-},
-{
-    "pk": 35, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 34, 
-        "kiosk": 42
-    }
-},
-{
-    "pk": 36, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 29, 
+        "image": "images/13_1.jpg", 
         "kiosk": 44
-    }
-},
-{
-    "pk": 37, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 20, 
-        "kiosk": 46
-    }
-},
-{
-    "pk": 38, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 31, 
-        "kiosk": 48
-    }
-},
-{
-    "pk": 39, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 39, 
-        "kiosk": 49
-    }
-},
-{
-    "pk": 40, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 38, 
-        "kiosk": 49
-    }
-},
-{
-    "pk": 41, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 33, 
-        "kiosk": 50
-    }
-},
-{
-    "pk": 42, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 32, 
-        "kiosk": 50
-    }
-},
-{
-    "pk": 43, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 22, 
-        "kiosk": 51
-    }
-},
-{
-    "pk": 44, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 21, 
-        "kiosk": 51
-    }
-},
-{
-    "pk": 45, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 43, 
-        "kiosk": 54
-    }
-},
-{
-    "pk": 46, 
-    "model": "bier.kioskimage", 
-    "fields": {
-        "image": 43, 
-        "kiosk": 54
-    }
-},
-{
-    "pk": 4, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 4, 
-        "kiosk": 18
-    }
-},
-{
-    "pk": 5, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 5, 
-        "kiosk": 10
-    }
-},
-{
-    "pk": 6, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 6, 
-        "kiosk": 9
-    }
-},
-{
-    "pk": 7, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 7, 
-        "kiosk": 10
-    }
-},
-{
-    "pk": 8, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 8, 
-        "kiosk": 29
-    }
-},
-{
-    "pk": 9, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 9, 
-        "kiosk": 18
-    }
-},
-{
-    "pk": 11, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 11, 
-        "kiosk": 33
-    }
-},
-{
-    "pk": 16, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 16, 
-        "kiosk": 9
-    }
-},
-{
-    "pk": 17, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 17, 
-        "kiosk": 9
-    }
-},
-{
-    "pk": 18, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 18, 
-        "kiosk": 9
-    }
-},
-{
-    "pk": 19, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 19, 
-        "kiosk": 29
-    }
-},
-{
-    "pk": 20, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 34
-    }
-},
-{
-    "pk": 21, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 6
-    }
-},
-{
-    "pk": 22, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 35
-    }
-},
-{
-    "pk": 23, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 36
-    }
-},
-{
-    "pk": 24, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 37
-    }
-},
-{
-    "pk": 25, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 38
-    }
-},
-{
-    "pk": 26, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 39
-    }
-},
-{
-    "pk": 27, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 40
-    }
-},
-{
-    "pk": 28, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 41
-    }
-},
-{
-    "pk": 29, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 42
-    }
-},
-{
-    "pk": 30, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 43
-    }
-},
-{
-    "pk": 31, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 44
-    }
-},
-{
-    "pk": 32, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 45
-    }
-},
-{
-    "pk": 33, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 46
-    }
-},
-{
-    "pk": 34, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 47
-    }
-},
-{
-    "pk": 35, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 48
-    }
-},
-{
-    "pk": 36, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 49
-    }
-},
-{
-    "pk": 37, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 50
-    }
-},
-{
-    "pk": 38, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 51
-    }
-},
-{
-    "pk": 39, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 52
-    }
-},
-{
-    "pk": 40, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 53
-    }
-},
-{
-    "pk": 41, 
-    "model": "bier.kioskcomments", 
-    "fields": {
-        "comment": 20, 
-        "kiosk": 54
     }
 }
 ]

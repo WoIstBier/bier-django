@@ -6,26 +6,22 @@ Created on Feb 17, 2013
 '''
 from django.contrib import admin
 #from polls.models import Poll, Choice
-from bier.models import Kiosk, Beer, BeerPrice, KioskImage, Image, KioskComments, Comment
+from bier.models import Kiosk, Beer, BeerPrice, Image, Comment
 from pygeocoder import Geocoder
 import logging
 log = logging.getLogger(__name__)
 
 class ImageInline(admin.TabularInline):
     model = Image
+    extra = 1
 
 class BeerPriceInline(admin.TabularInline):
     model = BeerPrice
     extra = 2
 
-class KioskImageInline(admin.TabularInline):
-    model = KioskImage
-    extra = 1
-    
-class KioskCommentInline(admin.TabularInline):
-    model = KioskComments
-    extra = 1
-    
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 2
     
 class KioskAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -41,7 +37,7 @@ class KioskAdmin(admin.ModelAdmin):
      (None, {'fields': ['description']})    
      
     ]
-    inlines = [BeerPriceInline, KioskImageInline, KioskCommentInline]
+    inlines = [BeerPriceInline, CommentInline, ImageInline]
     
     def save_model(self, request, obj, form, change):
         address = "%s %s, %s, Deutschland" % (obj.street, obj.number, obj.city)
@@ -87,12 +83,12 @@ class BeerAdmin(admin.ModelAdmin):
     ]
     list_display = ('brand', 'name', 'brew', 'location')
     
-class KioskImageAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Kiosk',               {'fields': ['kiosk']}),
-        ('Bild', {'fields': ['image']})
-    ]
-    list_display = ('kiosk', 'image')
+# class KioskImageAdmin(admin.ModelAdmin):
+#     fieldsets = [
+#         ('Kiosk',               {'fields': ['kiosk']}),
+#         ('Bild', {'fields': ['image']})
+#     ]
+#     list_display = ('kiosk', 'image')
 #    inlines = [ImageInline]
     
 class ImageAdmin(admin.ModelAdmin):
