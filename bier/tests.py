@@ -119,11 +119,20 @@ class BeerTests(TestCase):
     def test_status_codes(self):
         basic_status_code(self, 'beer')
         
-class BeerPriceTests(TestCase):    
+class BeerPriceTests(TestCase):   
+     
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
         basic_status_code(self, 'beerprice')
+        
+        resp = self.client.post(prefix + 'beerprice/', {'kiosk': '12312312321321', 'size': '0.7', 'beer': '7',  'price': '128' })
+        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
+        self.assertEqual(resp.status_code, 400, msg)
+        
+        resp = self.client.post(prefix + 'beerprice/', {'size': '0.7', 'beer': '7',  'price': '128' })
+        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
+        self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_beerprice(self):
         from bier.models import BeerPrice
@@ -200,7 +209,26 @@ class ImageTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_code(self):
+
         basic_status_code(self, 'image')
+        
+        
+        from PIL import Image as PIL
+        from StringIO import StringIO
+        
+        file_obj = StringIO()
+        image = PIL.open('./bier/fixtures/test.jpeg')
+        image.save(file_obj, 'jpeg')
+        file_obj.name = 'test.png'
+        file_obj.seek(0)
+        
+        resp = self.client.post(prefix + 'image/', {'kiosk':'123123123123123', 'image': file_obj})
+        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
+        self.assertEqual(resp.status_code, 400, msg)
+        
+        resp = self.client.post(prefix + 'image/', {'image': file_obj})
+        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
+        self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_image(self):
         from PIL import Image as PIL
@@ -215,7 +243,7 @@ class ImageTests(TestCase):
         
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
         
-        resp = self.client.post(prefix + 'image/?kiosk='+ str(proper_kiosk_id), {'image': file_obj})
+        resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': file_obj})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 201, msg)
         
@@ -235,12 +263,20 @@ class CommentTests(TestCase):
 
     def test_status_code(self):
         basic_status_code(self, 'comment')
+        resp = self.client.post(prefix + 'comment/', {'kiosk':'123123123123123123', 'name': 'TestName', 'comment': 'test. test. 123.'})
+        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code)+ str(resp)
+        self.assertEqual(resp.status_code, 400, msg)
+        
+        
+        resp = self.client.post(prefix + 'comment/', {'name': 'TestName', 'comment': 'test. test. 123.'})
+        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code)+ str(resp)
+        self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_comment(self):
         from bier.models import Comment
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
         
-        resp = self.client.post(prefix + 'comment/?kiosk='+ str(proper_kiosk_id), {'kiosk':str(proper_kiosk_id), 'name': 'TestName', 'comment': 'test. test. 123.'})
+        resp = self.client.post(prefix + 'comment/', {'kiosk':str(proper_kiosk_id), 'name': 'TestName', 'comment': 'test. test. 123.'})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code)+ str(resp)
         self.assertEqual(resp.status_code, 201, msg)
         
@@ -251,6 +287,10 @@ class CommentTests(TestCase):
         
         for key in keys:
             self.assertEqual(str(cont_dict.get(key)),str(getattr(c, key)))
+        
+
+        
+
         
 #         c_created = str(getattr(c, 'created'))[:10] + 'T' + str(getattr(c, 'created'))[11:23] + 'Z'
 #         self.assertEqual(cont_dict.get('created'), c_created)
