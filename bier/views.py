@@ -103,6 +103,8 @@ class ImageList(APIView):
         for img in imgSet:
             url["thumbnail_url"] = img.image['thumbnail'].url
             url["gallery_url"] = img.image['gallery'].url
+            url["medium_url"] = img.image['medium'].url
+            url["kiosk_id"] = img.kiosk.id
             urls.append(url)
         
         return Response(urls)

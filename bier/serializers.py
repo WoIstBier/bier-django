@@ -17,7 +17,8 @@ class CommentSerializer(serializers.ModelSerializer):
 class ImageOutputSerializer(serializers.Serializer):
     imageUrl = serializers.CharField(source='url.get(thumbnail_url)', read_only=True)
     thumbUrl = serializers.CharField(source='url.get(thumbnail_url)', read_only=True)
-    
+    mediumUrl = serializers.CharField(source='url.get(thumbnail_url)', read_only=True)
+    kioskId = serializers.IntegerField(source='url.get(kiosk_id)', read_only=True)
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
