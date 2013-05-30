@@ -84,7 +84,7 @@ class kioskListTests(TestCase):
             self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.") 
 
         resp = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
-
+        
         cont_dict = json.loads(resp.content)
         for kiosk in cont_dict:
             self.assertTrue(kiosk.get('beerName').__contains__('Hansa'))
