@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
-from django.test import Client
 import json
 
 prefix = '/bier/rest/'
@@ -29,7 +28,6 @@ Check different status codes and JSON content delivered
 for TESTCASE with given SUFFIX
 '''
 def basic_status_code(testcase, suffix):
-
     resp1 = testcase.client.get(prefix + suffix)
     testcase.assertEqual(resp1.status_code, 301, 'Server redirect did not give a proper response statuscode! expected: ' + str(301) + ' response: ' + str(resp1.status_code))
 
@@ -43,9 +41,9 @@ def basic_status_code(testcase, suffix):
     resp2 = testcase.client.get(prefix + suffix + '/', {'ignore_text': 'ignore', 'ignore_num': 123})
     testcase.assertEqual(resp2.status_code, 200, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
     testcase.assertJSONEqual(resp1.content, resp2.content, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
-    
 
 class kioskListTests(TestCase):
+    
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
@@ -93,20 +91,20 @@ class kioskListTests(TestCase):
           
         None_notallowed = ['kioskName', 'kioskStreet', 'kioskCity', 'kioskPostalCode', 'kioskNumber', 'distance']
         None_allowed    = ['beerName', 'beerBrew', 'beerSize', 'beerPrice', 'thumb_path']
-          
+        
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.53 , 'geo_long': 7.45, 'radius': 5})
-        
-        cont_dict = json.loads(resp.content)[-1]
-        
-        self.assertGreaterEqual(5, cont_dict.get('distance'), 'The distance is greater than the given radius!')
-        
-        for key in None_notallowed:
-            self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.")
-            self.assertNotEqual(cont_dict.get(key), None)
-            self.assertNotEqual(cont_dict.get(key), '')
-          
-        for key in None_allowed:
-            self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.") 
+        self.assertTrue(resp, "Response from KioskList was empty FFS")
+       
+        kiosk_list = json.loads(resp.content)
+        for kiosk in kiosk_list:
+            self.assertGreaterEqual(5, kiosk.get('distance'), 'The distance is greater than the given radius!')
+            for key in None_notallowed:
+                self.assertTrue(kiosk.has_key(key), "The key " + key + " wasn't found in the response.")
+                self.assertNotEqual(kiosk.get(key), None)
+                self.assertNotEqual(kiosk.get(key), '')
+              
+            for key in None_allowed:
+                self.assertTrue(kiosk.has_key(key), "The key " + key + " wasn't found in the response.") 
 
         resp = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
         
@@ -285,8 +283,28 @@ class ImageTests(TestCase):
 
         resp = self.client.get(str(cont_dict.get('thumbUrl')))
         #self.assertEqual(resp.status_code, 200)
+    def test_response_content(self):
+          
+        keys = ['kiosk_id', 'thumbnail_url', 'gallery_url']
         
-
+        resp = self.client.get(prefix + 'image/')
+        self.assertTrue(resp, "Response from imageList was empty FFS")
+       
+        image_list = json.loads(resp.content)
+        for img in image_list:
+            for key in keys:
+                self.assertTrue(img.has_key(key), "The key " + key + " wasn't found in the response.") 
+        
+    def test_regression_7_6(self):
+        resp = self.client.get(prefix + 'image/')
+        self.assertTrue(resp, "Response from imageList was empty FFS")
+       
+        image_list = json.loads(resp.content)
+        id_set = set()
+        for img in image_list:
+            id_set.add(img.get("kiosk_id"))
+        self.assertTrue(len(id_set) > 1, "Only images for 1 kiosk returned")
+         
 class CommentTests(TestCase):
     fixtures = ['test_data.json']
 

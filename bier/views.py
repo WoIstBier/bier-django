@@ -101,6 +101,7 @@ class ImageList(APIView):
             imgSet = Image.objects.all()
             
         for img in imgSet:
+            url = dict()
             url["thumbnail_url"] = img.image['thumbnail'].url
             url["gallery_url"] = img.image['gallery'].url
             url["medium_url"] = img.image['medium'].url
@@ -201,7 +202,7 @@ class SimpleKioskList(generics.ListCreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
           
-        log.error("Serializer is invalid for kiosk put. : " + str(serializer.errors))
+        log.warn("Serializer is invalid for kiosk put. : " + str(serializer.errors))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
      
 
@@ -326,6 +327,8 @@ class KioskList(APIView):
                 beer = request.QUERY_PARAMS.get('beer', None)
         except :
             return HttpResponseBadRequest('bad parameter string')
+
+        max_distance = radius;
         #radius from km to degrees
         R = 6371 # earth radius
         #from a length to radians. see definition of a radian
@@ -340,7 +343,7 @@ class KioskList(APIView):
         l = list()
         for kiosk in queryResult:
             item = getListItemFromKiosk(kiosk, g_lat, g_long, beer)
-            if item is not None:
+            if item is not None and item.distance <= max_distance :
                 l.append(item)
         
         serializer = KioskListItemSerializer(l, many=True)

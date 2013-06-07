@@ -21,10 +21,10 @@ class ImageOutputSerializer(serializers.Serializer):
     kioskId = serializers.IntegerField(source='url.get(kiosk_id)', read_only=True)
 
 class ImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(max_length=300, allow_empty_file=False)
+#     kiosk = serializers.IntegerField(read_only=True)
     class Meta:
         model = Image
-
-
 
 
 class BeerSerializer(serializers.ModelSerializer):
