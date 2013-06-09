@@ -20,32 +20,6 @@ def kiosk(request):
     kiosk_liste = Kiosk.objects.order_by('name')
     return render_to_response('bier/kiosk.html', {'kioske': kiosk_liste })
 
-# def biere(request, kiosk_id):
-#     print('in bier view')
-#     if request.method =='POST':
-#         print('Post request')
-#         form = ImageForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             print('form is valid')
-#             imgModel = Image(image=request.FILES['image'])
-#             imgModel.save()
-#             k = KioskImage(kiosk = Kiosk.objects.get(pk=kiosk_id) , image=imgModel)
-#             k.save()
-#             return HttpResponseRedirect(reverse('bier.views.kiosk'))
-#         else:
-#             print('form is invalid')
-#     else:
-#         form = ImageForm()
-#         
-#     p = BeerPrice.objects.filter(id = kiosk_id)
-#     k = KioskImage.objects.filter(kiosk__pk = kiosk_id)
-#     imgSet = Image.objects.filter(pk__in =  k.values_list('image'))
-#     c = RequestContext(request,  {'bier_list': p, 'form' : form, 'imgs': imgSet, 'kiosk': Kiosk.objects.get(pk=kiosk_id) })
-#     return render_to_response('bier/biere.html', c)
-# 
-
-
-
 '''
 Here come the views for the rest api
 '''
@@ -83,55 +57,24 @@ def getSetForKioskId(model, serializer, kiosk_id):
     
 ''' views for images'''
 class ImageList(APIView):
-        
+    
     def get(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        url = dict()
-        urls = list()
-        if kiosk_id is not None:
-            if not check_kiosk_args(kiosk_id):
-                return HttpResponseBadRequest("Kiosk id arguments was malformed")
-#             check_kiosk_args(kiosk_id)
-#             kImgSet = KioskImage.objects.filter(kiosk__id = kiosk_id)
-#             imgSet = Image.objects.filter(pk__in =  kImgSet.values_list('img'))
-            imgSet = Image.objects.filter(kiosk__pk = kiosk_id)
-            if imgSet.count()== 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
-        else:
-            imgSet = Image.objects.all()
-            
-        for img in imgSet:
-            url = dict()
-            url["thumbnail_url"] = img.image['thumbnail'].url
-            url["gallery_url"] = img.image['gallery'].url
-            url["medium_url"] = img.image['medium'].url
-            url["kiosk_id"] = img.kiosk.id
-            urls.append(url)
-        
-        return Response(urls)
+        return getSetForKioskId(Image, ImageSerializer, kiosk_id)
     
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
-#         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-#         #self.check_kiosk_args(kiosk_id)
-#         if not check_kiosk_args(kiosk_id):
-#             return HttpResponseBadRequest("Kiosk id arguments was malformed")
-#         if not check_if_kiosk_exists(kiosk_id):
-#             return Response("Kiosk mit dieser Id gibts nicht", status=status.HTTP_400_BAD_REQUEST)
         serializer = ImageSerializer(data = request.DATA , files=request.FILES)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
 
 class ImageDetail(generics.RetrieveAPIView):
     model = Image
     serializer_class = ImageSerializer       
 
 ''' views for comments'''
-
 class CommentList(generics.ListAPIView):
     model = Comment
     serializer_class = CommentSerializer

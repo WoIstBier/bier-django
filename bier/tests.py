@@ -289,7 +289,7 @@ class ImageTests(TestCase):
         #self.assertEqual(resp.status_code, 200)
     def test_response_content(self):
         print(str(13))
-        keys = ['kiosk_id', 'thumbnail_url', 'gallery_url']
+        keys = ['kiosk', 'thumbnail_url', 'gallery_url']
         
         resp = self.client.get(prefix + 'image/')
         self.assertTrue(resp, "Response from imageList was empty FFS")
@@ -307,7 +307,7 @@ class ImageTests(TestCase):
         image_list = json.loads(resp.content)
         id_set = set()
         for img in image_list:
-            id_set.add(img.get("kiosk_id"))
+            id_set.add(img.get("kiosk"))
         self.assertTrue(len(id_set) > 1, "Only images for 1 kiosk returned")
          
 class CommentTests(TestCase):

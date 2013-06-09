@@ -117,65 +117,15 @@ class Image(models.Model):
     admin_img.short_description = 'Thumb'
     admin_img.allow_tags = True
         
-    
+    def get_gallery_url(self):
+        return self.image['gallery'].url
+    def get_medium_url(self):
+        return self.image['medium'].url
+    def get_thumbnail_url(self):
+        return self.image['thumbnail'].url
     
     def __unicode__(self):
         return self.image.name
-     
-#     def create_thumbnail(self):
-#         from PIL import Image
-# #        print('HALLO PFAD:: ' + self.image.path  + '  url:  ' + self.image.url + '  name: ' + self.image.name)
-#         imgFile = Image.open(self.image)
-#         #Convert to RGB
-#         if imgFile.mode not in ('L', 'RGB'):
-#             imgFile = imgFile.convert('RGB')
-#         # get path to thumbFile
-#         thumb_path = self.get_default_thumbnail_filename(self.image.path)
-#         imgFile = imgFile.copy()
-#         # if picture is too big create a thumbnail 
-#         if imgFile.size[0] > self.maxWidth or imgFile.size[1] > self.maxHeight:
-#             imgFile.thumbnail((self.maxWidth,self.maxHeight), Image.ANTIALIAS)
-# #        print('Saving to:  ' + thumb_path)
-#         imgFile.save(thumb_path, 'JPEG', qualitiy=95)
-#         f = open(thumb_path)
-#         myfile = File(f)
-# #       save thumbnail to thumbnail field but dont call the save method again. or youl get a inifinite save loop ya know 
-#         self.thumbnail.save(thumb_path, myfile, save=False )
-    
-#     def get_default_thumbnail_filename(self, filename):
-#         path, full_name = os.path.split(filename)
-#         name, ext = os.path.splitext(full_name)
-#         return path + '/images/thumbs/' + name + '_thumb' + ext
-# 
-#     def save(self, *args, **kwargs):
-#         self.create_thumbnail()
-#         force_update = False
-#         # If the instance already has been saved, it has an id and we set
-#         # force_update to True
-#         if self.id:
-#             force_update = True
-#         # Force an UPDATE SQL query if we're editing the image to avoid integrity exception
-#         super(Image, self).save(force_update=force_update)
-
-# ''' This model connects images with kiosks'''
-# class KioskImage(models.Model):
-#     kiosk = models.ForeignKey(Kiosk)
-#     image = models.ForeignKey(Image, null=False)
-#     
-#     def __unicode__(self):
-#         return self.kiosk.name 
-
-# ''' This model connects images with kiosks'''
-# class KioskComments(models.Model):
-#     kiosk = models.ForeignKey(Kiosk)
-#     comment = models.ForeignKey(Comment)
-#     
-#     def __unicode__(self):
-#         return self.kiosk.name + self.comment.name
-
-#class ImageForm(ModelForm):
-#    class Meta:
-#        model = Image
 
 class ImageForm(forms.Form):
     image = forms.FileField(
