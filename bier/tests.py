@@ -47,6 +47,7 @@ class kioskListTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(1))
         basic_status_code(self, 'kioskList')
 
         resp1 = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.5 , 'geo_long': 7.5, 'radius': 5})
@@ -69,6 +70,7 @@ class kioskListTests(TestCase):
     parameters for non existing beers. or lookup kiosks at tatooine
     '''
     def test_distance_and_empty_response(self):
+        print(str(2))
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 0.2 , 'geo_long': -176.5, 'radius': 5})
         self.assertEqual(resp.content, '[]', 'We got a kiosk on Baker Island!')
 
@@ -88,7 +90,7 @@ class kioskListTests(TestCase):
         self.assertEqual(response.content, '[]')
 
     def test_response_content(self):
-          
+        print(str(3))  
         None_notallowed = ['kioskName', 'kioskStreet', 'kioskCity', 'kioskPostalCode', 'kioskNumber', 'distance']
         None_allowed    = ['beerName', 'beerBrew', 'beerSize', 'beerPrice', 'thumb_path']
         
@@ -117,6 +119,7 @@ class KioskDetailsTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(4))
         proper_id = get_proper_response_index(self, 'kioskDetails')
         basic_status_code(self, 'kioskDetails/' + str(proper_id))
         
@@ -124,6 +127,7 @@ class KioskDetailsTests(TestCase):
         self.assertEqual(resp1.status_code, 404)
         
     def test_response_content(self):
+        print(str(5))
         resp = self.client.get(prefix + 'kioskDetails/' + str(get_proper_response_index(self, 'kioskDetails')) + '/')
         
         cont_dict = json.loads(resp.content)
@@ -141,6 +145,7 @@ class BeerTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(6))
         basic_status_code(self, 'beer')
         
 
@@ -149,6 +154,7 @@ class BeerPriceTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(7))
         basic_status_code(self, 'beerprice')
         
         resp = self.client.post(prefix + 'beerprice/', {'kiosk': '12312312321321', 'size': '0.7', 'beer': '7',  'price': '128' })
@@ -160,6 +166,7 @@ class BeerPriceTests(TestCase):
         self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_beerprice(self):
+        print(str(8))
         from bier.models import BeerPrice
         proper_beer_id = get_proper_response_index(self, 'beer')
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
@@ -199,9 +206,11 @@ class KioskTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(9))
         basic_status_code(self, 'kiosk')
         
     def test_post_kiosk(self):
+        print(str(10))
         from bier.models import Kiosk
         resp = self.client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345', 
                                                     'number': '123', 'geo_lat': '51.51', 'geo_long': '7.51'})
@@ -236,7 +245,7 @@ class ImageTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_code(self):
-
+        print(str(11))
         basic_status_code(self, 'image')
         
         from PIL import Image as PIL
@@ -258,7 +267,6 @@ class ImageTests(TestCase):
         
     def test_post_image(self):
         from PIL import Image as PIL
-        from bier.models import Image
         from StringIO import StringIO
         
         file_obj = StringIO()
@@ -268,23 +276,19 @@ class ImageTests(TestCase):
         file_obj.seek(0)
         
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
-        
         resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': file_obj})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 201, msg)
         
-        cont_dict = json.loads(resp.content)
-        i = Image.objects.get(pk = cont_dict.get('id'))
-        
-        keys = ['id', 'image']
-        
+        image_response = json.loads(resp.content)
+        #this is either a list if it contains more than one image. or its a dict.
+        self.assertFalse(isinstance(image_response, list), "Posting an image returned more than one image")
+        keys = ['kiosk', 'image']
         for key in keys:
-            self.assertEqual(cont_dict.get(key), getattr(i, key))
-
-        resp = self.client.get(str(cont_dict.get('thumbUrl')))
+            self.assertTrue(image_response.has_key(key), "The key " + key + " wasn't found in the response.") 
         #self.assertEqual(resp.status_code, 200)
     def test_response_content(self):
-          
+        print(str(13))
         keys = ['kiosk_id', 'thumbnail_url', 'gallery_url']
         
         resp = self.client.get(prefix + 'image/')
@@ -296,6 +300,7 @@ class ImageTests(TestCase):
                 self.assertTrue(img.has_key(key), "The key " + key + " wasn't found in the response.") 
         
     def test_regression_7_6(self):
+        print(str(14))
         resp = self.client.get(prefix + 'image/')
         self.assertTrue(resp, "Response from imageList was empty FFS")
        
@@ -309,6 +314,7 @@ class CommentTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_code(self):
+        print(str(15))
         basic_status_code(self, 'comment')
         resp = self.client.post(prefix + 'comment/', {'kiosk':'123123123123123123', 'name': 'TestName', 'comment': 'test. test. 123.'})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code)+ str(resp)
@@ -320,6 +326,7 @@ class CommentTests(TestCase):
         self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_comment(self):
+        print(str(16))
         from bier.models import Comment
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
         
