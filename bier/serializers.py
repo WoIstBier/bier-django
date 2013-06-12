@@ -14,16 +14,14 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
 
-class ImageOutputSerializer(serializers.Serializer):
-    imageUrl = serializers.CharField(source='url.get(thumbnail_url)', read_only=True)
-    thumbUrl = serializers.CharField(source='url.get(thumbnail_url)', read_only=True)
-    
-
 class ImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(max_length=300, allow_empty_file=False)
+    medium_url = serializers.Field(source='get_medium_url')
+    gallery_url = serializers.Field(source='get_gallery_url')
+    thumbnail_url = serializers.Field(source='get_gallery_url')
+#     kiosk = serializers.IntegerField(read_only=True)
     class Meta:
         model = Image
-
-
 
 
 class BeerSerializer(serializers.ModelSerializer):

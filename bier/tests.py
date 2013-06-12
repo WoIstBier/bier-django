@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
-from django.test import Client
 import json
 
 prefix = '/bier/rest/'
 
+'''
+This function looks up for some proper index 
+for which you can get positive response (<100, 200)
+
+Return value is the first index that fits the requirements
+'''
 def get_proper_response_index(testcase, suffix):
-        i=1
+        i = 1
         resp = testcase.client.get(prefix + suffix + '/' + str(i), follow = 1)
        
         while resp.status_code is not 200 and i < 100:
@@ -16,83 +21,105 @@ def get_proper_response_index(testcase, suffix):
             resp = testcase.client.get(prefix + suffix + '/' + str(i), follow = 1)
 
         return i  
+
+
+'''
+Check different status codes and JSON content delivered 
+for TESTCASE with given SUFFIX
+'''
 def basic_status_code(testcase, suffix):
     resp1 = testcase.client.get(prefix + suffix)
     testcase.assertEqual(resp1.status_code, 301, 'Server redirect did not give a proper response statuscode! expected: ' + str(301) + ' response: ' + str(resp1.status_code))
+
     resp1 = testcase.client.get(prefix + suffix, follow = 1)
     testcase.assertEqual(resp1.status_code, 200, 'URL = ' + prefix+suffix + 'Server redirect did not give a proper response statuscode! expected: ' + str(200) + ' response: ' + str(resp1.status_code))
+
     resp2 = testcase.client.get(prefix + suffix + '/')
     testcase.assertEqual(resp1.status_code, 200, 'Server redirect did not give a proper response statuscode! expected: ' + str(200) + ' response: ' + str(resp2.status_code))
     testcase.assertJSONEqual(resp1.content, resp2.content, 'The request redirect was not a proper redirect. The two responses are not equal.')
+
     resp2 = testcase.client.get(prefix + suffix + '/', {'ignore_text': 'ignore', 'ignore_num': 123})
     testcase.assertEqual(resp2.status_code, 200, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
     testcase.assertJSONEqual(resp1.content, resp2.content, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
-    
+
 class kioskListTests(TestCase):
+    
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(1))
         basic_status_code(self, 'kioskList')
 
         resp1 = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.5 , 'geo_long': 7.5, 'radius': 5})
         self.assertEqual(resp1.status_code, 200)
+
         resp2 = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.5 , 'geo_long': 7.5, 'radius': 5, 'ignore_text': 'ignore', 'ignore_num': 123})
-        msg='The given ignore keys have not been ignored by the API!'
+        msg = 'The given ignore keys have not been ignored by the API!'
         self.assertEqual(resp2.status_code, 200, msg)
         msg += 'The two responses are not equal.'
         self.assertJSONEqual(resp1.content, resp2.content, msg)
+
         resp1 = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
         self.assertEqual(resp1.status_code, 200)
+
         resp1 = self.client.get(prefix + 'kioskList/', {'geo_lat': '5a1.5' , 'geo_long': '7b.5', 'radius': 'c5'})
         self.assertEqual(resp1.status_code, 400)
         
         
-    ''' parameters for non existing beers. or lookup kiosks at tatooine'''
+    ''' 
+    parameters for non existing beers. or lookup kiosks at tatooine
+    '''
     def test_distance_and_empty_response(self):
+        print(str(2))
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 0.2 , 'geo_long': -176.5, 'radius': 5})
         self.assertEqual(resp.content, '[]', 'We got a kiosk on Baker Island!')
+
         #request with a non-existent beer
         response  = self.client.get(prefix + 'kioskList/', {'beer': 'gibtsnichtbier'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '[]')
+
         #mos espa coordinates tunisia
         response  = self.client.get(prefix + "kioskList/", {'geo_lat': 33.994296, 'geo_long': 7.842677})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '[]', 'We got a kiosk on tatooine!')
+
         #test radius too small
         response  = self.client.get(prefix + "kioskList/?radius=0.01&geo_lat=51.53533&geo_long=7.48700")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '[]')
 
     def test_response_content(self):
-          
+        print(str(3))  
         None_notallowed = ['kioskName', 'kioskStreet', 'kioskCity', 'kioskPostalCode', 'kioskNumber', 'distance']
         None_allowed    = ['beerName', 'beerBrew', 'beerSize', 'beerPrice', 'thumb_path']
-          
+        
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.53 , 'geo_long': 7.45, 'radius': 5})
-        
-        cont_dict = json.loads(resp.content)[-1]
-        
-        self.assertGreaterEqual(5, cont_dict.get('distance'), 'The distance is greater than the given radius!')
-        
-        for key in None_notallowed:
-            self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.")
-            self.assertNotEqual(cont_dict.get(key), None)
-            self.assertNotEqual(cont_dict.get(key), '')
-          
-        for key in None_allowed:
-            self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.") 
+        self.assertTrue(resp, "Response from KioskList was empty FFS")
+       
+        kiosk_list = json.loads(resp.content)
+        for kiosk in kiosk_list:
+            self.assertGreaterEqual(5, kiosk.get('distance'), 'The distance is greater than the given radius!')
+            for key in None_notallowed:
+                self.assertTrue(kiosk.has_key(key), "The key " + key + " wasn't found in the response.")
+                self.assertNotEqual(kiosk.get(key), None)
+                self.assertNotEqual(kiosk.get(key), '')
+              
+            for key in None_allowed:
+                self.assertTrue(kiosk.has_key(key), "The key " + key + " wasn't found in the response.") 
 
         resp = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
-
+        
         cont_dict = json.loads(resp.content)
         for kiosk in cont_dict:
             self.assertTrue(kiosk.get('beerName').__contains__('Hansa'))
             
+
 class KioskDetailsTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(4))
         proper_id = get_proper_response_index(self, 'kioskDetails')
         basic_status_code(self, 'kioskDetails/' + str(proper_id))
         
@@ -100,6 +127,7 @@ class KioskDetailsTests(TestCase):
         self.assertEqual(resp1.status_code, 404)
         
     def test_response_content(self):
+        print(str(5))
         resp = self.client.get(prefix + 'kioskDetails/' + str(get_proper_response_index(self, 'kioskDetails')) + '/')
         
         cont_dict = json.loads(resp.content)
@@ -117,13 +145,16 @@ class BeerTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(6))
         basic_status_code(self, 'beer')
         
+
 class BeerPriceTests(TestCase):   
      
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(7))
         basic_status_code(self, 'beerprice')
         
         resp = self.client.post(prefix + 'beerprice/', {'kiosk': '12312312321321', 'size': '0.7', 'beer': '7',  'price': '128' })
@@ -135,6 +166,7 @@ class BeerPriceTests(TestCase):
         self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_beerprice(self):
+        print(str(8))
         from bier.models import BeerPrice
         proper_beer_id = get_proper_response_index(self, 'beer')
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
@@ -169,13 +201,16 @@ class BeerPriceTests(TestCase):
         msg = 'POST request with a beer price of one cent was successful. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
         #self.assertEqual(resp.status_code, 400, msg)
         
+
 class KioskTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_codes(self):
+        print(str(9))
         basic_status_code(self, 'kiosk')
         
     def test_post_kiosk(self):
+        print(str(10))
         from bier.models import Kiosk
         resp = self.client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345', 
                                                     'number': '123', 'geo_lat': '51.51', 'geo_long': '7.51'})
@@ -205,13 +240,13 @@ class KioskTests(TestCase):
                                                     'number': '123', 'geo_lat': '51.51', 'geo_long': '7.51'})
         self.assertEqual(resp.status_code, 400, 'POST request with duplicate data was successfull.')
         
+
 class ImageTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_code(self):
-
+        print(str(11))
         basic_status_code(self, 'image')
-        
         
         from PIL import Image as PIL
         from StringIO import StringIO
@@ -232,7 +267,6 @@ class ImageTests(TestCase):
         
     def test_post_image(self):
         from PIL import Image as PIL
-        from bier.models import Image
         from StringIO import StringIO
         
         file_obj = StringIO()
@@ -242,26 +276,45 @@ class ImageTests(TestCase):
         file_obj.seek(0)
         
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
-        
         resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': file_obj})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 201, msg)
         
-        cont_dict = json.loads(resp.content)
-        i = Image.objects.get(pk = cont_dict.get('id'))
-        
-        keys = ['id', 'image']
-        
+        image_response = json.loads(resp.content)
+        #this is either a list if it contains more than one image. or its a dict.
+        self.assertFalse(isinstance(image_response, list), "Posting an image returned more than one image")
+        keys = ['kiosk', 'image']
         for key in keys:
-            self.assertEqual(cont_dict.get(key), getattr(i, key))
-
-        resp = self.client.get(str(cont_dict.get('thumbUrl')))
+            self.assertTrue(image_response.has_key(key), "The key " + key + " wasn't found in the response.") 
         #self.assertEqual(resp.status_code, 200)
+    def test_response_content(self):
+        print(str(13))
+        keys = ['kiosk', 'thumbnail_url', 'gallery_url']
         
+        resp = self.client.get(prefix + 'image/')
+        self.assertTrue(resp, "Response from imageList was empty FFS")
+       
+        image_list = json.loads(resp.content)
+        for img in image_list:
+            for key in keys:
+                self.assertTrue(img.has_key(key), "The key " + key + " wasn't found in the response.") 
+        
+    def test_regression_7_6(self):
+        print(str(14))
+        resp = self.client.get(prefix + 'image/')
+        self.assertTrue(resp, "Response from imageList was empty FFS")
+       
+        image_list = json.loads(resp.content)
+        id_set = set()
+        for img in image_list:
+            id_set.add(img.get("kiosk"))
+        self.assertTrue(len(id_set) > 1, "Only images for 1 kiosk returned")
+         
 class CommentTests(TestCase):
     fixtures = ['test_data.json']
 
     def test_status_code(self):
+        print(str(15))
         basic_status_code(self, 'comment')
         resp = self.client.post(prefix + 'comment/', {'kiosk':'123123123123123123', 'name': 'TestName', 'comment': 'test. test. 123.'})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code)+ str(resp)
@@ -273,6 +326,7 @@ class CommentTests(TestCase):
         self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_comment(self):
+        print(str(16))
         from bier.models import Comment
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
         

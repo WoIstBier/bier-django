@@ -38,8 +38,12 @@ class KioskAdmin(admin.ModelAdmin):
      
     ]
     inlines = [BeerPriceInline, CommentInline, ImageInline]
+    actions = ['get_geo_information_action']
     
-    def save_model(self, request, obj, form, change):
+    
+    def get_geo_information(self, obj):
+        if obj.is_valid_address:
+            return 0
         address = "%s %s, %s, Deutschland" % (obj.street, obj.number, obj.city)
         address = address.replace(unicode('ä',"utf-8"), "ae")
         address = address.replace(unicode('ö',"utf-8"), "oe")
@@ -50,7 +54,7 @@ class KioskAdmin(admin.ModelAdmin):
         except Exception:
             obj.is_valid_address = False
             log.info("Google did not return any results for %s" % address )
-            return None
+            return 0
         # chekc if address is valid and add street name from google to get rid of spelling differences
         obj.is_valid_address = location[0].valid_address
         if (obj.is_valid_address):
@@ -73,6 +77,17 @@ class KioskAdmin(admin.ModelAdmin):
 #             return obj.save() # Call the "real" save() method
 #         # custom stuff here
         obj.save()
+        return 1
+    
+    def get_geo_information_action(self, request, queryset):
+        i = 0
+        for obj in queryset:
+            i += self.get_geo_information(obj)
+        self.message_user(request, "%s kioske successfully updated." % i)
+    get_geo_information_action.short_description = "Update geo infos from google"
+            
+    def save_model(self, request, obj, form, change):
+        self.get_geo_information(obj)
     
 class BeerAdmin(admin.ModelAdmin):
     fieldsets = [
