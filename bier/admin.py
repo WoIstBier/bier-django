@@ -39,8 +39,8 @@ class KioskAdmin(admin.ModelAdmin):
     ]
     inlines = [BeerPriceInline, CommentInline, ImageInline]
     actions = ['get_geo_information_action']
-    
-    
+
+        
     def get_geo_information(self, obj):
         if obj.is_valid_address:
             return 0
@@ -60,12 +60,6 @@ class KioskAdmin(admin.ModelAdmin):
         if (obj.is_valid_address):
             obj.street = location[0].route
             obj.city = location[0].locality    
-#             q = Kiosk.objects.all().filter(street = self.street, number  = self.number, city= self.city)
-#             if q.exists():
-#                 self.doubleEntry=True
-#                 log.info("Someone tried to add an existing kiosk: %s" % address )
-#                 return None
-#             self.doubleEntry = False
             #self.city = location[0].city
             # add zip code
             obj.zip_code = location[0].postal_code
@@ -74,7 +68,6 @@ class KioskAdmin(admin.ModelAdmin):
             if obj.name == '' or obj.name is None:
                 obj.name = obj.street + ' ' + str(obj.number);
             log.info("Creating new Kiosk: %s" % obj.name )
-#             return obj.save() # Call the "real" save() method
 #         # custom stuff here
         obj.save()
         return 1
@@ -97,6 +90,35 @@ class BeerAdmin(admin.ModelAdmin):
         ('Sorte des Bieres z.B. Weizen',   {'fields': ['brew']}),
     ]
     list_display = ('brand', 'name', 'brew', 'location')
+    model = Beer
+    
+class BeerPriceAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('Bier. z.B. Hansa Pils',               {'fields': ['beer']}),
+        ('Preis',   {'fields': ['price']}),
+        ('FlaschenGröße',   {'fields': ['size']}),
+        ('Preis pro liter',   {'fields': ['score']}),
+    ]
+    list_display = ('beer', 'price', 'size', 'score')
+    model = BeerPrice
+    
+    actions = ['calc_scores']
+    
+    def calc_scores(self, request, queryset):
+        short_description = "Update score"
+        i = 0
+        for obj in queryset:
+            i += self.calculate_score(obj)
+        self.message_user(request, "%s kioske successfully updated." % i)
+
+    calc_scores.short_description = "Update geo infos from google"
+    
+    def calculate_score(self, obj):
+        if obj.score == 0:
+            obj.score = obj.price / obj.size
+            obj.save()
+            return 1
+        return 0
     
 # class KioskImageAdmin(admin.ModelAdmin):
 #     fieldsets = [
@@ -128,3 +150,4 @@ admin.site.register(Comment, CommentAdmin)
 #admin.site.register(KioskImage, KioskImageAdmin)
 admin.site.register(Kiosk, KioskAdmin)
 admin.site.register(Beer, BeerAdmin)
+admin.site.register(BeerPrice, BeerPriceAdmin)

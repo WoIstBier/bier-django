@@ -1,70 +1,133 @@
 <html>
   <head>
-    <title></title>
-    <meta content="">
+    {% load static from staticfiles %}
+    <link rel="icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
+    <title>Bier!</title>
+    <meta content="Hauptseite der Bier App">
     <style>
-	    h2 {text-transform: uppercase; font-weight: 200}
-    	div.content {padding: 1em 0 0 1em; margin 1em; width:60% ; min-height: 500px}
-    	img#main{width: 25%; padding: 5em 1em 1em 0 ; float: left; height: 300px; width: 300px;}
-    	body{background-color: 	#FFFFFF; font-family: Century Gothic, sans-serif; } 
-    	span#text p {font-size: small; }
-    	span#text{width: 600; display: block}
+	#container {
+		width:800px;
+		height:600px;
+		margin:20px auto;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-top: -300px;
+		margin-left:-400px;
+	}
+/*	#header {
+		text-align:center;
+		background: #777;
+		color:#fff;
+		height:50px;
+		padding:5px
+	}*/
+	#sidebar {
+		float:left;
+		width:330px;
+		text-align:center;
+/* 		background:#eee; */
+		padding:15px;
+	}
+
+	#clear {
+		clear:both;
+	}
+	#footer{
+	  position: absolute;
+	  bottom:0px;
+	}
+	
+    	#content {
+		margin-left:2em;
+		float: left;
+		width:300px;
+	}
+	h2 {text-transform: uppercase; font-weight: 200}
+    	img#main{height: 300px; width: 300px; margin-top:1em;}
+
+    	body{
+		background-color: #FFFFFF; 
+		font-family: Century Gothic, sans-serif; 
+	} 
+    	span#text{display: block; font-size: small;}
 	blockquote {
 	  font-family: Georgia, serif;
 	  font-size: 18px;
 	  font-style: italic;
-	  width: 500px;
+/* 	  width: 400px; */
 	  margin: 0.25em 0;
 	  padding: 0.25em 40px;
 	  line-height: 1.45;
-	  position: relative;
+ 	  position: relative; 
 	  color: #383838;
-	  float: right;
 	}
 	blockquote:before {
 	  display: block;
 	  content: "\201C";
 	  font-size: 80px;
 	  position: absolute;
-	  left: -20px;
-	  top: -20px;
-	  color: #7a7a7a;
+	  left: -15px;
+	  top: -24px;
+	  color: #6a95aa;
 	}
       blockquote cite {
 	color: #999999;
 	font-size: 14px;
 	display: block;
-	margin-top: 5px;
+	margin-top: 6px;
       }
       
       blockquote cite:before {
 	content: "\2014 \2009";
+	margin-right: 1px;
       }
     </style>
   </head>
   <body>
-	<div class="content" >
-		{% load static from staticfiles %}
+	<div id="container" >
+	  <div id="sidebar">
 		<img id="main" src="{% static "images/bier_logo.jpg" %}" alt="Offizielles Logo" />
-    	<h2> Oh nein es kommt! </h2>
-    	<span id="text">
-	        <p> Hier entsteht die Webpräsenz der einzig wahren Bier-App.  </p>
-	        <p> Kontaktieren koennt ihr uns zunächst ueber bier"AltGr+Q"cepheus.uberspace.de und später ueber die entsprechende domain 
-	        	wenn wir uns endlich mal auf einen Namen geeinigt haben. Noch gibts hier nicht viel zu sehen. 
-	        	Das soll sich aber in absehbarer Zukunft ändern. Neben einigen Funktionalitäten die die App bieten wird, wird sich bestimmt auch jemand
-	        	dazu bereit erklären einen Dortmund/Bier-Blog zu verfassen.</p>
-			<p> Für alle Beta-Tester geht es  <a href="admin/" > hier </a> zum admin interface </p>
-	</span>
-	  <blockquote>
-	  Awesome.
-	  <cite>Steve Jobs</cite>
-	  </blockquote>
+	  </div>
+	  
+	  <div id="content">
+		  <h2> Oh nein es kommt! </h2>
+		  <span id="text">
+		  <p> Hier entsteht die Webpräsenz der einzig wahren Bier-App.  </p>
+		  <p> Die beste Datenbank der Welt. Voller Bier und Kioske! Es wird euer Leben verändern.</p>
+		  <p> Für alle Beta-Tester geht es  <a href="admin/" > hier</a>  zum admin interface </p>
 
-	  <blockquote>
-	  Des Dichters Muße ist das Bier. Diese App ist die Tinte in meiner Feder.
-	  <cite>Johann Wolfgang von Goethe</cite>
-	  </blockquote>
+		  {% if kiosk_number and beer_number%}
+		    <p> Bisher gibt es {{ kiosk_number }} Kioske und {{beer_number}} Biersorten in der Datenbank  </p>
+		  {%else%}
+		    <p> Bisher gibt es noch keine Kioske in der Datenbank</p>
+		  </span>
+		  {% endif %}
+	 
+		  <blockquote>
+		  Awesome.
+		  <cite>Steve Jobs</cite>
+		  </blockquote>
+
+		  <blockquote>
+		  Des Dichters Muße ist das Bier. Diese App ist die Tinte in meiner Feder.
+		  <cite>Johann Wolfgang von Goethe</cite>
+		  </blockquote>
+		  
+		  <blockquote>
+		  Können Sie noch ne Kasse aufmachen?
+		  <cite>Irgendein Typ im Netto.</cite>
+		  </blockquote>
+	  </div>
+
+	  
+	  <div id="clear">
+	  </div>
 	</div> 
   </body>
 </html>
+
+
+
+
 
