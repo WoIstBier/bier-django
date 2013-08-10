@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Avg
 import math
 import logging
 log = logging.getLogger(__name__)
@@ -14,7 +15,9 @@ log = logging.getLogger(__name__)
 
 
 def index(request):
-    return render_to_response('bier/index.html')
+    num_kiosk = Kiosk.objects.all().count();
+    num_beer = Beer.objects.all().count();
+    return render_to_response('bier/index.html', {'kiosk_number': num_kiosk, 'beer_number': num_beer})
 
 def kiosk(request):
     kiosk_liste = Kiosk.objects.order_by('name')
@@ -164,11 +167,14 @@ class KioskDetail(APIView):
 
 ''' An object to hold all the info the kiosk detail view on the client needs. this will be passed to the serializer'''
 class KioskDetailContainer(object):
-    def __init__(self, kiosk, beerPrice=None, images=None, comments = None):
+    def __init__(self, kiosk, beerPrice=None, images=None, comments = None, comment_count = 0, beer_count = 0, avg_price = 1):
         self.kiosk = kiosk
         self.beerPrice = beerPrice
         self.images = images
         self.comments = comments
+        self.comment_count = comment_count
+        self.beer_count = beer_count
+        self.avg_price = avg_price
         
         
 ''' this will get the kiosk with the given id from the database and pulls all the necessary info from the connected tables''' 
@@ -185,7 +191,10 @@ class KioskDetailView(APIView):
         imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
         commentSet = Comment.objects.filter(kiosk__pk = kiosk.id)
         beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
-        l = KioskDetailContainer(kiosk, beerPrice=beerPriceSet, images=imageSet, comments=commentSet)
+        beer_count = beerPriceSet.count()
+        comment_count = commentSet.count()
+        avg_price = beerPriceSet.aggregate(Avg('score'))
+        l = KioskDetailContainer(kiosk, beerPrice=beerPriceSet, images=imageSet, comments=commentSet, comment_count = comment_count, beer_count = beer_count , avg_price = avg_price )
         serializer = KioskDetailSerializer(l)
         return Response(serializer.data)
     

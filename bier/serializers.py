@@ -18,7 +18,7 @@ class ImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(max_length=300, allow_empty_file=False)
     medium_url = serializers.Field(source='get_medium_url')
     gallery_url = serializers.Field(source='get_gallery_url')
-    thumbnail_url = serializers.Field(source='get_gallery_url')
+    thumbnail_url = serializers.Field(source='get_thumbnail_url')
 #     kiosk = serializers.IntegerField(read_only=True)
     class Meta:
         model = Image
@@ -43,6 +43,9 @@ class KioskDetailSerializer(serializers.Serializer):
     beerPrices = BeerPriceSerializer(source='beerPrice', many=True)
     comments = CommentSerializer(source='comments', many=True)
     kiosk = KioskSerializer(source='kiosk')
+    comment_count = serializers.IntegerField(source='comment_count', read_only=True) 
+    beer_count = serializers.IntegerField(source='beer_count', read_only=True) 
+    average_price = serializers.IntegerField(source='avg_price.score__avg', read_only=True) 
     
 
 '''

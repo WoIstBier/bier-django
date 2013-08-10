@@ -28,12 +28,19 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admindocs',
+    'south',
     'easy_thumbnails',
     'bier',
-    'rest_framework',
-    'django_filters'
+    'rest_framework'
 )
+THUMBNAIL_ALIASES = {
+    '': {
+        'thumbnail': {'size': (64, 64), 'crop': "smart"},
+        'gallery': {'size': (640, 480), 'crop': "smart"},
+        'medium': {'size': (140, 120), 'crop': "smart"},
+    },
+}
 
 REST_FRAMEWORK = {
     'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
