@@ -13,7 +13,8 @@ pip install pygeocoder
 pip install pillow
 pip install djangorestframework
 pip install django-filter
-pip install django-thumbs
+#pip install django-thumbs not in use
+pip install easy_thumbnails
 
 ##### 
 #Some important stuff in settingy.py

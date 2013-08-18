@@ -105,7 +105,6 @@ class BeerPriceAdmin(admin.ModelAdmin):
     actions = ['calc_scores']
     
     def calc_scores(self, request, queryset):
-        short_description = "Update score"
         i = 0
         for obj in queryset:
             i += self.calculate_score(obj)
