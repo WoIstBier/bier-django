@@ -10,9 +10,12 @@ from rest_framework.views import APIView
 from django.db.models import Avg
 import math
 import logging
+from django.conf import settings
+import os
 log = logging.getLogger(__name__)
 
-
+def not_found_view(request):
+    return render_to_response('bier/404.html')
 
 def index(request):
     num_kiosk = Kiosk.objects.all().count();
@@ -58,12 +61,32 @@ def getSetForKioskId(model, serializer, kiosk_id):
     return Response(serializer.data)  
     
     
+def doesImageExist(image):
+    path =  os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.pardir,image.image.url.strip(os.sep)))
+    if os.path.exists(path): 
+        return True
+    else:
+        log.warn('View tried to access an image that doesnt exist: ' + str(path))
+        return False
+        
 ''' views for images'''
 class ImageList(APIView):
     
     def get(self, request):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        return getSetForKioskId(Image, ImageSerializer, kiosk_id)
+        if kiosk_id is None:
+            commentSet = Image.objects.all()
+        else: 
+            if not check_kiosk_args(kiosk_id):
+                return HttpResponseBadRequest("Kiosk id arguments was malformed")
+     
+            commentSet = Image.objects.filter(kiosk__pk = kiosk_id)
+            if commentSet.count()== 0:
+                return Response(status = status.HTTP_204_NO_CONTENT)
+        commentSet =  filter(lambda img: doesImageExist(img), commentSet)
+        serializer = ImageSerializer(commentSet, many=True)
+        return Response(serializer.data)  
+#         return getSetForKioskId(Image, ImageSerializer, kiosk_id)
     
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
@@ -217,10 +240,10 @@ def calculate_distance(lat_1,lon_1  ,  lat_2,lon_2):
 
 ''' An Object to hold all the stuff needed for a listItem. This Object will be provided to the Serializer'''
 class ListItem(object):
-    def __init__(self, kiosk, beerPrice=None, thumb=None, distance = 0):
+    def __init__(self, kiosk, beerPrice=None, image=None, distance = 0):
         self.kiosk = kiosk
         self.beerPrice = beerPrice
-        self.thumb = thumb
+        self.image = image
         self.distance = distance
         
         
@@ -233,8 +256,13 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     img = None
     beerPrice = None
     imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
-    if imageSet.exists():
-        img = imageSet[0].image['thumbnail'].url
+    if imageSet.exists() and doesImageExist(imageSet[0]):
+        img = imageSet[0]
+#         print('trying to open: '  + path ) 
+#         try:
+#             with open(path): pass
+#         except IOError:
+#             print 'Oh dear.'
 
     beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
     if beerPriceSet.exists():
@@ -248,7 +276,7 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
             return None
     if lat is not None and lon is not None:
         distance = calculate_distance(float(kiosk.geo_lat), float(kiosk.geo_long), lat, lon)
-        return ListItem(kiosk=kiosk, thumb=img, beerPrice = beerPrice, distance = distance )
+        return ListItem(kiosk=kiosk, image=img, beerPrice = beerPrice, distance = distance )
 
     return ListItem(kiosk=kiosk, thumb=img, beerPrice = beerPrice )
     

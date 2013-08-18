@@ -91,8 +91,8 @@ class kioskListTests(TestCase):
 
     def test_response_content(self):
         print(str(3))  
-        None_notallowed = ['kioskName', 'kioskStreet', 'kioskCity', 'kioskPostalCode', 'kioskNumber', 'distance']
-        None_allowed    = ['beerName', 'beerBrew', 'beerSize', 'beerPrice', 'thumb_path']
+        None_notallowed = ['kiosk', 'distance']
+        None_allowed    = ['beerPrice', 'image']
         
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.53 , 'geo_long': 7.45, 'radius': 5})
         self.assertTrue(resp, "Response from KioskList was empty FFS")
@@ -112,7 +112,8 @@ class kioskListTests(TestCase):
         
         cont_dict = json.loads(resp.content)
         for kiosk in cont_dict:
-            self.assertTrue(kiosk.get('beerName').__contains__('Hansa'))
+            self.assertTrue(kiosk.get('beerPrice').get('beer_name').__contains__('Hansa')  )
+#             self.assertTrue( (kiosk.get('beerPrice.beer_name')).__contains__('Hansa'))
             
 
 class KioskDetailsTests(TestCase):
@@ -254,9 +255,8 @@ class ImageTests(TestCase):
         file_obj = StringIO()
         image = PIL.open('./bier/fixtures/test.jpeg')
         image.save(file_obj, 'jpeg')
-        file_obj.name = 'test.png'
+        file_obj.name = 'test.jpg'
         file_obj.seek(0)
-        
         resp = self.client.post(prefix + 'image/', {'kiosk':'123123123123123', 'image': file_obj})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 400, msg)
@@ -266,6 +266,7 @@ class ImageTests(TestCase):
         self.assertEqual(resp.status_code, 400, msg)
         
     def test_post_image(self):
+        print(str(12))
         from PIL import Image as PIL
         from StringIO import StringIO
         

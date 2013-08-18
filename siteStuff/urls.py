@@ -4,6 +4,7 @@ from settings import MEDIA_ROOT, STATIC_ROOT
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
+
 import logging
 log = logging.getLogger(__name__)
 import socket
@@ -25,9 +26,13 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #include the urls from the polls app.
     url(r'^bier/', include('bier.urls')),
-
-    url(r'^$', 'bier.views.index', name='kiosk')
+    
+#     url(r'^$', TemplateView.as_view(template_name="index.html")),
+    
+    url(r'^$', 'bier.views.index')
 )
+
+handler404 = 'bier.views.not_found_view'
 
 if LOCALHOST:
     append= patterns( '',  
