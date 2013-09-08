@@ -2,92 +2,14 @@
   <head>
     {% load static from staticfiles %}
     <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
+    <link href="{% static "css/main.css" %}" rel="stylesheet" type="text/css" />
     <title>Bier!</title>
     <meta content="Hauptseite der Bier App">
-    <style>
-	#container {
-		width:800px;
-		height:600px;
-		margin:20px auto;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		margin-top: -300px;
-		margin-left:-400px;
-	}
-/*	#header {
-		text-align:center;
-		background: #777;
-		color:#fff;
-		height:50px;
-		padding:5px
-	}*/
-	#sidebar {
-		float:left;
-		width:330px;
-		text-align:center;
-/* 		background:#eee; */
-		padding:15px;
-	}
-
-	#clear {
-		clear:both;
-	}
-	#footer{
-	  position: absolute;
-	  bottom:0px;
-	}
-	
-    	#content {
-		margin-left:2em;
-		float: left;
-		width:300px;
-	}
-	h2 {text-transform: uppercase; font-weight: 200}
-    	img#main{height: 300px; width: 300px; margin-top:1em;}
-
-    	body{
-		background-color: #FFFFFF; 
-		font-family: Century Gothic, sans-serif; 
-	} 
-    	span#text{display: block; font-size: small;}
-	blockquote {
-	  font-family: Georgia, serif;
-	  font-size: 18px;
-	  font-style: italic;
-/* 	  width: 400px; */
-	  margin: 0.25em 0;
-	  padding: 0.25em 40px;
-	  line-height: 1.45;
- 	  position: relative; 
-	  color: #383838;
-	}
-	blockquote:before {
-	  display: block;
-	  content: "\201C";
-	  font-size: 80px;
-	  position: absolute;
-	  left: -15px;
-	  top: -24px;
-	  color: #6a95aa;
-	}
-      blockquote cite {
-	color: #999999;
-	font-size: 14px;
-	display: block;
-	margin-top: 6px;
-      }
-      
-      blockquote cite:before {
-	content: "\2014 \2009";
-	margin-right: 1px;
-      }
-    </style>
   </head>
   <body>
 	<div id="container" >
 	  <div id="sidebar">
-		<img id="main" src="{% static "images/bier_logo.jpg" %}" alt="Offizielles Logo" />
+		<img id="logo" src="{% static "images/bier_logo.jpg" %}" alt="Offizielles Logo" />
 	  </div>
 	  
 	  <div id="content">
@@ -116,6 +38,18 @@
 	  <div id="clear">
 	  </div>
 	</div> 
+	<div id="social">
+			<a href="https://twitter.com/woistbier" rel="publisher">
+				<img id="social" src="{% static "images/twitter_blue_32_32.png" %}" alt="Offizielles Logo" />
+			</a>
+			<a href="https://plus.google.com/118053360909839617087" rel="publisher">
+				<img id="social" src="{% static "images/gplus_32_32.png" %}" alt="Offizielles Logo" />
+			</a>
+			<a href="https://facebook.com/woistbier" rel="publisher">
+				<img id="social" src="{% static "images/facebook_32_32.png" %}" alt="Offizielles Logo" />
+			</a>
+	</div>
+	
   </body>
 </html>
 
