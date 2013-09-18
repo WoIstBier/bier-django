@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from settings import MEDIA_ROOT, STATIC_ROOT
+from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -29,7 +30,14 @@ urlpatterns = patterns('',
     
 #     url(r'^$', TemplateView.as_view(template_name="index.html")),
     
-    url(r'^$', 'bier.views.index')
+    url(r'^$', 'bier.views.index',name="index"),
+    url(r'^about', 
+        TemplateView.as_view(template_name='bier/contact.html'),
+        name='about'),
+    url(r'^testPage', 
+        TemplateView.as_view(template_name='bier/testPage/index.html'),
+        name='test_about')
+                       
 )
 
 handler404 = 'bier.views.not_found_view'

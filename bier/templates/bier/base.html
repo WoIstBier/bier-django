@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static from staticfiles %}
+    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
+    <link href="{% static "css/main.css" %}" rel="stylesheet" type="text/css" />
+    <title>{% block title%}WoIstBier{% endblock%}</title>
+    <meta content="WoIstBier. Wo ist Bier? Das kann dir unsere App beantworten. Für Android und IPhone">
+  </head>
+  <body>
+  {% static "images/" as images %}
+  {% url 'bier.views.index' as index_url %}
+  {% url 'about' as about_url %}
+  {% block menu %}
+  <div class="menu">
+  	<p><a href="{{index_url}}">Hauptseite</a> <a href="{{about_url}}">Kontakt</a> </p>
+  </div>
+   	{% endblock %} 
+  {% block content %}
+
+
+
+	<div id="container" >
+	  <div id="sidebar">
+		<img id="logo" src="{% static "images/bier_logo.jpg" %}" alt="Offizielles Logo" />
+	  </div>
+	  
+	  <div id="content">
+	  	<h2>some heading</h2>
+		<p>
+			Base stuff goes here
+		</p>
+	  </div>
+	  
+	  <div id="clear">
+	  </div>
+	</div> 
+	{% endblock %}
+	
+	{% block social %}
+	<div class="social">
+			<a href="https://twitter.com/woistbier" rel="publisher">
+				<img id="social" src="{% static "images/twitter_blue_32_32.png" %}" alt="Offizielles Logo" />
+			</a>
+			<a href="https://plus.google.com/118053360909839617087" rel="publisher">
+				<img id="social" src="{% static "images/gplus_32_32.png" %}" alt="Offizielles Logo" />
+			</a>
+			<a href="https://facebook.com/woistbier" rel="publisher">
+				<img id="social" src="{% static "images/facebook_32_32.png" %}" alt="Offizielles Logo" />
+			</a>
+	</div>
+	{% endblock %}
+	
+  </body>
+</html>
+

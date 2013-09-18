@@ -1,0 +1,48 @@
+{% extends "bier/base.html" %}
+{% block title %} Ein Impressum. Fett. {% endblock %} 
+
+{% block content %}
+
+	<div id="container" >
+	  <div id="sidebar">
+		<img id="logo" src="{{images}}/bier_logo.jpg"  alt="Offizielles Logo" />
+	  </div>
+	  
+	  <div id="content">
+	  	<h2>Wer wir sind?</h2>
+		<p>
+			Ein bekloppter Haufen Dummbatze aus Dortmund. Wir wissen eigentlich ziemlich wenig. Nur eine Sache scheint uns klar:  
+			Bier ist gut und man sollte viel davon haben. 
+			<p></p>
+			Unser Ziel ist es dieses Wissen, mithilfe modernster Technologien, in die Welt zu tragen.
+		</p>
+		<h2>Kontaktiert uns</h2>
+		<p>
+			Irgendwas geht nicht, jemand hat was dummes gemacht oder ihr braucht einfach jemandem zum Reden? 
+			</p><p>
+			Schreibt uns ne Mail, bewerft uns mit (vollen) Bierflaschen oder schickt eine Brieftaube.
+		</p>
+		<p>
+			<SCRIPT TYPE="text/javascript">
+			<!-- 
+			function reverse (s) {
+ 				 return s.split('').reverse().join('');
+			}
+			str = 'reib'
+			str = ('reibtsiow@' + str)
+			str = ('ed.' + str)
+			document.write('<a id="mail" href="mailto:' + reverse(str) + '">' + reverse(str) + '</a>')
+			 //-->
+			</script>
+			
+			<NOSCRIPT>
+			    <em>Kauf dir Javascript sonst kriegste keine mailadresse.</em>
+			</NOSCRIPT>
+
+		</p>
+	  </div>
+	  
+	  <div id="clear">
+	  </div>
+	</div> 
+{% endblock %}
