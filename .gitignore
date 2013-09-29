@@ -1,4 +1,5 @@
 *.pyc
-settings.py
+#settings.py
+local_test_settings.py
 *.orig
 *.jpg

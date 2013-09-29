@@ -166,6 +166,31 @@ class BeerPriceTests(TestCase):
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 400, msg)
         
+    def test_edit_beerprice(self):
+        print(str(17))
+        proper_beer_id = get_proper_response_index(self, 'beer')
+        proper_kiosk_id = get_proper_response_index(self, 'kiosk')
+        proper_beerprice_id = get_proper_response_index(self, 'beerprice')
+        data=json.dumps({'kiosk': str(proper_kiosk_id), 'size': '0.7', 'beer': str(proper_beer_id),  'price': '128' })
+        #print('kiosk id: ' + str(proper_kiosk_id) + '  beerprice id' + str(proper_beerprice_id) + ' beer id : ' + str(proper_beer_id))
+
+        resp = self.client.put(prefix + 'beerprice/' + str(proper_beerprice_id) + '/', data, content_type='application/json')
+        msg = 'PUT request was unsuccessful for some reason. expected: ' + str(200) + ' response: ' + str(resp.status_code) + str(resp)
+        self.assertEqual(resp.status_code, 200, msg)
+
+        before_dict = json.loads(resp.content)
+        self.assertEqual(str(before_dict.get('size')), '0.7')
+        self.assertEqual(str(before_dict.get('price')), '128')
+
+        data=json.dumps({'kiosk': str(proper_kiosk_id), 'size': '1.0', 'beer': str(proper_beer_id),  'price': '110' })
+        resp = self.client.put(prefix + 'beerprice/' + str(proper_beerprice_id)  + '/', data, content_type='application/json')
+        msg = 'PUT request was unsuccessful for some reason. expected: ' + str(200) + ' response: ' + str(resp.status_code) + str(resp)
+        self.assertEqual(resp.status_code, 200, msg)
+        
+        before_dict = json.loads(resp.content)
+        self.assertEqual(str(before_dict.get('size')), '1.0')
+        self.assertEqual(str(before_dict.get('price')), '110')
+
     def test_post_beerprice(self):
         print(str(8))
         from bier.models import BeerPrice
