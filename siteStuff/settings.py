@@ -4,11 +4,14 @@ try:
     from local_test_settings import *
     print('-------> reading local test settings')
 except ImportError:
-    try:    
-        from production_server_settings import *
-        print('-------> reading production settings')
-    except ImportError:
-        pass
+    pass
+
+
+try:    
+    print('-------> importing production settings')
+    from production_server_settings import *
+except ImportError:
+    print('-------> NOT READING production settings')
  
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
