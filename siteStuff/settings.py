@@ -1,10 +1,11 @@
 #Global  Django settings for siteStuff project.
-
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '-e8_!iy!jknm!%sxw$8=a5t#^t=lzctijb=t@djup(t$hhs^)+'
 try:
     from local_test_settings import *
     print('-------> reading local test settings')
 except ImportError:
-    pass
+    print('-------> NOT importing local settings')
 
 
 try:    
