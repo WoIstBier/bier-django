@@ -62,11 +62,12 @@ def getSetForKioskId(model, serializer, kiosk_id):
     
     
 def doesImageExist(image):
-    path =  os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.pardir,image.image.url.strip(os.sep)))
+    path =  os.path.abspath(os.path.join('/home/bier/html/',image.image.url.strip(os.sep)))
+    #print('Path is: ' + str(path))
     if os.path.exists(path): 
         return True
     else:
-        log.warn('View tried to access an image that doesnt exist: ' + str(path))
+        log.error('View tried to access an image that doesnt exist: ' + str(path))
         return False
         
 ''' views for images'''
