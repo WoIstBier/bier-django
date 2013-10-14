@@ -1,48 +1,21 @@
 ####
 #These packages have to be installed
 #Some of them might already be on your system
-# Last updated 26 Mai
+# Last updated 14 October 2013
 ####
 
-easy_install pip
-pip install mysql-connector-python
-pip install mysql-utilities
-pip install django
-#pip install geopy not in use anymore
-pip install pygeocoder
-pip install pillow
-pip install djangorestframework
-pip install django-filter
-#pip install django-thumbs not in use
-pip install easy_thumbnails
+Django==1.5.4
+MySQL-python==1.2.4
+Pillow==2.2.1
+South==0.8.2
+argparse==1.2.1
+django-filter==0.7
+django-nose==1.2
+djangorestframework==2.3.8
+easy-thumbnails==1.4
+nose==1.3.0
+pygeocoder==1.2.1.1
+requests==2.0.0
+six==1.4.1
+wsgiref==0.1.2
 
-##### 
-#Some important stuff in settingy.py
-#####
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    'django.contrib.admindocs',
-    'south',
-    'easy_thumbnails',
-    'bier',
-    'rest_framework'
-)
-THUMBNAIL_ALIASES = {
-    '': {
-        'thumbnail': {'size': (64, 64), 'crop': "smart"},
-        'gallery': {'size': (640, 480), 'crop': "smart"},
-        'medium': {'size': (140, 120), 'crop': "smart"},
-    },
-}
-
-REST_FRAMEWORK = {
-    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
-}
