@@ -4,6 +4,8 @@ import json
 
 prefix = '/bier/rest/'
 
+
+
 '''
 This function looks up for some proper index 
 for which you can get positive response (<100, 200)
@@ -149,7 +151,9 @@ class BeerTests(TestCase):
         print(str(6))
         basic_status_code(self, 'beer')
         
-
+'''
+A testcase to check various limits on the beerprice models
+'''
 class BeerPriceTests(TestCase):   
      
     fixtures = ['test_data.json']

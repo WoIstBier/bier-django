@@ -2,6 +2,10 @@
 from django.db import models
 #from geopy import geocoders
 from django.forms import forms
+
+from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator
+
 from easy_thumbnails.fields import ThumbnailerImageField
 import logging
 log = logging.getLogger(__name__)
@@ -85,15 +89,17 @@ class BeerPrice(models.Model):
     size = models.FloatField(max_length=1, choices=SIZE_CHOICES, default = NORMAL )
     kiosk = models.ForeignKey(Kiosk, related_name='related_kiosk')
     beer = models.ForeignKey(Beer, related_name='related_beer')
-    price = models.IntegerField()
+    price = models.IntegerField(validators=[MaxValueValidator(400), MinValueValidator(10)])
     score = models.FloatField(max_length=1, default = 1 )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     modified = models.DateTimeField(auto_now = True, blank=True, null=True)
+
     class Meta:
         unique_together = ("beer","kiosk", "size")
     
     def save(self,*args, **kwargs):
         self.score = self.price / self.size
+        #print("kiosk: " + str(self.kiosk) + " beer: " + str(self.beer) + "  id: " + str(self.id)  )
         super(BeerPrice, self).save(*args, **kwargs) # Call the "real" save() method
         
     
@@ -109,20 +115,34 @@ class Image(models.Model):
     
     #display image in admin view with this function
     def admin_img(self):
-        if self.image:
+        try:
             return u'<image src="%s" alt="Bild" />' % self.image['medium'].url
-        else:
+        except Exception:
             return 'no image. WTF'
     
     admin_img.short_description = 'Thumb'
     admin_img.allow_tags = True
         
+    #the following methods are called by the serializer for the image model
+    #in case  the ioriginal file cant be found we totaly return 404 bitch
     def get_gallery_url(self):
-        return self.image['gallery'].url
+        try:
+            return self.image['gallery'].url
+        except:
+            log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
+            return '/media/images/404_gallery.jpg'
     def get_medium_url(self):
-        return self.image['medium'].url
+        try:
+            return self.image['medium'].url
+        except:
+            log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
+            return '/media/images/404_medium.jpg'
     def get_thumbnail_url(self):
-        return self.image['thumbnail'].url
+        try:
+            return self.image['thumbnail'].url
+        except:
+            log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
+            return '/media/images/404_thumbnail.jpg'
     
     def __unicode__(self):
         return self.image.name
@@ -134,4 +154,3 @@ class ImageForm(forms.Form):
     )
     def __unicode__(self):
         return self.image.path
-    

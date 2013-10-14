@@ -85,17 +85,31 @@ INSTALLED_APPS = (
     'south',
     'easy_thumbnails',
     'bier',
+    'django_nose',
     'rest_framework'
 )
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--verbosity=2', '--nologcapture']
+
+
 THUMBNAIL_ALIASES = {
     '': {
         'thumbnail': {'size': (64, 64), 'crop': "smart"},
-        'gallery': {'size': (640, 480), 'crop': "smart"},
+        'gallery': {'size': (640, 480), 'autocrop':"True"},
         'medium': {'size': (140, 120), 'crop': "smart"},
     },
 }
 
 REST_FRAMEWORK = {
-    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
+    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend',
+
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'kiosk_uploads': '10/minute',
+        'image_uploads': '15/minute'
+    }
 }
 
