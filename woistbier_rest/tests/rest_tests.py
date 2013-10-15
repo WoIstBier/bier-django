@@ -70,7 +70,7 @@ class KioskTests(TestCase):
 
 class ImageTests(TestCase):
     fixtures = ['test_data.json']
-    # test if the imagelist in the (images/?kiosk=bla) view is the same as the one deliverd in the kioskdetail view 
+    # test if the imagelist in the (images/?kiosk=bla) view is the same as the one deliverd in the kioskdetail view and the kiosklistitem
     def test_imagelists(self):
         #post a new empty kiosk
         resp = post_kiosk(self.client, 137)
@@ -90,10 +90,16 @@ class ImageTests(TestCase):
             #get the kiosk from the detaisl dict thingy
             images_from_kiosk = json.loads(resp.content).get('images')
             self.assertItemsEqual(images_from_view, images_from_kiosk, 'Image lists in the image and the kioskdetails view were not the same')
-            #log.info(str(images))
 
-
-
+            resp = self.client.get(prefix + 'kioskList/?radius=1000')
+            kioskListItems = json.loads(resp.content)
+            #lets find the kiosk with the id we just posted
+            for listitem in kioskListItems:
+                i = listitem.get('kiosk').get('id')
+                if str(i)==str(kiosk_id):
+                    #log.info('asdsaaaaaaaaaaaaaaaaa' + str(listitem.get('image')))
+                    self.assertTrue(listitem.get('image') is not None, 'thumb was none!')
+                    break
 
 
 
