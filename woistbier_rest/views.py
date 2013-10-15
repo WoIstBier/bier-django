@@ -49,11 +49,13 @@ def check_if_kiosk_exists(kiosk_id):
     return True
 
     
-    
-def doesImageExist(image):
-    path =  os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.pardir,image.image.url.strip(os.sep)))
-    #log.info('checking if thing esxists: ' + str(path))
-    return os.path.exists(path)
+'''
+Is this broken? Bork bork bork!
+'''  
+# def doesImageExist(image):
+#     path =  os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.pardir,image.image.url.strip(os.sep)))
+#     #log.info('checking if thing esxists: ' + str(path))
+#     return os.path.exists(path)
 
 ''' views for images'''
 class ImageList(generics.ListAPIView):
@@ -238,7 +240,7 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     img = None
     beerPrice = None
     imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
-    if imageSet.exists() and doesImageExist(imageSet[0]):
+    if imageSet.exists():
         img = imageSet[0]
 
     beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
