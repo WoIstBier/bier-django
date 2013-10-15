@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.throttling import ScopedRateThrottle
 from django.db.models import Avg
-from easy_thumbnails.exceptions import EasyThumbnailsError
 import math
 import logging
 from django.conf import settings
@@ -49,64 +48,19 @@ def check_if_kiosk_exists(kiosk_id):
         return False
     return True
 
-def getSetForKioskId(model, serializer, kiosk_id):
-    if kiosk_id is None:
-            commentSet = model.objects.all()
-    else: 
-            if not check_kiosk_args(kiosk_id):
-                return HttpResponseBadRequest("Kiosk id arguments was malformed")
-    
-            commentSet = model.objects.filter(kiosk__pk = kiosk_id)
-            if commentSet.count()== 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
-    serializer = serializer(commentSet, many=True)
-    return Response(serializer.data)  
     
     
 def doesImageExist(image):
-<<<<<<< HEAD
     path =  os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.pardir,image.image.url.strip(os.sep)))
     #log.info('checking if thing esxists: ' + str(path))
     return os.path.exists(path)
 
-=======
-    path =  os.path.abspath(os.path.join('/home/bier/html/',image.image.url.strip(os.sep)))
-    #print('Path is: ' + str(path))
-    if os.path.exists(path): 
-        return True
-    else:
-        log.error('View tried to access an image that doesnt exist: ' + str(path))
-        return False
-        
->>>>>>> 6f3cbbde3cff295868dfe602a528e974c38b90d5
 ''' views for images'''
-class ImageList(APIView):
-    
-    def get(self, request):
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if kiosk_id is None:
-            imageSet = Image.objects.all()
-        else: 
-            if not check_kiosk_args(kiosk_id):
-                return HttpResponseBadRequest("Kiosk id arguments was malformed")
-     
-            imageSet = Image.objects.filter(kiosk__pk = kiosk_id)
-            if imageSet.count()== 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
+class ImageList(generics.ListAPIView):
+    model = Image
+    serializer_class = ImageSerializer
+    filter_fields=['kiosk']
 
-        serializer = ImageSerializer(imageSet, many=True)
-        return Response(serializer.data) 
-        # try:
-        #     #log.warn('No exception: ')
-        #     #imageSet =  filter(lambda img: doesImageExist(img), imageSet)
-        #     #serializer = ImageSerializer(imageSet, many=True)
-        #     return Response(serializer.data)  
-        # except EasyThumbnailsError:
-        #     log.warn('ImageList view caught an Exception. Some imagefiles are probably missing')
-        #     imageSet =  filter(lambda img: doesImageExist(img), imageSet)
-        #     serializer = ImageSerializer(imageSet, many=True)
-        #     return Response(serializer.data)
-#         return getSetForKioskId(Image, ImageSerializer, kiosk_id)
     
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
@@ -125,10 +79,10 @@ class ImageDetail(generics.RetrieveAPIView):
 class CommentList(generics.ListAPIView):
     model = Comment
     serializer_class = CommentSerializer
-    filter_fields=('name', 'created')
-    def get(self, request):
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
+    filter_fields=('name', 'created', 'kiosk')
+    # def get(self, request):
+    #     kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+    #     return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
     
     def post(self, request):
         serializer = CommentSerializer(data=request.DATA)
@@ -147,9 +101,10 @@ class CommentDetail(generics.CreateAPIView):
 class BeerPriceList(generics.ListCreateAPIView):
     model = BeerPrice
     serializer_class = BeerPriceSerializer
-    def get(self, request):
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        return getSetForKioskId(BeerPrice, BeerPriceSerializer, kiosk_id)
+    filter_fields=['kiosk']
+    # def get(self, request):
+    #     kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+    #     return getSetForKioskId(BeerPrice, BeerPriceSerializer, kiosk_id)
 
 
 class BeerPriceDetail(generics.RetrieveUpdateAPIView):
@@ -285,11 +240,6 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
     imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
     if imageSet.exists() and doesImageExist(imageSet[0]):
         img = imageSet[0]
-#         print('trying to open: '  + path ) 
-#         try:
-#             with open(path): pass
-#         except IOError:
-#             print 'Oh dear.'
 
     beerPriceSet = BeerPrice.objects.filter(kiosk__id = kiosk.id).order_by('score')
     if beerPriceSet.exists():
@@ -315,27 +265,6 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
 class KioskList(APIView):
 
     def get(self, request):
-	#import time
-
-	#print "Start : %s" % time.ctime()
-	#time.sleep( 1 )
-	#print "1" 
-	#time.sleep( 1 )
-	#print "2" 
-	#time.sleep( 1 )
-	#print "3" 
-	#time.sleep( 1 )
-	#print "4" 
-	#time.sleep( 1 )
-	#print "5" 
-	#time.sleep( 1 )
-	#print "6" 
-	#time.sleep( 1 )
-	#print "7" 
-	#time.sleep( 1 )
-	#print "8" 
-	#time.sleep( 1 )
-	#print "End : %s" % time.ctime()
         #get parameters from httprequest
         #in case url contains bullshit for lat,long or radius this will throw a value exception
         #default values 5km radius 

@@ -282,7 +282,7 @@ class ImageTests(TestCase):
         from StringIO import StringIO
         
         file_obj = StringIO()
-        image = PIL.open('./bier/fixtures/test.jpeg')
+        image = PIL.open('./bier/fixtures/unittest_test_image_4311.jpeg')
         image.save(file_obj, 'jpeg')
         file_obj.name = 'test.jpg'
         file_obj.seek(0)
@@ -300,7 +300,7 @@ class ImageTests(TestCase):
         from StringIO import StringIO
         
         file_obj = StringIO()
-        image = PIL.open('./bier/fixtures/test.jpeg')
+        image = PIL.open('./bier/fixtures/unittest_test_image_4311.jpeg')
         image.save(file_obj, 'jpeg')
         file_obj.name = 'test.png'
         file_obj.seek(0)

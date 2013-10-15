@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
-#import json
-import logging
-from django.conf import settings
 import os
+import logging
 import json
-#import sys
-log = logging.getLogger(__name__)
+from django.test import TestCase
+from django.conf import settings
 
 prefix = '/bier/rest/'
+log = logging.getLogger(__name__)
 
 def get_image_path_from_response(resp):
     image_response = json.loads(resp.content)
     img = image_response.get('image')
-    print(img)
+    #print(img)
     path = os.path.abspath(os.path.join(settings.MEDIA_ROOT,img))
-    print(path)
+    #print(path)
     return path
 
 def get_kiosk_id():
@@ -24,27 +22,102 @@ def get_kiosk_id():
     print(str(kiosk))
     return kiosk.id
 
-def post_image(client,kioskId):
-    from PIL import Image as PIL
-    from StringIO import StringIO
-        
-    file_obj = StringIO()
-    image = PIL.open('./bier/fixtures/test.jpeg')
-    image.save(file_obj, 'jpeg')
-    file_obj.name = 'test.jpg'
-    file_obj.seek(0)
+def post_kiosk(client, number):
+    return client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345', 
+                                                    'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
 
-    resp = client.post(prefix + 'image/', {'kiosk':str(kioskId), 'image': file_obj})
+def post_image(client,kioskId):
+    #from PIL import Image as PIL
+    #from StringIO import StringIO
+    
+    with open('./bier/fixtures/unittest_test_image_4311.jpeg', 'r') as f:
+        #read_data = f.read()
+        resp = client.post(prefix + 'image/', {'kiosk':str(kioskId), 'image': f})
+
+    #file_obj = StringIO()
+    #image = PIL.open('./bier/fixtures/test.jpeg')
+    #image.save(f, 'jpeg')
+    #file_obj.name = 'test.jpg'
+    #file_obj.seek(0)
+
     return resp
+
+def remove_files_with_prefix_in_folder(prefix, folder):
+    #log.info('path is: ' + str(folder))
+    #log.info('name is: ' + filename )
+    for t in os.listdir(folder):
+        #log.info(str(t))
+        if t.startswith(prefix):
+            #log.info('removing file: ' + os.path.join(folder,t))
+            os.remove(os.path.join(folder,t))
+
+class KioskTests(TestCase):
+    fixtures  = ['test_data.json']
+
+    def test_post_kiosk(self):
+        #post a kiosk and check the return code
+        resp = post_kiosk(self.client, 42)
+        self.assertEqual(resp.status_code, 201)
+        #check if its really there. That means getting the id of the kiosk in the response
+        #and make a get reqeust for it. this wont reutrn a kiosk but a kioskdetailthingy
+        kiosk = json.loads(resp.content)
+        resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk.get('id')) + '/')
+        self.assertEqual(resp.status_code, 200)
+        #get the kiosk from the detaisl dict thingy
+        kiosk = json.loads(resp.content).get('kiosk')
+        self.assertTrue(kiosk.get('id') > 0)
+
 
 class ImageTests(TestCase):
     fixtures = ['test_data.json']
+    # test if the imagelist in the (images/?kiosk=bla) view is the same as the one deliverd in the kioskdetail view 
+    def test_imagelists(self):
+        #post a new empty kiosk
+        resp = post_kiosk(self.client, 137)
+        kiosk = json.loads(resp.content)
+        kiosk_id = str(kiosk.get('id'))
+        #post a number of images
+        for num in range(1,6):
+            post_image(self.client, kiosk_id)
+            resp = self.client.get(prefix + 'image/?kiosk=' + kiosk_id)
+            images_from_view = json.loads(resp.content)
+            #log.info(str(images))
+            #thers should be the posted amount of images in here
+            self.assertTrue(len(images_from_view) == num )
+            
+            resp = self.client.get(prefix + 'kioskDetails/' + kiosk_id + '/')
+            self.assertEqual(resp.status_code, 200)
+            #get the kiosk from the detaisl dict thingy
+            images_from_kiosk = json.loads(resp.content).get('images')
+            self.assertItemsEqual(images_from_view, images_from_kiosk, 'Image lists in the image and the kioskdetails view were not the same')
+            #log.info(str(images))
 
-    def test_non_existing_image(self):
+
+
+
+
+
+    def test_post_images(self):
+        #post a kiosk and get the list of images for its id. This list should be empty for a new kiosk
+        resp = post_kiosk(self.client, 137)
+        kiosk = json.loads(resp.content)
+
+        resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk.get('id')))
+        images = json.loads(resp.content)
+        self.assertEquals(images, [])
+        #now post an image to the kiosk and check if the list contains 1 image
+        post_image(self.client, kiosk.get('id'))
+        resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk.get('id')))
+        images = json.loads(resp.content)
+        #log.info(str(images))
+        self.assertTrue(len(images) == 1 )
+
+
+    def test_missing_images(self):
         kioskId = get_kiosk_id()
+        #post an image and save the path to it
         resp = post_image(self.client, kioskId)
-        self.assertEqual(resp.status_code, 201)
-        #path = get_image_path_from_response(resp)
+        path = get_image_path_from_response(resp)
 
         #get some kioskdetails for that kiosk
         resp = self.client.get(prefix + 'kioskDetails/' + str(kioskId) + '/')
@@ -53,51 +126,23 @@ class ImageTests(TestCase):
         resp = self.client.get(prefix + 'image/?kiosk=' + str(kioskId))
         self.assertEqual(resp.status_code, 200)
 
-        # #log.info(path)
-        # filename = os.path.basename(path).decode('utf-8').encode("latin-1")
-        # #filename.decode('utf-8').encode("latin-1")
-        # log.info('filename is ' + repr(filename))
-        # #os.remove(unicode(path))
-        # filename = os.path.splitext(filename)[0]
+        #now remove the generated image files
+        folder = os.path.dirname(path)
+        filename = os.path.basename(path)
+        filename = os.path.splitext(filename)[0]
+        remove_files_with_prefix_in_folder(filename, folder)
+        #and try to load views again
+        resp = self.client.get(prefix + 'kioskDetails/' + str(kioskId) + '/')
+        self.assertEqual(resp.status_code, 200)
+        resp = self.client.get(prefix + 'image/?kiosk=' + str(kioskId))
+        self.assertEqual(resp.status_code, 200)
 
-        # filename = filename + '640x480_q85_crop-smart.jpg'
-        # folder = os.path.dirname(path).decode('utf-8').encode("latin-1")
-        # log.info('folder  is ' + repr(folder))
-        # #log.info('Removing ' +  os.join(folder, filename))
-        # path = folder + '/' +filename
-        # log.info('Removing ' +  folder + '/' +filename)
-        # os.remove(path.decode('utf-8').encode("latin-1"))
+    def test_cleanup_images(self):
 
-        # #get some kioskdetails for that kiosk
-        # resp = self.client.get(prefix + 'kioskDetails/' + str(kioskId) + '/')
-        # self.assertEqual(resp.status_code, 200)
-        # #and the image list
-        # resp = self.client.get(prefix + 'image/?kiosk=' + str(kioskId))
-        # self.assertEqual(resp.status_code, 200)
-        #now remove the image and its thumbs
-        #folder = os.path.dirname(path)
-        #log.info('Folder_ : ' + folder )
-        #filename = os.path.basename(path)
-        #os.remove(unicode(path))
-        #filename = os.path.splitext(filename)[0]
-        #log.info('name is: ' + filename )
-        #log.info(settings.THUMBNAIL_ALIASES[0].get('medium'))
-        
-    #     #os.listdir(folder)
-
-    #     #print('asdasdas ')
-    #     folder = unicode(folder)
-    #     log.info(sys.getfilesystemencoding())
-    #     log.info(os.listdir(u'/home/mackaiver/workspace/bier_server/images'))
-    #     log.info('asdasdasdasd')
-    #     # for f in os.listdir(folder):
-    #     #     pass
-    #             #log.info(str(f))
-    #         # for imgFile in os.listdir(folder):
-    #         #     file_path = os.path.join(folder, imgFile)
-    #         #     if imgFile.startswith(filename):
-    #         #         pass
-
+        path = os.path.join(os.path.abspath(settings.MEDIA_ROOT), 'images')
+        #now remove the generated image files
+        log.info('Removing files in folder: ' +str(path))
+        remove_files_with_prefix_in_folder('unittest_test_image_4311', path)
 
 
 
