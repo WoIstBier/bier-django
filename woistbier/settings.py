@@ -92,8 +92,8 @@ INSTALLED_APPS = (
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-NOSE_ARGS = ['--verbosity=2', '--nologcapture']
-
+#NOSE_ARGS = ['--verbosity=2', '--nologcapture']
+NOSE_ARGS = ['--verbosity=2']
 
 THUMBNAIL_ALIASES = {
     '': {

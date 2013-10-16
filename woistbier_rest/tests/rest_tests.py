@@ -81,7 +81,7 @@ class ImageTests(TestCase):
             post_image(self.client, kiosk_id)
             resp = self.client.get(prefix + 'image/?kiosk=' + kiosk_id)
             images_from_view = json.loads(resp.content)
-            #log.info(str(images))
+            #log.info(str(images_from_view))
             #thers should be the posted amount of images in here
             self.assertTrue(len(images_from_view) == num )
             
@@ -183,6 +183,37 @@ A test to check wether the throttling of the rest api works
 '''
 class RestThrottleTests(TestCase):
     fixtures = ['test_data.json']
+
+    #test for valid url responses like 404
+    def test_valid_urls(self):
+        kiosk_id = get_kiosk_id()
+        resp = self.client.get(prefix + 'kioskDetails/')
+        self.assertEqual(resp.status_code, 404)
+
+        resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk_id) + '/')
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(prefix + 'beer/')
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(prefix + 'beerprice/')
+        self.assertEqual(resp.status_code, 200)
+        # resp = self.client.get(prefix + 'beerPrice/?kiosk=' + str(kiosk_id))
+        # self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(prefix + 'image/')
+        self.assertEqual(resp.status_code, 200)
+        
+        resp = self.client.get(prefix + 'kioskList/')
+        self.assertEqual(resp.status_code, 200)
+
+        resp = self.client.get(prefix + 'comment/')
+        self.assertEqual(resp.status_code, 200)
+
+        #test for 404 response
+        resp = self.client.get(prefix + 'nonexsitingurl/')
+        log.info('REsp code is : ' + str(resp.status_code))
+        self.assertEqual(resp.status_code, 404)
     
     #post one kiosk with street and number to the db
     def post_kiosk(self, street, number):
@@ -192,7 +223,7 @@ class RestThrottleTests(TestCase):
         return resp.status_code
     
     def test_kiosk_addition_throttle(self):
-        print('throttle test add kiosk 1 ')
+        #print('throttle test add kiosk 1 ')
         import time
         from woistbier_rest.models import Kiosk
         #lets get a count of kioske 
