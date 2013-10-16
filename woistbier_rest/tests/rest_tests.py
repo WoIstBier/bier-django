@@ -27,18 +27,10 @@ def post_kiosk(client, number):
                                                     'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
 
 def post_image(client,kioskId):
-    #from PIL import Image as PIL
-    #from StringIO import StringIO
     
     with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'r') as f:
         #read_data = f.read()
         resp = client.post(prefix + 'image/', {'kiosk':str(kioskId), 'image': f})
-
-    #file_obj = StringIO()
-    #image = PIL.open('./woistbier_rest/fixtures/test.jpeg')
-    #image.save(f, 'jpeg')
-    #file_obj.name = 'test.jpg'
-    #file_obj.seek(0)
 
     return resp
 

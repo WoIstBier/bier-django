@@ -1,47 +1,28 @@
-<html>
-  <head>
-    {% load static from staticfiles %}
-    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
-    <link href="{% static "css/main.css" %}" rel="stylesheet" type="text/css" />
-    <title>Bier!</title>
-    <meta content="404 Seite">
-  </head>
-  <body>
-	<div id="container" >
-	  <div id="sidebar">
-		<img id="logo" src="{% static "images/bier_logo.jpg" %}" alt="Offizielles Logo" />
-	  </div>
-	  
-	  <div id="content">
-		  <h2> Oh Fuck. 404! </h2>
-		  <p> Falscher link?? Gehe zu  <a href="http://woistbier.de" >Hauptseite</a>   </p>
-		  </br>
-		  		  </br>
-		  		  		  </br>
-		  <blockquote>
-		  Ah du Huan! Was für 404 ja? Aufs Maul!?
-		  <cite>Nordstadt Typ</cite>
-		  </blockquote>
-	  </div>
+{% extends "bier/base.html" %}
+{% block title %} Seite nicht gefunden. Och menno! {% endblock %} 
 
-	  
-	  <div id="clear">
-	  </div>
-	</div> 
-		<div id="social">
-			<a href="https://twitter.com/woistbier" rel="publisher">
-				<img id="social" src="{% static "images/twitter_blue_32_32.png" %}" alt="Offizielles Logo" />
-			</a>
-			<a href="https://plus.google.com/118053360909839617087" rel="publisher">
-				<img id="social" src="{% static "images/gplus_32_32.png" %}" alt="Offizielles Logo" />
-			</a>
-			<a href="https://facebook.com/woistbier" rel="publisher">
-				<img id="social" src="{% static "images/facebook_32_32.png" %}" alt="Offizielles Logo" />
-			</a>
-	</div>
-  </body>
-</html>
+{% block content %}
 
+    <div id="container" >
+      <div id="sidebar">
+        <img id="logo" src="{{images}}/bier_logo.jpg"  alt="Offizielles Logo" />
+      </div>
+      <div id="content">
+          <h2> Oh Fuck. 404! </h2>
+          <p> Falscher link?? Gehe zu  <a href="http://woistbier.de" >Hauptseite</a>   </p>
+          </br>
+                  </br>
+                          </br>
+          <blockquote>
+          Ah du Huan! Was für 404 ja? Aufs Maul!?
+          <cite>Nordstadt Typ</cite>
+          </blockquote>
+      </div>
+      
+      <div id="clear">
+      </div>
+    </div> 
+{% endblock %}
 
 
 
