@@ -16,7 +16,9 @@ import os
 log = logging.getLogger(__name__)
 
 def not_found_view(request):
-    return render_to_response('bier/404.html')
+    response = render_to_response('bier/404.html')
+    response.status_code = 404
+    return response
 
 def index(request):
     num_kiosk = Kiosk.objects.all().count();

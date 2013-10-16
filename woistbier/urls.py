@@ -40,7 +40,7 @@ urlpatterns = patterns('',
                        
 )
 
-handler404 = 'bier.views.not_found_view'
+handler404 = 'woistbier_rest.views.not_found_view'
 
 if LOCALHOST:
     append= patterns( '',  
