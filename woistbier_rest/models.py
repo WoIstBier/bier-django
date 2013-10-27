@@ -33,7 +33,7 @@ class Kiosk(models.Model):
     
     '''Custom save method to create a name for the kiosk if no name was supplied'''
     def save(self, *args, **kwargs):
-        if self.name == '' or self.name is None:
+        if self.street is not None and self.number is not None:
                 self.name = self.street + ' ' + str(self.number);
         super(Kiosk, self).save(*args, **kwargs);
 
@@ -47,9 +47,13 @@ class Beer(models.Model):
         ('export', 'Export'),
         ('weizen', 'Weizen'),
         ('dunkel', 'Dunkel'),
-        ('export', 'Hell'),
+        ('hell', 'Hell'),
         ('lager', 'Lager'),
-        ('koelsch', 'Kölsch')
+        ('koelsch', 'Kölsch'),
+        ('alt', 'Alt'),
+        ('biermischgetraenk', 'Biermischgetränk'),
+        ('starkbier', 'Starkbier'),
+        ('stout', 'Stout')
     )
     brew = models.CharField(max_length=20, choices=BREW_CHOICES, default='pils')
     name  = models.CharField(max_length=100)
