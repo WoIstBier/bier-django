@@ -2,28 +2,37 @@
 {% block title %} Wo ist Bier {% endblock %} 
 
 {% block content %}
-	<div id="container" >
-	  <div id="sidebar">
+	<div class="container" >
+	  
+	  <div class="six columns alpha">
 		<img id="logo" src="{{images}}/bier_logo.jpg"  alt="Offizielles Logo" />
 	  </div>
 	  
-	  <div id="content">
-		  <h2> Oh nein, es kommt! </h2>
-		  <p> Hier entsteht die Webpräsenz der einzig wahren Bier-App.  </p>
-		  <p> Es wird euer Leben verändern.</p>
+	  <div class="six columns omega">
+		  <h2> Oh nein, sie ist da! </h2>
+		  <p> Es ist soweit. Die App die euer Leben von Grund auf verändern wird. Bestimmt.  </p>
+		  <p> Ab jetzt könnt ihr die App im AppStore eures vertrauens kostenlos herunterladen. </p>
+		  <p> Für Android Telefone und iPhones mit iOS 7</p>
+		  <p>
+		  	<a href="https://play.google.com/store/apps/details?id=de.woistbier.bier"><img class="badge scale-with-grid" src="{{images}}/playstore_badge.png"  alt="PlayStore badge" /></a> 
 
-			</br>	 
-		  <blockquote>
+		  	<a href="https://itunes.apple.com/de/app/wo-ist-bier/id725600187"><img class="badge scale-with-grid" src="{{images}}/appstore_badge.png"  alt="Itunes store badge" /></a> 
+		  </p>
+
+		  <p> Bisher haben wir {{beer_number}} Biersorten und {{kiosk_number}} Kioske in unserer Datenbank und das ist erst der Anfang. Helft mit und tragt euren Kiosk um die Ecke ein. </p>
+
+		</br>	 
+		  <blockquote class="blue">
 		  Awesome.
 		  <cite>Steve Jobs</cite>
 		  </blockquote>
 
-		  <blockquote>
+		  <blockquote class="blue">
 		  Des Dichters Muße ist das Bier. Diese App ist die Tinte in meiner Feder.
 		  <cite>Johann Wolfgang von Goethe</cite>
 		  </blockquote>
 		  
-		  <blockquote>
+		  <blockquote class="blue">
 		  Können Sie noch ne Kasse aufmachen?
 		  <cite>Typ im Netto</cite>
 		  </blockquote>

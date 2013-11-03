@@ -1,18 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+    <head>
     {% load static from staticfiles %}
+    <meta charset="utf-8">
     <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
-    <link href="{% static "css/main.css" %}" rel="stylesheet" type="text/css" />
     <title>{% block title%}WoIstBier{% endblock%}</title>
-    <meta content="WoIstBier. Wo ist Bier? Das kann dir unsere App beantworten. Für Android und IPhone">
+    <meta content="WoIstBier. Wo ist Bier? Das kann dir unsere App beantworten. Für Android und IPhone. Verfügbar ab iOS7 und Android 2.3">
+        <!-- Mobile Specific Metas
+  ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+  ================================================== -->
+    <link rel="stylesheet" href="{% static "css/skeleton.css" %}">
+    <link rel="stylesheet" href="{% static "css/layout.css" %}">
+    <link rel="stylesheet" href="{% static "css/normalize.css" %}">
+    <link href="{% static "css/main.css" %}" rel="stylesheet" type="text/css" />
+
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
   {% static "images/" as images %}
   {% url 'woistbier_rest.views.index' as index_url %}
   {% url 'about' as about_url %}
   {% block menu %}
-  <div class="menu">
+  <div class="sixteen columns menu">
   	<p><a href="{{index_url}}">Hauptseite</a> <a href="{{about_url}}">Kontakt</a> </p>
   </div>
    	{% endblock %} 

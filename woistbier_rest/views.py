@@ -29,6 +29,10 @@ def kiosk(request):
     kiosk_liste = Kiosk.objects.order_by('name')
     return render_to_response('bier/kiosk.html', {'kioske': kiosk_liste })
 
+def beer_list(request):
+    beer_list = Beer.objects.order_by('name')
+    return render_to_response('bier/beer_list.html', {'beer_list': beer_list })
+
 '''
 Here come the views for the rest api
 '''
