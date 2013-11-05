@@ -1,0 +1,50 @@
+{% extends "bier/base.html" %}
+{% block title %} Wo ist Bier {% endblock %} 
+
+{% block content %}
+    <div class="container" >
+      
+      <div class="six columns alpha">
+        <img id="logo" src="{{images}}/bier_logo.jpg"  alt="Offizielles Logo" />
+      </div>
+      
+      <div class="six columns omega">
+          <h2> Alter, Bier! </h2>
+          <p> Es folgt die Liste der bisher eingetragenen Biersorten.  </p>
+          <p> Haben wir eine vergessen? Sagt bescheid. </p>
+          <p> <SCRIPT TYPE="text/javascript"> writeAdress('reib', 'reibtsiow', 'ed') </script>  </p>
+
+        </br>    
+          <blockquote class="blue">
+          Hallo? Bier!
+          <cite>Geiler Typ</cite>
+          </blockquote>
+      </div>
+      
+      <div class="sixteen columns">
+        <script type="text/javascript">
+        var beers;
+        function appendBeer(beer){
+          $("#beerlist").append('<li>' +
+                                 '<span class="title">' +  beer.name + '</span> '+ 
+                                 '<span class="detail" >'  + beer.brand + '  ' + beer.location +' </span>' +
+
+                                 '</li>');
+        }
+        $.get("/bier/rest/beer/", function(data){
+          beers = data;
+          beers.forEach( appendBeer );
+        });
+        </script>
+
+        <ul id="beerlist">
+        </ul>
+      </div>
+    </div> 
+
+{% endblock %}
+
+
+
+
+

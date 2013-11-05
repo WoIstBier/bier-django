@@ -23,14 +23,32 @@
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script TYPE="text/javascript">
+            <!-- 
+            function reverse (s) {
+                 return s.split('').reverse().join('');
+            }
+
+            function writeAdress (name, server, domain) {
+                str = name
+                str = (server + '@' + str)
+                str = (domain +'.' + str)
+                document.write('<a id="mail" href="mailto:' + reverse(str) + '">' + reverse(str) + '</a>')
+            }
+            
+             //-->
+    </script>
   </head>
   <body>
   {% static "images/" as images %}
   {% url 'woistbier_rest.views.index' as index_url %}
   {% url 'about' as about_url %}
+  {% url 'beer' as beer_url %}
+  {% url 'impressum' as impressum_url %}
   {% block menu %}
   <div class="sixteen columns menu">
-  	<p><a href="{{index_url}}">Hauptseite</a> <a href="{{about_url}}">Kontakt</a> </p>
+  	<p><a href="{{index_url}}">Hauptseite</a> <a href="{{about_url}}">Kontakt</a> <a href="{{beer_url}}">Bier</a> <a href="{{impressum_url}}">Impressum</a>  </p>
   </div>
    	{% endblock %} 
   {% block content %}

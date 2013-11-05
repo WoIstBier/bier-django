@@ -30,10 +30,17 @@ urlpatterns = patterns('',
     
 #     url(r'^$', TemplateView.as_view(template_name="index.html")),
     
-    url(r'^$', 'woistbier_rest.views.index',name="index"),
+    url(r'^$', 'woistbier_rest.views.index',
+        name="index"),
     url(r'^about', 
         TemplateView.as_view(template_name='bier/contact.html'),
         name='about'),
+    url(r'^beer', 
+        TemplateView.as_view(template_name='bier/beer.html'),
+        name='beer'),
+    url(r'^impressum', 
+        TemplateView.as_view(template_name='bier/impressum.html'),
+        name='impressum'),
     url(r'^testPage', 
         TemplateView.as_view(template_name='bier/testPage/index.html'),
         name='test_about')

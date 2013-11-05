@@ -84,13 +84,28 @@
 	} 
 
 	section.bottom{
-		margin-top: 550px;
+		margin-top: 5em;
 	}
     
     span#text{display: block; font-size: small;}
     a#mail{
 	  color: #6a95aa;
 	  text-decoration: none;
+	}
+	ul#beerlist{
+		padding-left: 1em;
+		margin-top: 5em;
+	}
+	ul#beerlist li{
+		margin-bottom: 0.7em;
+	}
+	ul#beerlist li span.detail{
+		margin-left: 2em;
+		color: #A6AFB4;
+
+	}
+	p.contact a {
+		margin-left: 0.8em;
 	}
 	
 	  /*--------------- menu -------------*/
@@ -107,6 +122,7 @@
 	}
 	div.menu a {
 	    margin-right: 1em;
+
 	}
 	div.menu a:link {color:#CCCCCC;}      /* unvisited link */
 	div.menu a:visited {color: #D3D3D3;}  /* visited link */
