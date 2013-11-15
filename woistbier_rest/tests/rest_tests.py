@@ -8,6 +8,7 @@ from django.conf import settings
 prefix = '/bier/rest/'
 log = logging.getLogger(__name__)
 
+
 def get_image_path_from_response(resp):
     image_response = json.loads(resp.content)
     img = image_response.get('image')
@@ -23,21 +24,23 @@ def get_kiosk_id():
     print(str(kiosk))
     return kiosk.id
 
+
 def post_comment(client, kiosk_id, username, text):
         resp = client.post(prefix + 'comment/', {'kiosk': kiosk_id, 'name': username,
                                                  'comment': text})
         return resp
+
 
 def post_kiosk(client, number):
     return client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345',
                                            'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
 
 
-def post_image(client,kioskId):
+def post_image(client, kiosk_id):
     
     with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'r') as f:
         #read_data = f.read()
-        resp = client.post(prefix + 'image/', {'kiosk':str(kioskId), 'image': f})
+        resp = client.post(prefix + 'image/', {'kiosk': str(kiosk_id), 'image': f})
 
     return resp
 
