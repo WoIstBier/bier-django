@@ -23,6 +23,10 @@ def get_kiosk_id():
     print(str(kiosk))
     return kiosk.id
 
+def post_comment(client, kiosk_id, username, text):
+        resp = client.post(prefix + 'comment/', {'kiosk': kiosk_id, 'name': username,
+                                                 'comment': text})
+        return resp
 
 def post_kiosk(client, number):
     return client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345',
@@ -55,21 +59,65 @@ class CommentTests(TestCase):
         #post a new empty kiosk
         resp = post_kiosk(self.client, 137)
         kiosk = json.loads(resp.content)
+        self.assertEqual(resp.status_code, 201)
         #get the comments for that new kiosk
-        resp = self.client.get(prefix + 'comments/?kiosk=' + str(kiosk.get('id')))
-        comments = json.loads(resp.content)
+        resp = self.client.get(prefix + 'comment/?kiosk=' + str(kiosk.get('id')))
+        self.assertEqual(resp.status_code, 200)
         #list should be empt since the kiosk was just generated
-        self.assertEquals(comments, [])
+        self.assertEquals(json.loads(resp.content), [])
 
-        #post a new comment
-        resp = self.client.post(prefix + 'comments/', {'kiosk': str(kiosk.get('id')), 'name': 'Anonymus',
-                                                       'comment': 'Ein leckerer test Kommentar'})
-        comments = json.loads(resp.content)
-        #list should be of length 1
-        self.assertEquals(len(comments), 1)
-        self.assertEquals(comments[0].get('name'), 'Anonymus')
-        self.assertEquals(comments[0].get('comment'), 'Ein leckerer test Kommentar')
+        #post a new comment with a username and a text
+        username = 'Horst der Borst'
+        text = 'Welch schoener kommentar ereilt mich da? Oh neine es ist siegliende mit ihrem Netz! Gott bewahre'
+        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
+        self.assertEqual(resp.status_code, 201)
+        comment = json.loads(resp.content)
 
+        self.assertEquals(comment.get('name'), username)
+        self.assertEquals(comment.get('comment'), text)
+
+        #post another with an umlaut in the username
+        username = u'Klaüs die Mäus'
+        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
+
+        self.assertEqual(resp.status_code, 201)
+        comment = json.loads(resp.content)
+        print(str(comment))
+        self.assertEquals(comment.get('name'), username)
+        self.assertEquals(comment.get('comment'), text)
+
+        #post another with a really long username this should fail with code 400
+        username = u'Klaüs die Mäus ist ein marzahn der königsgesselschaft. Der König folgt ihn treu.' \
+                   u' Was immer der Hunnen planen'
+        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
+        print(str(resp))
+        self.assertEqual(resp.status_code, 400)
+
+        #post another with a really long text this should fail with code 400
+        username = u'Klaüsi!'
+        text = u"Siegfried hieß der wack're Recke, und er kämpfte gut," \
+               u"hatte eine dicke Haut vom Bad im Drachenblut!" \
+               u"Siegfried hatte einen Schatz gar groß und meisterlich," \
+               u"den hatte er geraubt vom alten Zwergenkönig Alberich!" \
+               u"Kriemhild hieß die holde Maid, das merke bitte sehr" \
+               u"ihre Brüder hießen Gunther, Gernot, Gieselher!" \
+               u"Siegfried hielt bei Bruder Gunther um die Kriemhild an," \
+               u"und so fing ganz froh und munter ihre große Liebe an!" \
+               u"3. Gunter liebte eine Frau, die starke Brunhild sehr," \
+               u"und da musste jetzt der große Held, der Siegfried her!" \
+               u"Siegfried half dem Gunther wohl, der konnte siegreich sein" \
+               u"und dann führte König Gunther seine starke Brunhild heim!"
+        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
+        print(str(resp))
+        self.assertEqual(resp.status_code, 400)
+
+        #at this point two comments should have been succesufully posted
+        #get the comments for that new kiosk
+        resp = self.client.get(prefix + 'comment/?kiosk=' + str(kiosk.get('id')))
+        self.assertEqual(resp.status_code, 200)
+        #list should be empt since the kiosk was just generated
+        comments_list = json.loads(resp.content)
+        self.assertEquals(len(comments_list), 2)
 
 
 class KioskTests(TestCase):
