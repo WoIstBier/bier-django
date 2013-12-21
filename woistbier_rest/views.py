@@ -15,41 +15,41 @@ from django.conf import settings
 import os
 log = logging.getLogger(__name__)
 
+
 def not_found_view(request):
     response = render_to_response('bier/404.html')
     response.status_code = 404
     return response
 
+
 def index(request):
-    num_kiosk = Kiosk.objects.all().count();
-    num_beer = Beer.objects.all().count();
+    num_kiosk = Kiosk.objects.all().count()
+    num_beer = Beer.objects.all().count()
     return render_to_response('bier/index.html', {'kiosk_number': num_kiosk, 'beer_number': num_beer})
 
-def kiosk(request):
-    kiosk_liste = Kiosk.objects.order_by('name')
-    return render_to_response('bier/kiosk.html', {'kioske': kiosk_liste })
 
 def beer_list(request):
-    num_beer = Beer.objects.all().count();
-    return render_to_response('bier/beer.html', {'beer_count': num_beer })
+    num_beer = Beer.objects.all().count()
+    return render_to_response('bier/beer.html', {'beer_count': num_beer})
+
 
 def impressum(request):
     return render_to_response('bier/impressum.html')
 
-'''
-Here come the views for the rest api
-'''
 
-''' Some helper Functions'''
+#Here come the views for the rest api
+
+
 def check_kiosk_args(kiosk_id):
-    if kiosk_id == None:
+    if kiosk_id is None:
         return False
     try:
         long(kiosk_id)
     except ValueError:
         return False
     return True
-    
+
+
 def check_if_kiosk_exists(kiosk_id):
     try:
         Kiosk.objects.get(pk = kiosk_id)
@@ -58,23 +58,15 @@ def check_if_kiosk_exists(kiosk_id):
     return True
 
     
-'''
-Is this broken? Bork bork bork!
-'''  
-# def doesImageExist(image):
-#     path =  os.path.abspath(os.path.join(settings.MEDIA_ROOT, os.pardir,image.image.url.strip(os.sep)))
-#     #log.info('checking if thing esxists: ' + str(path))
-#     return os.path.exists(path)
-
-''' views for images'''
+#views for images
 class ImageList(generics.ListAPIView):
     model = Image
     serializer_class = ImageSerializer
-    filter_fields=['kiosk']
+    filter_fields = ['kiosk']
 
-    
     def post(self, request):
-        #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg" http://localhost:8000/bier/rest/image/68/
+        #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg"
+        #                           http://localhost:8000/bier/rest/image/68/
         print(str(request))
         serializer = ImageSerializer(data = request.DATA , files=request.FILES)
         if serializer.is_valid():
@@ -82,15 +74,16 @@ class ImageList(generics.ListAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ImageDetail(generics.RetrieveAPIView):
     model = Image
     serializer_class = ImageSerializer       
 
-''' views for comments'''
+
 class CommentList(generics.ListAPIView):
     model = Comment
     serializer_class = CommentSerializer
-    filter_fields=('name', 'created', 'kiosk')
+    filter_fields = ('name', 'created', 'kiosk')
     # def get(self, request):
     #     kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
     #     return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
@@ -108,55 +101,50 @@ class CommentDetail(generics.CreateAPIView):
     serializer_class = CommentSerializer 
     
   
-''' views for beers'''
 class BeerPriceList(generics.ListCreateAPIView):
     model = BeerPrice
     serializer_class = BeerPriceSerializer
-    filter_fields=['kiosk']
-    # def get(self, request):
-    #     kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-    #     return getSetForKioskId(BeerPrice, BeerPriceSerializer, kiosk_id)
+    filter_fields = ['kiosk']
 
 
 class BeerPriceDetail(generics.RetrieveUpdateAPIView):
-    model=BeerPrice
+    model = BeerPrice
     serializer_class = BeerPriceSerializer
-
 
 
 class BeerList(generics.ListAPIView):
     model = Beer
     serializer_class = BeerSerializer
-    filter_fields=['name', 'brand', 'location', 'brew']
-    def get(self, request):
+    filter_fields = ['name', 'brand', 'location', 'brew']
+
+    def get(self, request, *args, **kwargs):
         kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
         if kiosk_id is not None:
             if not check_kiosk_args(kiosk_id):
                 return HttpResponseBadRequest("Kiosk id arguments was malformed")
-            beerSet = Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
-            if beerSet.count()== 0:
+            beer_set = Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
+            if beer_set.count() == 0:
                 return Response(status = status.HTTP_204_NO_CONTENT)
         else:
-            beerSet = Beer.objects.all()
+            beer_set = Beer.objects.all()
              
-        serializer = BeerSerializer(beerSet, many=True)
+        serializer = BeerSerializer(beer_set, many=True)
         return Response(serializer.data)
     
     
 class BeerDetail(generics.RetrieveAPIView):
-    model=Beer
+    model = Beer
     serializer_class = BeerSerializer
     
 
-''' views for kiosk'''
 class SimpleKioskList(generics.ListCreateAPIView):
     throttle_classes = (ScopedRateThrottle,)
     throttle_scope = 'kiosk_uploads'
     model = Kiosk
     serializer_class = KioskSerializer
-    filter_fields = ('id', 'name', 'owner', 'street','city','zip_code')
+    filter_fields = ('id', 'name', 'owner', 'street', 'city', 'zip_code')
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = KioskSerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
@@ -180,7 +168,7 @@ class KioskDetail(APIView):
         return Response(serializer.data)
     
 
-''' An object to hold all the info the kiosk detail view on the client needs. this will be passed to the serializer'''
+#An object to hold all the info the kiosk detail view on the client needs. this will be passed to the serializer
 class KioskDetailContainer(object):
     def __init__(self, kiosk, beerPrice=None, images=None, comments = None, comment_count = 0, beer_count = 0, avg_price = 1):
         self.kiosk = kiosk
@@ -192,7 +180,7 @@ class KioskDetailContainer(object):
         self.avg_price = avg_price
         
         
-''' this will get the kiosk with the given id from the database and pulls all the necessary info from the connected tables''' 
+# this will get the kiosk with the given id from the database and pulls all the necessary info from the connected tables
 class KioskDetailView(APIView):
 
     def get_object(self, primaryKey):
@@ -209,46 +197,47 @@ class KioskDetailView(APIView):
         beer_count = beerPriceSet.count()
         comment_count = commentSet.count()
         avg_price = beerPriceSet.aggregate(Avg('score'))
-        l = KioskDetailContainer(kiosk, beerPrice=beerPriceSet, images=imageSet, comments=commentSet, comment_count = comment_count, beer_count = beer_count , avg_price = avg_price )
+        l = KioskDetailContainer(kiosk, beerPrice=beerPriceSet, images=imageSet, comments=commentSet,
+                                 comment_count=comment_count, beer_count=beer_count, avg_price=avg_price)
         serializer = KioskDetailSerializer(l)
         return Response(serializer.data)
        
     
-
-'''angle to radians conversion'''
+#angle to radians conversion
 def radians(r):
     return r * math.pi / 180
-''' simple pythagorean distance for flat surfaces. Returns distance in kilometers!'''
-def calculate_distance(lat_1,lon_1  ,  lat_2,lon_2):
+
+
+# simple pythagorean distance for flat surfaces. Returns distance in kilometers!
+def calculate_distance(lat_1, lon_1, lat_2, lon_2):
     R = 6371
     lat_1 = radians(lat_1)
     lat_2 = radians(lat_2)
     lon_1 = radians(lon_1)
     lon_2 = radians(lon_2)
-    x = (lon_2-lon_1) * math.cos((lat_1+lat_2)/2);
-    y = (lat_2-lat_1);
-    return math.sqrt(x*x + y*y) * R;
+    x = (lon_2-lon_1) * math.cos((lat_1+lat_2)/2)
+    y = (lat_2-lat_1)
+    return math.sqrt(x*x + y*y) * R
 
 
-
-''' An Object to hold all the stuff needed for a listItem. This Object will be provided to the Serializer'''
+#An Object to hold all the stuff needed for a listItem. This Object will be provided to the Serializer
 class ListItem(object):
-    def __init__(self, kiosk, beerPrice=None, image=None, distance = 0):
+    def __init__(self, kiosk, beer_price=None, image=None, distance=0.0):
         self.kiosk = kiosk
-        self.beerPrice = beerPrice
+        self.beerPrice = beer_price
         self.image = image
         self.distance = distance
         
         
-'''
-    returns a listitem object  given a specific kiosk and the lat,long values of the client
-    so it can calculate the distance between kiosk and client to write into the listitem object
-    if a beer argument is supplied only kioskItems containg that beer will be returned
-'''
-def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
+#
+#   returns a listitem object  given a specific kiosk and the lat,long values of the client
+#   so it can calculate the distance between kiosk and client to write into the listitem object
+#   if a beer argument is supplied only kioskItems containg that beer will be returned
+#
+def get_list_item_from_kiosk(kiosk, lat=None, lon=None, beer=None):
     img = None
     beerPrice = None
-    imageSet = Image.objects.filter(kiosk__pk = kiosk.id)
+    imageSet = Image.objects.filter(kiosk__pk=kiosk.id)
     if imageSet.exists():
         img = imageSet[0]
 
@@ -264,15 +253,13 @@ def getListItemFromKiosk(kiosk, lat = None, lon = None, beer=None):
             return None
     if lat is not None and lon is not None:
         distance = calculate_distance(float(kiosk.geo_lat), float(kiosk.geo_long), lat, lon)
-        return ListItem(kiosk=kiosk, image=img, beerPrice = beerPrice, distance = distance )
+        return ListItem(kiosk=kiosk, beer_price=beerPrice,  image=img, distance=distance)
 
-    return ListItem(kiosk=kiosk, thumb=img, beerPrice = beerPrice )
+    return ListItem(kiosk=kiosk, beer_price=beerPrice, thumb=img)
     
 
-''' 
-    View to return a list of kioskItems where the kiosk is within a boundingbox with the length radius supplied in the url
-    in case the parameter contain bullshit values this will raise a ERROR400 bad request to the client
-''' 
+#View to return a list of kioskItems where the kiosk is within a boundingbox with the length radius supplied in the url
+#in case the parameter contain bullshit values this will raise a ERROR400 bad request to the client
 class KioskList(APIView):
 
     def get(self, request):
@@ -298,7 +285,7 @@ class KioskList(APIView):
 
         max_distance = radius;
         #radius from km to degrees
-        R = 6371 # earth radius
+        R = 6371  # earth radius
         #from a length to radians. see definition of a radian
         radius = radius/R
         # now convert radians to degrees
@@ -310,7 +297,7 @@ class KioskList(APIView):
         #build a kiosklistem for every kiosk we fetched and return it through the serializer
         l = list()
         for kiosk in queryResult:
-            item = getListItemFromKiosk(kiosk, g_lat, g_long, beer)
+            item = get_list_item_from_kiosk(kiosk, g_lat, g_long, beer)
             if item is not None and item.distance <= max_distance :
                 l.append(item)
         
@@ -318,7 +305,7 @@ class KioskList(APIView):
         return Response(serializer.data)
         
 
-''' View for a single kiosklistitem does not take any parameter'''
+# View for a single kiosklistitem does not take any parameter
 class KioskListItem(APIView):
     
     def get_object(self, primaryKey):
@@ -329,7 +316,6 @@ class KioskListItem(APIView):
 
     def get(self, request, primaryKey):
         kiosk = self.get_object(primaryKey)
-        l = getListItemFromKiosk(kiosk)
+        l = get_list_item_from_kiosk(kiosk)
         serializer = KioskListItemSerializer(l)
         return Response(serializer.data)
-    

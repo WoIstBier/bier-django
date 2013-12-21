@@ -12,7 +12,7 @@
           <h2> Alter, Bier! </h2>
           <p> Es folgt die Liste der bisher eingetragenen Biersorten.  </p>
           <p> Haben wir eine vergessen? Sagt bescheid. </p>
-          <p> <SCRIPT TYPE="text/javascript"> writeAdress('reib', 'reibtsiow', 'ed') </script>  </p>
+          <p> <SCRIPT TYPE="text/javascript"> writeContact('bier') </script>  </p>
 
         </br>    
           <blockquote class="blue">
@@ -25,18 +25,23 @@
         <script type="text/javascript">
         var beers;
         function appendBeer(beer){
-          $("#beerlist").append('<li>' +
+            $("#beerlist").append('<li style="opacity: 0; ">' +
                                  '<span class="title">' +  beer.name + '</span> '+ 
                                  '<span class="detail" >'  + beer.brand + '  ' + beer.location +' </span>' +
-
                                  '</li>');
         }
+
         $.get("/bier/rest/beer/", function(data){
           beers = data;
           beers.forEach( appendBeer );
+          $("#loading").hide();
+          $("#beerlist li").each(function(i) {
+            $(this).delay((i++) * 40).fadeTo(300, 1);
+          });
+
         });
         </script>
-
+        <span id="loading" > Lädt... </span>
         <ul id="beerlist">
         </ul>
       </div>

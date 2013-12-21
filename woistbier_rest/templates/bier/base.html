@@ -26,16 +26,27 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script TYPE="text/javascript">
             <!-- 
+            /**
+            Stuff for obfuscating emails. Probably a bit over the top
+            **/
             function reverse (s) {
                  return s.split('').reverse().join('');
             }
-
-            function writeAdress (name, server, domain) {
+            //convinience method which 
+            function writeContact(name){
+              writeFullEmailAdress(reverse(name), 'reibtsiow', 'ed')
+            }
+            //this functions takes the strings in reverse order and builds a valid address out of them
+            function writeFullEmailAdress (name, server, domain) {
                 str = name
                 str = (server + '@' + str)
                 str = (domain +'.' + str)
-                document.write('<a id="mail" href="mailto:' + reverse(str) + '">' + reverse(str) + '</a>')
+                str = reverse(str)
+                document.write('<a id="mail" href="mailto:' + str + '">' + str + '</a>')
             }
+
+            /** animating the social buttons on hover **/
+
             
              //-->
     </script>
@@ -73,6 +84,7 @@
 	{% endblock %}
 	
 	{% block social %}
+
 	<div class="social">
 			<a href="https://twitter.com/woistbier" rel="publisher">
 				<img id="social" src="{% static "images/twitter_blue_32_32.png" %}" alt="Offizielles twitter Logo" />
@@ -84,9 +96,18 @@
 				<img id="social" src="{% static "images/facebook_32_32.png" %}" alt="Offizielles facebook Logo" />
 			</a>
 			<a href="https://instagram.com/woistbier" rel="publisher">
-				<img id="social" src="{% static "images/instagram_32_32.png" %}" alt="Inoffizierlles Instagram Logo" />
+				<img id="social" src="{% static "images/instagram_32_32.png" %}" alt="Inoffizielles Instagram Logo" />
 			</a>
 	</div>
+
+ <script TYPE="text/javascript">
+    $(".social img ").hover(function(){
+        console.log("Hovering")
+        $(this).filter(':not(:animated)').animate({ width: '+=4px', height:'+=4px' }, 'fast');
+    }, function() {
+        $(this).animate({ width: '26px', height:'26px' }, 'fast');
+    });
+</script>
 	{% endblock %}
 	
   </body>

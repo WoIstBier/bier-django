@@ -106,12 +106,12 @@ class CommentTests(TestCase):
                u"ihre Brüder hießen Gunther, Gernot, Gieselher!" \
                u"Siegfried hielt bei Bruder Gunther um die Kriemhild an," \
                u"und so fing ganz froh und munter ihre große Liebe an!" \
-               u"3. Gunter liebte eine Frau, die starke Brunhild sehr," \
+               u"Gunter liebte eine Frau, die starke Brunhild sehr," \
                u"und da musste jetzt der große Held, der Siegfried her!" \
                u"Siegfried half dem Gunther wohl, der konnte siegreich sein" \
                u"und dann führte König Gunther seine starke Brunhild heim!"
         resp = post_comment(self.client, str(kiosk.get('id')), username, text)
-        print(str(resp))
+        #print(str(resp))
         self.assertEqual(resp.status_code, 400)
 
         #at this point two comments should have been succesufully posted

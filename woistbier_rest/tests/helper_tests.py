@@ -4,11 +4,9 @@ from django.test import TestCase
 
 prefix = '/bier/rest/'
 
-'''
-blabla
-'''
-class view_tests(TestCase):
-    
+
+class ViewTests(TestCase):
+
     def test_radian_conversion(self):
         import woistbier_rest.views as v
         print('Test radian conversion')

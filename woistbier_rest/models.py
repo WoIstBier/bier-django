@@ -30,16 +30,15 @@ class Kiosk(models.Model):
     def __unicode__(self):
         return self.name
     
-    
-    '''Custom save method to create a name for the kiosk if no name was supplied'''
+    #Custom save method to create a name for the kiosk if no name was supplied
     def save(self, *args, **kwargs):
         if self.street is not None and self.number is not None:
-                self.name = self.street + ' ' + str(self.number);
-        super(Kiosk, self).save(*args, **kwargs);
+                self.name = self.street + ' ' + str(self.number)
+        super(Kiosk, self).save(*args, **kwargs)
 
     class Meta:
-        unique_together = ("city","street", "number", "zip_code")
-#     doubleEntry=False
+        unique_together = ("city", "street", "number", "zip_code")
+
 
 class Beer(models.Model):
     BREW_CHOICES = (
@@ -56,14 +55,14 @@ class Beer(models.Model):
         ('stout', 'Stout')
     )
     brew = models.CharField(max_length=20, choices=BREW_CHOICES, default='pils')
-    name  = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     brand = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-
 
     def __unicode__(self):
         return self.name
     
+
 class Comment(models.Model):
     name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
     comment = models.CharField(max_length=400)
@@ -101,12 +100,12 @@ class BeerPrice(models.Model):
     class Meta:
         unique_together = ("beer","kiosk", "size")
     
-    def save(self,*args, **kwargs):
+    def save(self, *args, **kwargs):
         self.score = self.price / self.size
         #print("kiosk: " + str(self.kiosk) + " beer: " + str(self.beer) + "  id: " + str(self.id)  )
-        super(BeerPrice, self).save(*args, **kwargs) # Call the "real" save() method
-        
-    
+        # Call the "real" save() method
+        super(BeerPrice, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return str(self.price)
 
@@ -135,12 +134,14 @@ class Image(models.Model):
         except:
             log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
             return '/media/images/404_gallery.jpg'
+
     def get_medium_url(self):
         try:
             return self.image['medium'].url
         except:
             log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
             return '/media/images/404_medium.jpg'
+
     def get_thumbnail_url(self):
         try:
             return self.image['thumbnail'].url
@@ -151,10 +152,12 @@ class Image(models.Model):
     def __unicode__(self):
         return self.image.name
 
+
 class ImageForm(forms.Form):
     image = forms.FileField(
         label='Waehle ein bild von deinem Computer',
         help_text='max. 2.5 megabytes'
     )
+
     def __unicode__(self):
         return self.image.path

@@ -2,19 +2,6 @@
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-e8_!iy!jknm!%sxw$8=a5t#^t=lzctijb=t@djup(t$hhs^)+'
 
-try:
-    from local_test_settings import *
-    print('-------> reading local test settings')
-except ImportError:
-    print('-------> NOT importing local settings')
-
-
-try:    
-    print('-------> importing production settings')
-    from production_server_settings import *
-except ImportError:
-    print('-------> NOT READING production settings')
- 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -117,3 +104,23 @@ REST_FRAMEWORK = {
     }
 }
 
+try:
+    from local_test_settings import *
+    print('-------> reading local test settings')
+    INSTALLED_APPS = INSTALLED_APPS + (
+        'debug_toolbar',
+    )
+    MIDDLEWARE_CLASSES =  MIDDLEWARE_CLASSES + (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    INTERNAL_IPS = ('127.0.0.1',)
+
+except ImportError:
+    print('-------> NOT importing local settings')
+
+
+try:    
+    print('-------> importing production settings')
+    from production_server_settings import *
+except ImportError:
+    print('-------> NOT READING production settings')
