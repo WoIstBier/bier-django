@@ -5,3 +5,4 @@ production_server_settings.py
 media/images/*
 static/*
 *.orig
+.cache/
