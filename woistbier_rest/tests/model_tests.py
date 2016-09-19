@@ -33,10 +33,10 @@ class KioskModelTest(TestCase):
     def test_kiosk_save(self):
         #create a new kiosk isntance and save it to the db
         #kiosk = self.post_kiosk_and_get_resulting_kiosk('TestStraße', 12)
-        kiosk = create_dummy_kiosk(street=u'TestStraße', number=12)
-        self.assertEqual(unicode(kiosk.street).encode('utf-8'), 'TestStraße')
+        kiosk = create_dummy_kiosk(street='TestStraße', number=12)
+        self.assertEqual(kiosk.street, 'TestStraße')
         self.assertEqual(kiosk.number, 12)
-        self.assertEqual(unicode(kiosk.name).encode('utf-8'), 'TestStraße' + ' ' + str(12))
+        self.assertEqual(kiosk.name, 'TestStraße' + ' ' + str(12))
 
         #now change street name and number
         kiosk.street = 'AndereStraße'
@@ -45,7 +45,7 @@ class KioskModelTest(TestCase):
         self.assertEqual(kiosk.street, 'AndereStraße')
         self.assertEqual(kiosk.number, 32)
         #the kiosk.name will change on calling the save method
-        self.assertNotEqual(unicode(kiosk.name).encode('utf-8'), 'AndereStraße' + str(32))
+        self.assertNotEqual(kiosk.name, 'AndereStraße' + str(32))
 
         kiosk.save()
 

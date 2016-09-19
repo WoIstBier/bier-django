@@ -40,7 +40,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR,'../media/')
+MEDIA_ROOT = os.path.join(BASE_DIR,'./media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -132,8 +132,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'kiosk_uploads': '1000/minute',
-        'image_uploads': '1500/minute'
+        'kiosk_uploads': '10/minute',
+        'image_uploads': '15/minute'
     }
 }
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import logging
 import json
@@ -10,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def get_image_path_from_response(resp):
-    image_response = json.loads(resp.content)
+    image_response = json.loads(resp.content.decode())
     img = image_response.get('image')
     #print(img)
     path = os.path.abspath(os.path.join(settings.MEDIA_ROOT,img))
@@ -41,7 +40,7 @@ def post_image(client, kiosk_id):
     with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'r') as f:
         #read_data = f.read()
         resp = client.post(prefix + 'image/', {'kiosk': str(kiosk_id), 'image': f})
-
+        print(resp)
     return resp
 
 
@@ -61,20 +60,20 @@ class CommentTests(TestCase):
     def test_post_comment(self):
         #post a new empty kiosk
         resp = post_kiosk(self.client, 137)
-        kiosk = json.loads(resp.content)
+        kiosk = json.loads(resp.content.decode())
         self.assertEqual(resp.status_code, 201)
         #get the comments for that new kiosk
         resp = self.client.get(prefix + 'comment/?kiosk=' + str(kiosk.get('id')))
         self.assertEqual(resp.status_code, 200)
         #list should be empt since the kiosk was just generated
-        self.assertEquals(json.loads(resp.content), [])
+        self.assertEquals(json.loads(resp.content.decode()), [])
 
         #post a new comment with a username and a text
         username = 'Horst der Borst'
         text = 'Welch schoener kommentar ereilt mich da? Oh neine es ist siegliende mit ihrem Netz! Gott bewahre'
         resp = post_comment(self.client, str(kiosk.get('id')), username, text)
         self.assertEqual(resp.status_code, 201)
-        comment = json.loads(resp.content)
+        comment = json.loads(resp.content.decode())
 
         self.assertEquals(comment.get('name'), username)
         self.assertEquals(comment.get('comment'), text)
@@ -84,32 +83,32 @@ class CommentTests(TestCase):
         resp = post_comment(self.client, str(kiosk.get('id')), username, text)
 
         self.assertEqual(resp.status_code, 201)
-        comment = json.loads(resp.content)
+        comment = json.loads(resp.content.decode())
         print(str(comment))
         self.assertEquals(comment.get('name'), username)
         self.assertEquals(comment.get('comment'), text)
 
         #post another with a really long username this should fail with code 400
-        username = u'Klaüs die Mäus ist ein marzahn der königsgesselschaft. Der König folgt ihn treu.' \
-                   u' Was immer der Hunnen planen'
+        username = 'Klaüs die Mäus ist ein marzahn der königsgesselschaft. Der König folgt ihn treu.' \
+                   ' Was immer der Hunnen planen'
         resp = post_comment(self.client, str(kiosk.get('id')), username, text)
         print(str(resp))
         self.assertEqual(resp.status_code, 400)
 
         #post another with a really long text this should fail with code 400
-        username = u'Klaüsi!'
-        text = u"Siegfried hieß der wack're Recke, und er kämpfte gut," \
-               u"hatte eine dicke Haut vom Bad im Drachenblut!" \
-               u"Siegfried hatte einen Schatz gar groß und meisterlich," \
-               u"den hatte er geraubt vom alten Zwergenkönig Alberich!" \
-               u"Kriemhild hieß die holde Maid, das merke bitte sehr" \
-               u"ihre Brüder hießen Gunther, Gernot, Gieselher!" \
-               u"Siegfried hielt bei Bruder Gunther um die Kriemhild an," \
-               u"und so fing ganz froh und munter ihre große Liebe an!" \
-               u"Gunter liebte eine Frau, die starke Brunhild sehr," \
-               u"und da musste jetzt der große Held, der Siegfried her!" \
-               u"Siegfried half dem Gunther wohl, der konnte siegreich sein" \
-               u"und dann führte König Gunther seine starke Brunhild heim!"
+        username = 'Klaüsi!'
+        text = "Siegfried hieß der wack're Recke, und er kämpfte gut," \
+               "hatte eine dicke Haut vom Bad im Drachenblut!" \
+               "Siegfried hatte einen Schatz gar groß und meisterlich," \
+               "den hatte er geraubt vom alten Zwergenkönig Alberich!" \
+               "Kriemhild hieß die holde Maid, das merke bitte sehr" \
+               "ihre Brüder hießen Gunther, Gernot, Gieselher!" \
+               "Siegfried hielt bei Bruder Gunther um die Kriemhild an," \
+               "und so fing ganz froh und munter ihre große Liebe an!" \
+               "Gunter liebte eine Frau, die starke Brunhild sehr," \
+               "und da musste jetzt der große Held, der Siegfried her!" \
+               "Siegfried half dem Gunther wohl, der konnte siegreich sein" \
+               "und dann führte König Gunther seine starke Brunhild heim!"
         resp = post_comment(self.client, str(kiosk.get('id')), username, text)
         #print(str(resp))
         self.assertEqual(resp.status_code, 400)
@@ -119,7 +118,7 @@ class CommentTests(TestCase):
         resp = self.client.get(prefix + 'comment/?kiosk=' + str(kiosk.get('id')))
         self.assertEqual(resp.status_code, 200)
         #list should be empt since the kiosk was just generated
-        comments_list = json.loads(resp.content)
+        comments_list = json.loads(resp.content.decode())
         self.assertEquals(len(comments_list), 2)
 
 
@@ -132,11 +131,11 @@ class KioskTests(TestCase):
         self.assertEqual(resp.status_code, 201)
         #check if its really there. That means getting the id of the kiosk in the response
         #and make a get reqeust for it. this wont reutrn a kiosk but a kioskdetailthingy
-        kiosk = json.loads(resp.content)
+        kiosk = json.loads(resp.content.decode())
         resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk.get('id')) + '/')
         self.assertEqual(resp.status_code, 200)
         #get the kiosk from the detaisl dict thingy
-        kiosk = json.loads(resp.content).get('kiosk')
+        kiosk = json.loads(resp.content.decode()).get('kiosk')
         self.assertTrue(kiosk.get('id') > 0)
 
 
@@ -148,13 +147,13 @@ class ImageTests(TestCase):
     def test_imagelists(self):
         #post a new empty kiosk
         resp = post_kiosk(self.client, 137)
-        kiosk = json.loads(resp.content)
+        kiosk = json.loads(resp.content.decode())
         kiosk_id = str(kiosk.get('id'))
         #post a number of images
         for num in range(1, 6):
             post_image(self.client, kiosk_id)
             resp = self.client.get(prefix + 'image/?kiosk=' + kiosk_id)
-            images_from_view = json.loads(resp.content)
+            images_from_view = json.loads(resp.content.decode())
             #log.info(str(images_from_view))
             #thers should be the posted amount of images in here
             self.assertTrue(len(images_from_view) == num)
@@ -162,12 +161,12 @@ class ImageTests(TestCase):
             resp = self.client.get(prefix + 'kioskDetails/' + kiosk_id + '/')
             self.assertEqual(resp.status_code, 200)
             #get the kiosk from the detaisl dict thingy
-            images_from_kiosk = json.loads(resp.content).get('images')
+            images_from_kiosk = json.loads(resp.content.decode()).get('images')
             self.assertItemsEqual(images_from_view, images_from_kiosk,
                                   'Image lists in the image and the kioskdetails view were not the same')
 
             resp = self.client.get(prefix + 'kioskList/?radius=1000')
-            kioskListItems = json.loads(resp.content)
+            kioskListItems = json.loads(resp.content.decode())
             #lets find the kiosk with the id we just posted
             for listitem in kioskListItems:
                 i = listitem.get('kiosk').get('id')
@@ -179,15 +178,15 @@ class ImageTests(TestCase):
     def test_post_images(self):
         #post a kiosk and get the list of images for its id. This list should be empty for a new kiosk
         resp = post_kiosk(self.client, 137)
-        kiosk = json.loads(resp.content)
+        kiosk = json.loads(resp.content.decode())
 
         resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk.get('id')))
-        images = json.loads(resp.content)
+        images = json.loads(resp.content.decode())
         self.assertEquals(images, [])
         #now post an image to the kiosk and check if the list contains 1 image
         post_image(self.client, kiosk.get('id'))
         resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk.get('id')))
-        images = json.loads(resp.content)
+        images = json.loads(resp.content.decode())
         #log.info(str(images))
         self.assertTrue(len(images) == 1)
 
