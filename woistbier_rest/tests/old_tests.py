@@ -287,26 +287,30 @@ class ImageTests(TestCase):
         from PIL import Image as PIL
 
         image = PIL.open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg')
-        image.save('./test.jpg')
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as t:
+            image.save(t.name)
 
-        resp = self.client.post(prefix + 'image/', {'kiosk':'123123123123123', 'image': open('./test.jpg', 'rb')})
-        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
-        self.assertEqual(resp.status_code, 400, msg)
+            resp = self.client.post(prefix + 'image/', {'kiosk':'123123123123123', 'image': t})
+            msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
+            self.assertEqual(resp.status_code, 400, msg)
 
-        resp = self.client.post(prefix + 'image/', {'image': open('./test.jpg', 'rb')})
-        msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
-        self.assertEqual(resp.status_code, 400, msg)
+            resp = self.client.post(prefix + 'image/', {'image': t})
+            msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
+            self.assertEqual(resp.status_code, 400, msg)
 
     def test_post_image(self):
-        print(str(12))
+        import tempfile
         from PIL import Image as PIL
         image = PIL.open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg')
-        image.save('./test.jpg')
 
-        proper_kiosk_id = get_proper_response_index(self, 'kiosk')
-        resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': open('./test.jpg', 'rb')})
-        msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
-        self.assertEqual(resp.status_code, 201, msg)
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as t:
+            image.save(t.name)
+
+            proper_kiosk_id = get_proper_response_index(self, 'kiosk')
+            resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': t})
+            msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
+            self.assertEqual(resp.status_code, 201, msg)
 
         image_response = json.loads(resp.content.decode())
         #this is either a list if it contains more than one image. or its a dict.
