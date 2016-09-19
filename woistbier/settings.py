@@ -73,7 +73,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    'south',
     'easy_thumbnails',
     'woistbier_rest',
     'django_nose',
@@ -119,7 +118,7 @@ except ImportError:
     print('-------> NOT importing local settings')
 
 
-try:    
+try:
     print('-------> importing production settings')
     from production_server_settings import *
 except ImportError:
