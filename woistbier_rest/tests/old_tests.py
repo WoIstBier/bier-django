@@ -34,15 +34,19 @@ def basic_status_code(testcase, suffix):
     testcase.assertEqual(resp1.status_code, 301, 'Server redirect did not give a proper response statuscode! expected: ' + str(301) + ' response: ' + str(resp1.status_code))
 
     resp1 = testcase.client.get(prefix + suffix, follow = 1)
-    testcase.assertEqual(resp1.status_code, 200, 'URL = ' + prefix+suffix + 'Server redirect did not give a proper response statuscode! expected: ' + str(200) + ' response: ' + str(resp1.status_code))
+    testcase.assertEqual(
+        resp1.status_code,
+        200,
+        'URL = ' + prefix+suffix + 'Server redirect did not give a proper response statuscode! expected: ' + str(200) + ' response: ' + str(resp1.status_code)
+    )
 
     resp2 = testcase.client.get(prefix + suffix + '/')
     testcase.assertEqual(resp1.status_code, 200, 'Server redirect did not give a proper response statuscode! expected: ' + str(200) + ' response: ' + str(resp2.status_code))
-    testcase.assertJSONEqual(resp1.content, resp2.content, 'The request redirect was not a proper redirect. The two responses are not equal.')
+    testcase.assertJSONEqual(resp1.content.decode(), resp2.content.decode(), 'The request redirect was not a proper redirect. The two responses are not equal.')
 
     resp2 = testcase.client.get(prefix + suffix + '/', {'ignore_text': 'ignore', 'ignore_num': 123})
     testcase.assertEqual(resp2.status_code, 200, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
-    testcase.assertJSONEqual(resp1.content, resp2.content, 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
+    testcase.assertJSONEqual(resp1.content.decode(), resp2.content.decode(), 'The given ignore keys have not been ignored by the server! The two responses are not equal.')
 
 class kioskListTests(TestCase):
 
@@ -59,7 +63,7 @@ class kioskListTests(TestCase):
         msg = 'The given ignore keys have not been ignored by the API!'
         self.assertEqual(resp2.status_code, 200, msg)
         msg += 'The two responses are not equal.'
-        self.assertJSONEqual(resp1.content, resp2.content, msg)
+        self.assertJSONEqual(resp1.content.decode('utf-8'), resp2.content.decode(), msg)
 
         resp1 = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
         self.assertEqual(resp1.status_code, 200)
@@ -72,50 +76,52 @@ class kioskListTests(TestCase):
     parameters for non existing beers. or lookup kiosks at tatooine
     '''
     def test_distance_and_empty_response(self):
-        print(str(2))
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 0.2 , 'geo_long': -176.5, 'radius': 5})
-        self.assertEqual(resp.content, '[]', 'We got a kiosk on Baker Island!')
+        data = json.loads(resp.content.decode('utf-8'))
+        self.assertEqual(data, [], 'We got a kiosk on Baker Island!')
 
         #request with a non-existent beer
         response  = self.client.get(prefix + 'kioskList/', {'beer': 'gibtsnichtbier'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '[]')
+        data = json.loads(resp.content.decode('utf-8'))
+        self.assertEqual(data, [])
 
         #mos espa coordinates tunisia
         response  = self.client.get(prefix + "kioskList/", {'geo_lat': 33.994296, 'geo_long': 7.842677})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '[]', 'We got a kiosk on tatooine!')
+        data = json.loads(resp.content.decode('utf-8'))
+        self.assertEqual(data, [], 'We got a kiosk on tatooine!')
 
         #test radius too small
         response  = self.client.get(prefix + "kioskList/?radius=0.01&geo_lat=51.53533&geo_long=7.48700")
+        data = json.loads(resp.content.decode('utf-8'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '[]')
+        self.assertEqual(data, [])
 
     def test_response_content(self):
-        print(str(3))
         None_notallowed = ['kiosk', 'distance']
         None_allowed    = ['beerPrice', 'image']
 
         resp = self.client.get(prefix + 'kioskList/', {'geo_lat': 51.53 , 'geo_long': 7.45, 'radius': 5})
         self.assertTrue(resp, "Response from KioskList was empty FFS")
 
-        kiosk_list = json.loads(resp.content)
+        kiosk_list = json.loads(resp.content.decode())
         for kiosk in kiosk_list:
             self.assertGreaterEqual(5, kiosk.get('distance'), 'The distance is greater than the given radius!')
             for key in None_notallowed:
-                self.assertTrue(kiosk.has_key(key), "The key " + key + " wasn't found in the response.")
+                self.assertTrue(key in kiosk, "The key " + key + " wasn't found in the response.")
                 self.assertNotEqual(kiosk.get(key), None)
                 self.assertNotEqual(kiosk.get(key), '')
 
             for key in None_allowed:
-                self.assertTrue(kiosk.has_key(key), "The key " + key + " wasn't found in the response.")
+                self.assertTrue(key in kiosk, "The key " + key + " wasn't found in the response.")
 
         resp = self.client.get(prefix + 'kioskList/', {'beer': 'Hansa'})
 
-        cont_dict = json.loads(resp.content)
+        cont_dict = json.loads(resp.content.decode())
         for kiosk in cont_dict:
-            self.assertTrue(kiosk.get('beerPrice').get('beer_name').__contains__('Hansa')  )
-#             self.assertTrue( (kiosk.get('beerPrice.beer_name')).__contains__('Hansa'))
+            self.assertTrue('Hansa' in kiosk.get('beerPrice').get('beer_name')  )
+
 
 
 class KioskDetailsTests(TestCase):
@@ -133,10 +139,10 @@ class KioskDetailsTests(TestCase):
         print(str(5))
         resp = self.client.get(prefix + 'kioskDetails/' + str(get_proper_response_index(self, 'kioskDetails')) + '/')
 
-        cont_dict = json.loads(resp.content)
+        cont_dict = json.loads(resp.content.decode())
 
         for key in ['images', 'beerPrices', 'comments', 'kiosk']:
-            self.assertTrue(cont_dict.has_key(key), "The key " + key + " wasn't found in the response.")
+            self.assertTrue(key in cont_dict, "The key " + key + " wasn't found in the response.")
 
         msg = 'The given response does not contain a kiosk.'
         self.assertNotEqual(cont_dict.get('kiosk'), '[]', msg)
@@ -182,7 +188,7 @@ class BeerPriceTests(TestCase):
         msg = 'PUT request was unsuccessful for some reason. expected: ' + str(200) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 200, msg)
 
-        before_dict = json.loads(resp.content)
+        before_dict = json.loads(resp.content.decode())
         self.assertEqual(str(before_dict.get('size')), '0.7')
         self.assertEqual(str(before_dict.get('price')), '128')
 
@@ -191,7 +197,7 @@ class BeerPriceTests(TestCase):
         msg = 'PUT request was unsuccessful for some reason. expected: ' + str(200) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 200, msg)
 
-        before_dict = json.loads(resp.content)
+        before_dict = json.loads(resp.content.decode())
         self.assertEqual(str(before_dict.get('size')), '1.0')
         self.assertEqual(str(before_dict.get('price')), '110')
 
@@ -205,7 +211,7 @@ class BeerPriceTests(TestCase):
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 201, msg)
 
-        cont_dict = json.loads(resp.content)
+        cont_dict = json.loads(resp.content.decode())
 
         b = BeerPrice.objects.get(pk = cont_dict.get('id'))
 
@@ -246,7 +252,7 @@ class KioskTests(TestCase):
                                                     'number': '123', 'geo_lat': '51.51', 'geo_long': '7.51'})
         self.assertEqual(resp.status_code, 201, 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code)+ str(resp))
 
-        cont_dict = json.loads(resp.content)
+        cont_dict = json.loads(resp.content.decode())
         k = Kiosk.objects.get(pk = cont_dict.get('id'))
 
         keys = ['street', 'number', 'zip_code', 'city', 'name', 'description', 'owner', 'geo_lat', 'geo_long', 'is_valid_address']
@@ -279,43 +285,35 @@ class ImageTests(TestCase):
         basic_status_code(self, 'image')
 
         from PIL import Image as PIL
-        from StringIO import StringIO
 
-        file_obj = StringIO()
         image = PIL.open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg')
-        image.save(file_obj, 'jpeg')
-        file_obj.name = 'test.jpg'
-        file_obj.seek(0)
-        resp = self.client.post(prefix + 'image/', {'kiosk':'123123123123123', 'image': file_obj})
+        image.save('./test.jpg')
+
+        resp = self.client.post(prefix + 'image/', {'kiosk':'123123123123123', 'image': open('./test.jpg', 'rb')})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 400, msg)
 
-        resp = self.client.post(prefix + 'image/', {'image': file_obj})
+        resp = self.client.post(prefix + 'image/', {'image': open('./test.jpg', 'rb')})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(400) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 400, msg)
 
     def test_post_image(self):
         print(str(12))
         from PIL import Image as PIL
-        from StringIO import StringIO
-
-        file_obj = StringIO()
         image = PIL.open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg')
-        image.save(file_obj, 'jpeg')
-        file_obj.name = 'test.png'
-        file_obj.seek(0)
+        image.save('./test.jpg')
 
         proper_kiosk_id = get_proper_response_index(self, 'kiosk')
-        resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': file_obj})
+        resp = self.client.post(prefix + 'image/', {'kiosk':str(proper_kiosk_id), 'image': open('./test.jpg', 'rb')})
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code) + str(resp)
         self.assertEqual(resp.status_code, 201, msg)
 
-        image_response = json.loads(resp.content)
+        image_response = json.loads(resp.content.decode())
         #this is either a list if it contains more than one image. or its a dict.
         self.assertFalse(isinstance(image_response, list), "Posting an image returned more than one image")
         keys = ['kiosk', 'image']
         for key in keys:
-            self.assertTrue(image_response.has_key(key), "The key " + key + " wasn't found in the response.")
+            self.assertTrue(key in image_response, "The key " + key + " wasn't found in the response.")
         #self.assertEqual(resp.status_code, 200)
     def test_response_content(self):
         print(str(13))
@@ -324,17 +322,17 @@ class ImageTests(TestCase):
         resp = self.client.get(prefix + 'image/')
         self.assertTrue(resp, "Response from imageList was empty FFS")
 
-        image_list = json.loads(resp.content)
+        image_list = json.loads(resp.content.decode())
         for img in image_list:
             for key in keys:
-                self.assertTrue(img.has_key(key), "The key " + key + " wasn't found in the response.")
+                self.assertTrue(key in img, "The key " + key + " wasn't found in the response.")
 
     def test_regression_7_6(self):
         print(str(14))
         resp = self.client.get(prefix + 'image/')
         self.assertTrue(resp, "Response from imageList was empty FFS")
 
-        image_list = json.loads(resp.content)
+        image_list = json.loads(resp.content.decode())
         id_set = set()
         for img in image_list:
             id_set.add(img.get("kiosk"))
@@ -364,7 +362,7 @@ class CommentTests(TestCase):
         msg = 'POST request was unsuccessful for some reason. expected: ' + str(201) + ' response: ' + str(resp.status_code)+ str(resp)
         self.assertEqual(resp.status_code, 201, msg)
 
-        cont_dict = json.loads(resp.content)
+        cont_dict = json.loads(resp.content.decode())
         c = Comment.objects.get(pk = cont_dict.get('id'))
 
         keys = ['id', 'name', 'comment']

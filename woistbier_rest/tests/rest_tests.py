@@ -36,21 +36,16 @@ def post_kiosk(client, number):
 
 
 def post_image(client, kiosk_id):
-
-    with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'r') as f:
+    with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'rb') as f:
         #read_data = f.read()
         resp = client.post(prefix + 'image/', {'kiosk': str(kiosk_id), 'image': f})
         print(resp)
     return resp
 
-
+#TODO: all of this should be replaced by temp folder inpython 3.5
 def remove_files_with_prefix_in_folder(prefix, folder):
-    #log.info('path is: ' + str(folder))
-    #log.info('name is: ' + filename )
     for t in os.listdir(folder):
-        #log.info(str(t))
         if t.startswith(prefix):
-            #log.info('removing file: ' + os.path.join(folder,t))
             os.remove(os.path.join(folder,t))
 
 
@@ -162,8 +157,8 @@ class ImageTests(TestCase):
             self.assertEqual(resp.status_code, 200)
             #get the kiosk from the detaisl dict thingy
             images_from_kiosk = json.loads(resp.content.decode()).get('images')
-            self.assertItemsEqual(images_from_view, images_from_kiosk,
-                                  'Image lists in the image and the kioskdetails view were not the same')
+            for kiosk_image, image_from_view in zip(images_from_view, images_from_kiosk):
+                self.assertEqual(kiosk_image, image_from_view, 'Image lists in the image and the kioskdetails view were not the same')
 
             resp = self.client.get(prefix + 'kioskList/?radius=1000')
             kioskListItems = json.loads(resp.content.decode())
@@ -171,7 +166,6 @@ class ImageTests(TestCase):
             for listitem in kioskListItems:
                 i = listitem.get('kiosk').get('id')
                 if str(i) == str(kiosk_id):
-                    #log.info('asdsaaaaaaaaaaaaaaaaa' + str(listitem.get('image')))
                     self.assertTrue(listitem.get('image') is not None, 'thumb was none!')
                     break
 
