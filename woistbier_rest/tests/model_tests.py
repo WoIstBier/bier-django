@@ -23,7 +23,7 @@ def create_dummy_beer(name='Geiles Bier', brew='Pils', location='Dortmund'):
 
 
 '''
-Tests for the kioskmodel. 
+Tests for the kioskmodel.
 '''
 
 
@@ -46,7 +46,7 @@ class KioskModelTest(TestCase):
         self.assertEqual(kiosk.number, 32)
         #the kiosk.name will change on calling the save method
         self.assertNotEqual(unicode(kiosk.name).encode('utf-8'), 'AndereStraße' + str(32))
-        
+
         kiosk.save()
 
         self.assertEqual(kiosk.name, 'AndereStraße' + ' ' + str(32))
@@ -69,4 +69,3 @@ class BeerPriceTest(TestCase):
         self.assertEquals(beer_price.score, beer_price.price/beer_price.size,
                           'Score not correctly computed. Its '+str(beer_price.score)
                           + ' but it should be  ' + str(beer_price.price/beer_price.size))
-

@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, include, url
-from settings import MEDIA_ROOT, STATIC_ROOT
 from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
@@ -10,9 +9,9 @@ import logging
 log = logging.getLogger(__name__)
 import socket
 print(str(socket.gethostname()))
-if  socket.gethostname().startswith('Novalee'):
+if  not 'cepheus' in socket.gethostname():
     LOCALHOST = True
-else: 
+else:
     LOCALHOST = False
 
 urlpatterns = patterns('',
@@ -27,35 +26,36 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #include the urls from the polls app.
     url(r'^bier/', include('woistbier_rest.urls')),
-    
+
 #     url(r'^$', TemplateView.as_view(template_name="index.html")),
-    
+
     url(r'^$', 'woistbier_rest.views.index',
         name="index"),
-    url(r'^about', 
+    url(r'^about',
         TemplateView.as_view(template_name='bier/contact.html'),
         name='about'),
-    url(r'^beer', 
+    url(r'^beer',
         TemplateView.as_view(template_name='bier/beer.html'),
         name='beer'),
-    url(r'^impressum', 
+    url(r'^impressum',
         TemplateView.as_view(template_name='bier/impressum.html'),
         name='impressum'),
-    url(r'^testPage', 
+    url(r'^testPage',
         TemplateView.as_view(template_name='bier/testPage/index.html'),
         name='test_about')
-                       
+
 )
 
 handler404 = 'woistbier_rest.views.not_found_view'
 
 if LOCALHOST:
-    append= patterns( '',  
+    from django.conf import settings
+    append= patterns( '',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': MEDIA_ROOT,
+            'document_root': settings.MEDIA_ROOT,
         }),
         url(r'^static/(?P<path>.*)$','django.views.static.serve',{
-            'document_root': STATIC_ROOT, 
+            'document_root': settings.STATIC_ROOT,
         })
     )
     urlpatterns += append

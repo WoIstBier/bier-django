@@ -37,7 +37,7 @@ def post_kiosk(client, number):
 
 
 def post_image(client, kiosk_id):
-    
+
     with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'r') as f:
         #read_data = f.read()
         resp = client.post(prefix + 'image/', {'kiosk': str(kiosk_id), 'image': f})
@@ -158,7 +158,7 @@ class ImageTests(TestCase):
             #log.info(str(images_from_view))
             #thers should be the posted amount of images in here
             self.assertTrue(len(images_from_view) == num)
-            
+
             resp = self.client.get(prefix + 'kioskDetails/' + kiosk_id + '/')
             self.assertEqual(resp.status_code, 200)
             #get the kiosk from the detaisl dict thingy
@@ -272,7 +272,7 @@ class RestThrottleTests(TestCase):
 
         resp = self.client.get(prefix + 'image/')
         self.assertEqual(resp.status_code, 200)
-        
+
         resp = self.client.get(prefix + 'kioskList/')
         self.assertEqual(resp.status_code, 200)
 
@@ -283,19 +283,19 @@ class RestThrottleTests(TestCase):
         resp = self.client.get(prefix + 'nonexsitingurl/')
         log.info('REsp code is : ' + str(resp.status_code))
         self.assertEqual(resp.status_code, 404)
-    
+
     #post one kiosk with street and number to the db
     def post_kiosk(self, street, number):
-        resp = self.client.post(prefix + 'kiosk/', {'street': 
-            street, 'city': 'Musterstadt', 'zip_code': '12345', 
+        resp = self.client.post(prefix + 'kiosk/', {'street':
+            street, 'city': 'Musterstadt', 'zip_code': '12345',
             'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
         return resp.status_code
-    
+
     def test_kiosk_addition_throttle(self):
         #print('throttle test add kiosk 1 ')
         import time
         from woistbier_rest.models import Kiosk
-        #lets get a count of kioske 
+        #lets get a count of kioske
         number = Kiosk.objects.count()
         statuscode = 201
         i = 1
@@ -314,5 +314,3 @@ class RestThrottleTests(TestCase):
         self.assertEqual(statuscode, 429 , 'Expected a too many requests statuscode (429) but its: '  + str(statuscode) + '      ' + str(number) + ' kiosks have been posted')
         #we cant test the exact number of posted kioske here. Since other tests also post stuff.
         #self.assertEqual(number, 10)
- 
-

@@ -18,4 +18,3 @@ class ViewTests(TestCase):
         angle_in_radians = v.radians(90)
         #self.assertEqual(angle_in_radians, 3.1415/2.0)
         self.assertAlmostEqual(angle_in_radians, 3.1415/2.0, places=4)
-
