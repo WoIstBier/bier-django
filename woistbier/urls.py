@@ -49,6 +49,7 @@ urlpatterns = patterns('',
 handler404 = 'woistbier_rest.views.not_found_view'
 
 if LOCALHOST:
+    print('Youre running on LOCALHOST.')
     from django.conf import settings
     append= patterns( '',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
