@@ -1,7 +1,5 @@
 *.pyc
-#settings.py
-local_test_settings.py
-production_server_settings.py
+secrets.py
 media/images/*
 static/*
 *.orig

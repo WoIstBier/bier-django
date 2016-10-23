@@ -1,6 +1,20 @@
-#Global  Django settings for siteStuff project.
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '-e8_!iy!jknm!%sxw$8=a5t#^t=lzctijb=t@djup(t$hhs^)+'
+#Global  Django settings for woistbier project.
+import logging
+log= logging.getLogger(__name__)
+
+try:
+    from .secrets import SECRET_KEY as secret
+    log.info('Found secret key.')
+    SECRET_KEY = secret
+except ImportError:
+    log.warn('Did not find secret key. Generating a new one. ')
+    from django.utils.crypto import get_random_string
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    SECRET_KEY = get_random_string(50, chars)
+
+#Never ever set this to true.
+DEBUG=False
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -80,8 +94,7 @@ INSTALLED_APPS = (
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-#NOSE_ARGS = ['--verbosity=2', '--nologcapture']
-NOSE_ARGS = ['--verbosity=2']
+
 
 THUMBNAIL_ALIASES = {
     '': {
@@ -102,24 +115,3 @@ REST_FRAMEWORK = {
         'image_uploads': '15/minute'
     }
 }
-
-try:
-    from local_test_settings import *
-    print('-------> reading local test settings')
-    INSTALLED_APPS = INSTALLED_APPS + (
-        'debug_toolbar',
-    )
-    MIDDLEWARE_CLASSES =  MIDDLEWARE_CLASSES + (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
-    INTERNAL_IPS = ('127.0.0.1',)
-
-except ImportError:
-    print('-------> NOT importing local settings')
-
-
-try:
-    print('-------> importing production settings')
-    from production_server_settings import *
-except ImportError:
-    print('-------> NOT READING production settings')

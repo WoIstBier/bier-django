@@ -8,7 +8,6 @@ admin.autodiscover()
 import logging
 log = logging.getLogger(__name__)
 import socket
-print(str(socket.gethostname()))
 if  not 'cepheus' in socket.gethostname():
     LOCALHOST = True
 else:
@@ -24,6 +23,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
     #include the urls from the polls app.
     url(r'^bier/', include('woistbier_rest.urls')),
 
@@ -49,7 +49,7 @@ urlpatterns = patterns('',
 handler404 = 'woistbier_rest.views.not_found_view'
 
 if LOCALHOST:
-    print('Youre running on LOCALHOST.')
+    print('You are running on LOCALHOST.')
     from django.conf import settings
     append= patterns( '',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
@@ -60,4 +60,4 @@ if LOCALHOST:
         })
     )
     urlpatterns += append
-    log.warn("Added file serve URLs to urls.py. This should only happen on non production systems.")
+    log.warn("Added file serve URLs to urls.py. This should only happen on non production systems!.")
