@@ -1,5 +1,7 @@
-*.pyc
+# under no cirsumstances put this file under git control
 secrets.py
+
+*.pyc
 media/images/*
 static/*
 *.orig

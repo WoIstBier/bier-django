@@ -2,20 +2,6 @@
 import logging
 log= logging.getLogger(__name__)
 
-try:
-    from .secrets import SECRET_KEY as secret
-    log.info('Found secret key.')
-    SECRET_KEY = secret
-except ImportError:
-    log.warn('Did not find secret key. Generating a new one. ')
-    from django.utils.crypto import get_random_string
-    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-    SECRET_KEY = get_random_string(50, chars)
-
-#Never ever set this to true.
-DEBUG=False
-
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.

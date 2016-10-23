@@ -1,8 +1,9 @@
-from .settings import *
+from woistbier.settings import *
 
 import logging
 log = logging.getLogger(__name__)
 
+SECRET_KEY='test_blabla_123456789'
 
 DEBUG=True
 
