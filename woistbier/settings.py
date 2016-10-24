@@ -1,6 +1,6 @@
 #Global  Django settings for siteStuff project.
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '-e8_!iy!jknm!%sxw$8=a5t#^t=lzctijb=t@djup(t$hhs^)+'
+SECRET_KEY = 'So you think this is real? Hell naaaw'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -119,7 +119,7 @@ except ImportError:
     print('-------> NOT importing local settings')
 
 
-try:    
+try:
     print('-------> importing production settings')
     from production_server_settings import *
 except ImportError:
