@@ -5,6 +5,7 @@ Created on Feb 17, 2013
 @author: mackaiver
 '''
 from django.contrib import admin
+from django.core.urlresolvers import reverse
 #from polls.models import Poll, Choice
 from woistbier_rest.models import Kiosk, Beer, BeerPrice, Image, Comment
 from pygeocoder import Geocoder
@@ -92,18 +93,36 @@ class BeerAdmin(admin.ModelAdmin):
     list_display = ('brand', 'name', 'brew', 'location')
     model = Beer
     
-class BeerPriceAdmin(admin.ModelAdmin):
+
+
+class KioskForeign(admin.ModelAdmin):
+    """ Meta View for all Views, containing a foreign key to kiosk.
+    """
+
+    def link_to_kiosk(self, obj):
+        """ Creates a link to a kiosk admin view
+        """
+        link = reverse("admin:woistbier_rest_kiosk_change",
+                       args=[obj.kiosk.id])
+        return '<a href="{}">{}</a>'.format(link, obj.kiosk.name)
+
+    link_to_kiosk.allow_tags = True
+
+
+class BeerPriceAdmin(KioskForeign):
     fieldsets = [
         ('Bier. z.B. Hansa Pils',               {'fields': ['beer']}),
         ('Preis',   {'fields': ['price']}),
         ('FlaschenGröße',   {'fields': ['size']}),
         ('Preis pro liter',   {'fields': ['score']}),
+        ('Kiosk', {'fields': ['link_to_kiosk']}),
     ]
-    list_display = ('beer', 'price', 'size', 'score')
+    list_display = ('beer', 'price', 'size', 'score', 'link_to_kiosk')
+    readonly_fields = ['link_to_kiosk']
     model = BeerPrice
-    
+
     actions = ['calc_scores']
-    
+
     def calc_scores(self, request, queryset):
         i = 0
         for obj in queryset:
@@ -111,14 +130,15 @@ class BeerPriceAdmin(admin.ModelAdmin):
         self.message_user(request, "%s kioske successfully updated." % i)
 
     calc_scores.short_description = "Update geo infos from google"
-    
+
     def calculate_score(self, obj):
         if obj.score == 0:
             obj.score = obj.price / obj.size
             obj.save()
             return 1
         return 0
-    
+
+
 # class KioskImageAdmin(admin.ModelAdmin):
 #     fieldsets = [
 #         ('Kiosk',               {'fields': ['kiosk']}),
@@ -126,23 +146,21 @@ class BeerPriceAdmin(admin.ModelAdmin):
 #     ]
 #     list_display = ('kiosk', 'image')
 #    inlines = [ImageInline]
-    
-class ImageAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Bild',               {'fields': ['image']})
-    ]
-    list_display = ('admin_img', 'image')
+
+
+class ImageAdmin(KioskForeign):
+    list_display = ['admin_img', 'image', 'link_to_kiosk']
+    fields = ['image', 'link_to_kiosk']
+    readonly_fields = ['link_to_kiosk']
     model = Image
-    
-class CommentAdmin(admin.ModelAdmin):
-#     fieldsets = [
-#         ('Name des Autors',               {'fields': ['name']}),
-#         ('Erstellungsdatum', {'fields': ['created']}),
-#         ('Text', {'fields': ['comment']})
-#     ]
-    fields = ['name', 'comment']
-#     list_display = ('name', 'created', 'comment')
+
+
+class CommentAdmin(KioskForeign):
+    list_display = ['name', 'comment', 'link_to_kiosk']
+    fields = list_display
+    readonly_fields = ['link_to_kiosk']
     model = Comment
+
 
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Comment, CommentAdmin)
