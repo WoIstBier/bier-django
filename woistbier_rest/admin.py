@@ -16,6 +16,10 @@ class ImageInline(admin.TabularInline):
 
 class BeerPriceInline(admin.TabularInline):
     model = BeerPrice
+    fieldsets = [
+        ('Bier', {'fields': ['beer']}),
+        ('Preis', {'fields': ['price']}),
+        ('Größe', {'fields': ['size']})]
     extra = 2
 
 class CommentInline(admin.TabularInline):
@@ -29,14 +33,18 @@ class KioskAdmin(admin.ModelAdmin):
      (None, {'fields': ['number']}),
      (None, {'fields': ['zip_code']}),
      (None, {'fields': ['city']}),
-     (None, {'fields': ['owner']}),
+     #(None, {'fields': ['owner']}),
      (None, {'fields': ['geo_lat']}),
      (None, {'fields': ['geo_long']}),
      (None, {'fields': ['is_valid_address']}),
-     (None, {'fields': ['description']})
+     #(None, {'fields': ['description']}),
+     (None, {'fields': ['created']}),
+     (None, {'fields': ['modified']})
     ]
 
+    readonly_fields = ['created', 'modified']
     inlines = [BeerPriceInline, CommentInline, ImageInline]
+    list_display = ['name', 'street', 'created', 'modified']
 
 
 class BeerAdmin(admin.ModelAdmin):
@@ -70,11 +78,14 @@ class BeerPriceAdmin(KioskForeign):
         ('Bier. z.B. Hansa Pils',               {'fields': ['beer']}),
         ('Preis',   {'fields': ['price']}),
         ('FlaschenGröße',   {'fields': ['size']}),
-        ('Preis pro liter',   {'fields': ['score']}),
+#        ('Preis pro liter', {'fields': ['score']}),
         ('Kiosk', {'fields': ['link_to_kiosk']}),
+        (None, {'fields': ['created']}),
+        (None, {'fields': ['modified']})
     ]
-    list_display = ('beer', 'price', 'size', 'score', 'link_to_kiosk')
-    readonly_fields = ['link_to_kiosk']
+
+    list_display = ('beer', 'price', 'size', 'link_to_kiosk', 'created', 'modified')
+    readonly_fields = ['link_to_kiosk', 'created', 'modified']
     model = BeerPrice
 
 class ImageAdmin(KioskForeign):
@@ -85,9 +96,9 @@ class ImageAdmin(KioskForeign):
 
 
 class CommentAdmin(KioskForeign):
-    list_display = ['name', 'comment', 'link_to_kiosk']
+    list_display = ['name', 'comment', 'link_to_kiosk', 'created', 'modified']
     fields = list_display
-    readonly_fields = ['link_to_kiosk']
+    readonly_fields = ['link_to_kiosk', 'created', 'modified']
     model = Comment
 
 
