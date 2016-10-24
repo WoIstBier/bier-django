@@ -27,7 +27,7 @@ class Kiosk(models.Model):
     is_valid_address = models.BooleanField('google_says_valid', default=False )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
     #Custom save method to create a name for the kiosk if no name was supplied
@@ -59,7 +59,7 @@ class Beer(models.Model):
     brand = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
 
@@ -69,7 +69,7 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     kiosk = models.ForeignKey(Kiosk)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name+str(self.created)
 
 ''' 
@@ -106,7 +106,7 @@ class BeerPrice(models.Model):
         # Call the "real" save() method
         super(BeerPrice, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.price)
 
 '''
@@ -149,7 +149,7 @@ class Image(models.Model):
             log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
             return '/media/images/404_thumbnail.jpg'
     
-    def __unicode__(self):
+    def __str__(self):
         return self.image.name
 
 
@@ -159,5 +159,5 @@ class ImageForm(forms.Form):
         help_text='max. 2.5 megabytes'
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.image.path
