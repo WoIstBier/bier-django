@@ -5,6 +5,7 @@ Created on Feb 17, 2013
 @author: mackaiver
 '''
 from django.contrib import admin
+from django.core.urlresolvers import reverse
 #from polls.models import Poll, Choice
 from woistbier_rest.models import Kiosk, Beer, BeerPrice, Image, Comment
 from pygeocoder import Geocoder
@@ -140,8 +141,16 @@ class CommentAdmin(admin.ModelAdmin):
 #         ('Erstellungsdatum', {'fields': ['created']}),
 #         ('Text', {'fields': ['comment']})
 #     ]
-    fields = ['name', 'comment']
-#     list_display = ('name', 'created', 'comment')
+    def link_to_kiosk(self, obj):
+        link = reverse("admin:woistbier_rest_kiosk_change",
+                       args=[obj.kiosk.id])
+        return u'<a href="%s">%s</a>' % (link, obj.kiosk.name)
+
+    list_display = ['name', 'comment', 'link_to_kiosk']
+    fields = list_display
+    readonly_fields = ['link_to_kiosk']
+
+    link_to_kiosk.allow_tags = True
     model = Comment
 
 admin.site.register(Image, ImageAdmin)
