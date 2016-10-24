@@ -10,13 +10,13 @@ from easy_thumbnails.fields import ThumbnailerImageField
 import logging
 log = logging.getLogger(__name__)
 
-'''Model for a Kiosk. 
+'''Model for a Kiosk.
 zip_code, geo info and valid addres flag will be supplied by the client with a google lookup
 There is a custom save method in the admin model in case a kiosk will be saved from the admin page
 '''
 class Kiosk(models.Model):
     street = models.CharField('street_name', max_length=150)
-    number = models.IntegerField('building_number') 
+    number = models.IntegerField('building_number')
     zip_code = models.CharField(max_length=6, blank=True, null=True)
     city = models.CharField(max_length=30)
     name = models.CharField('kiosk_name', max_length=160, blank=True)
@@ -26,14 +26,14 @@ class Kiosk(models.Model):
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
     created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
-    
+
     def __str__(self):
         return self.name
-    
+
     #Custom save method to create a name for the kiosk if no name was supplied
     def save(self, *args, **kwargs):
-        if self.street is not None and self.number is not None:
-                self.name = self.street + ' ' + str(self.number)
+        if not self.name:
+                self.name = '{} {}'.format(self.street, self.number)
         super(Kiosk, self).save(*args, **kwargs)
 
     class Meta:
@@ -61,7 +61,7 @@ class Beer(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class Comment(models.Model):
     name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
@@ -72,7 +72,7 @@ class Comment(models.Model):
     def __str__(self):
         return self.name+str(self.created)
 
-''' 
+'''
 This class connects beers with kiosks and add information about pricing and aisze of the bottle
 the score field is basicly cents per liter which makes it possible to find the cheapest beer per liter
 '''
@@ -99,7 +99,7 @@ class BeerPrice(models.Model):
 
     class Meta:
         unique_together = ("beer","kiosk", "size")
-    
+
     def save(self, *args, **kwargs):
         self.score = self.price / self.size
         #print("kiosk: " + str(self.kiosk) + " beer: " + str(self.beer) + "  id: " + str(self.id)  )
@@ -115,17 +115,17 @@ Model containing an image which automaticly creates a thumbnail when imagesize >
 class Image(models.Model):
     image = ThumbnailerImageField(upload_to='images/',  max_length=300,  blank=True)
     kiosk = models.ForeignKey(Kiosk)
-    
+
     #display image in admin view with this function
     def admin_img(self):
         try:
             return u'<image src="%s" alt="Bild" />' % self.image['medium'].url
         except Exception:
             return 'no image. WTF'
-    
+
     admin_img.short_description = 'Thumb'
     admin_img.allow_tags = True
-        
+
     #the following methods are called by the serializer for the image model
     #in case  the ioriginal file cant be found we totaly return 404 bitch
     def get_gallery_url(self):
@@ -148,7 +148,7 @@ class Image(models.Model):
         except:
             log.error('Image could not be found for kiosk: ' + str(self.kiosk.id))
             return '/media/images/404_thumbnail.jpg'
-    
+
     def __str__(self):
         return self.image.name
 

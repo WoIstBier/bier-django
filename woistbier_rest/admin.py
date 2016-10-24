@@ -38,6 +38,7 @@ class KioskAdmin(admin.ModelAdmin):
 
     inlines = [BeerPriceInline, CommentInline, ImageInline]
 
+
 class BeerAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Name. z.B. Hansa Pils',               {'fields': ['name']}),
@@ -75,16 +76,6 @@ class BeerPriceAdmin(KioskForeign):
     list_display = ('beer', 'price', 'size', 'score', 'link_to_kiosk')
     readonly_fields = ['link_to_kiosk']
     model = BeerPrice
-
-
-# class KioskImageAdmin(admin.ModelAdmin):
-#     fieldsets = [
-#         ('Kiosk',               {'fields': ['kiosk']}),
-#         ('Bild', {'fields': ['image']})
-#     ]
-#     list_display = ('kiosk', 'image')
-#    inlines = [ImageInline]
-
 
 class ImageAdmin(KioskForeign):
     list_display = ['admin_img', 'image', 'link_to_kiosk']
