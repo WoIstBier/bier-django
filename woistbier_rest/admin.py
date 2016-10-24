@@ -109,18 +109,20 @@ class KioskForeign(admin.ModelAdmin):
     link_to_kiosk.allow_tags = True
 
 
-class BeerPriceAdmin(admin.ModelAdmin):
+class BeerPriceAdmin(KioskForeign):
     fieldsets = [
         ('Bier. z.B. Hansa Pils',               {'fields': ['beer']}),
         ('Preis',   {'fields': ['price']}),
         ('FlaschenGröße',   {'fields': ['size']}),
         ('Preis pro liter',   {'fields': ['score']}),
+        ('Kiosk', {'fields': ['link_to_kiosk']}),
     ]
-    list_display = ('beer', 'price', 'size', 'score')
+    list_display = ('beer', 'price', 'size', 'score', 'link_to_kiosk')
+    readonly_fields = ['link_to_kiosk']
     model = BeerPrice
-    
+
     actions = ['calc_scores']
-    
+
     def calc_scores(self, request, queryset):
         i = 0
         for obj in queryset:
@@ -128,14 +130,15 @@ class BeerPriceAdmin(admin.ModelAdmin):
         self.message_user(request, "%s kioske successfully updated." % i)
 
     calc_scores.short_description = "Update geo infos from google"
-    
+
     def calculate_score(self, obj):
         if obj.score == 0:
             obj.score = obj.price / obj.size
             obj.save()
             return 1
         return 0
-    
+
+
 # class KioskImageAdmin(admin.ModelAdmin):
 #     fieldsets = [
 #         ('Kiosk',               {'fields': ['kiosk']}),
