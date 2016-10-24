@@ -33,23 +33,14 @@ class KioskModelTest(TestCase):
     def test_kiosk_save(self):
         #create a new kiosk isntance and save it to the db
         #kiosk = self.post_kiosk_and_get_resulting_kiosk('TestStraße', 12)
-        kiosk = create_dummy_kiosk(street='TestStraße', number=12)
-        self.assertEqual(kiosk.street, 'TestStraße')
-        self.assertEqual(kiosk.number, 12)
-        self.assertEqual(kiosk.name, 'TestStraße' + ' ' + str(12))
+        kiosk = create_dummy_kiosk(street='Bierstraße', number=123)
+        self.assertEqual(kiosk.name, 'Bierstraße' + ' ' + str(123))
 
         #now change street name and number
-        kiosk.street = 'AndereStraße'
-        kiosk.number = 32
-
-        self.assertEqual(kiosk.street, 'AndereStraße')
-        self.assertEqual(kiosk.number, 32)
-        #the kiosk.name will change on calling the save method
-        self.assertNotEqual(kiosk.name, 'AndereStraße' + str(32))
-
+        kiosk.name = 'Dem Horst Sein Kiosk'
         kiosk.save()
 
-        self.assertEqual(kiosk.name, 'AndereStraße' + ' ' + str(32))
+        self.assertEqual(kiosk.name, 'Dem Horst Sein Kiosk')
 
 
 class BeerPriceTest(TestCase):
