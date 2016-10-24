@@ -93,6 +93,22 @@ class BeerAdmin(admin.ModelAdmin):
     list_display = ('brand', 'name', 'brew', 'location')
     model = Beer
     
+
+
+class KioskForeign(admin.ModelAdmin):
+    """ Meta View for all Views, containing a foreign key to kiosk.
+    """
+
+    def link_to_kiosk(self, obj):
+        """ Creates a link to a kiosk admin view
+        """
+        link = reverse("admin:woistbier_rest_kiosk_change",
+                       args=[obj.kiosk.id])
+        return '<a href="{}">{}</a>'.format(link, obj.kiosk.name)
+
+    link_to_kiosk.allow_tags = True
+
+
 class BeerPriceAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Bier. z.B. Hansa Pils',               {'fields': ['beer']}),
@@ -127,31 +143,21 @@ class BeerPriceAdmin(admin.ModelAdmin):
 #     ]
 #     list_display = ('kiosk', 'image')
 #    inlines = [ImageInline]
-    
-class ImageAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Bild',               {'fields': ['image']})
-    ]
-    list_display = ('admin_img', 'image')
-    model = Image
-    
-class CommentAdmin(admin.ModelAdmin):
-#     fieldsets = [
-#         ('Name des Autors',               {'fields': ['name']}),
-#         ('Erstellungsdatum', {'fields': ['created']}),
-#         ('Text', {'fields': ['comment']})
-#     ]
-    def link_to_kiosk(self, obj):
-        link = reverse("admin:woistbier_rest_kiosk_change",
-                       args=[obj.kiosk.id])
-        return u'<a href="%s">%s</a>' % (link, obj.kiosk.name)
 
+
+class ImageAdmin(KioskForeign):
+    list_display = ['admin_img', 'image', 'link_to_kiosk']
+    fields = ['image', 'link_to_kiosk']
+    readonly_fields = ['link_to_kiosk']
+    model = Image
+
+
+class CommentAdmin(KioskForeign):
     list_display = ['name', 'comment', 'link_to_kiosk']
     fields = list_display
     readonly_fields = ['link_to_kiosk']
-
-    link_to_kiosk.allow_tags = True
     model = Comment
+
 
 admin.site.register(Image, ImageAdmin)
 admin.site.register(Comment, CommentAdmin)
