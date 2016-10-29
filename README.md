@@ -1,4 +1,5 @@
 # Wo Ist Bier Backend
+[![Build Status](https://travis-ci.org/WoIstBier/bier-django.svg?branch=master)](https://travis-ci.org/WoIstBier/bier-django)
 
 Current work is ongoing on the v2 branch.
 ```shell
