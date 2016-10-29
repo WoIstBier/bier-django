@@ -58,6 +58,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+woistbier_rest/migrations
 
 # Flask stuff:
 instance/
@@ -94,4 +95,5 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
 local_db.sqlite
