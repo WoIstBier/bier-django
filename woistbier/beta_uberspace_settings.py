@@ -12,12 +12,22 @@ log = logging.getLogger(__name__)
 #Never ever set this to True. Security risk.
 DEBUG = False
 
+appname='woistbier_beta'
+
 ADMINS = (
-  ('Admin', 'admin@woistbier.de'),
+  # ('Admin', 'admin@woistbier.de'),
   ('Kai', 'kai@woistbier.de'),
 )
 
-ALLOWED_HOSTS = ['bier.cepheus.uberspace.de','cepheus.uberspace.de','woistbier.de','webmail.woistbier.de','mail.woistbier.de','www.woistbier.de','autoconfig.woistbier.de']
+ALLOWED_HOSTS = [
+            'beta.bier.cepheus.uberspace.de',
+            'beta.woistbier.de',
+            # 'bier.cepheus.uberspace.de',
+            # 'cepheus.uberspace.de',
+            # 'woistbier.de',
+        ]
+
+USE_X_FORWARDED_HOST = True
 
 DATABASES = {
     'default': {
@@ -43,26 +53,26 @@ SERVER_EMAIL='admin@woistbier.de'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/var/www/virtual/bier/html/bier/media/'
+MEDIA_ROOT = '/var/www/virtual/bier/html/{}/media/'.format(appname)
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/bier/media/'
+MEDIA_URL = '{}/media/'.format(appname)
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/var/www/virtual/bier/html/bier/static/'
+STATIC_ROOT = '/var/www/virtual/bier/html/{}/static/'.format(appname)
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/bier/static/'
+STATIC_URL = '{}/static/'.format(appname)
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-        '/home/bier/django/bier/woistbier_rest/static',
+        '/home/bier/bier-django/woistbier_rest/static',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -70,20 +80,6 @@ STATICFILES_DIRS = (
 
 
 
-from django.core.mail import mail_admins
-import socket
-print('socket.hostname : ' + socket.gethostname())
-mail_admins('Server start notification', 'Hallo, \n \
-                     das ist eine automatische Benarichtigung darüber, dass der Server soeben neu gestarted wurde. \n \
-                     socket.hostname : ' + socket.gethostname(),  fail_silently=False);
-
-#from django.core.mail import send_mail
-#send_mail('Subject here', 'Here is the message.', 'admin@woistbier.de', ['admin@woistbier.de'], fail_silently=False)
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -101,8 +97,8 @@ LOGGING = {
         'logfile': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/home/bier/" + "logfile-django.log",
-            'maxBytes': 50000,
+            'filename': "/home/bier/" + "logfile_{}.log".format(appname),
+            'maxBytes': 150000,
             'backupCount': 2,
             'formatter': 'standard',
         },
@@ -111,31 +107,18 @@ LOGGING = {
             'class':'logging.StreamHandler',
             'formatter': 'standard'
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-          }
+
     },
     'loggers': {
         'django': {
-            'handlers':['console', 'logfile', 'mail_admins'],
+            'handlers':['console', 'logfile',],
             'propagate': True,
-            'level':'WARN',
+            'level':'INFO',
         },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-    },
-        'django.db.backends': {
-            'handlers': ['console'],
+        'bier':{
+            'handlers': ['console', 'logfile',],
             'level': 'DEBUG',
-            'propagate': True,
         },
-    'bier':{
-        'handlers': ['console', 'logfile','mail_admins'],
-            'level': 'DEBUG',
-            },
         '': {
             'handlers': ['logfile'],
             'level': 'DEBUG',
