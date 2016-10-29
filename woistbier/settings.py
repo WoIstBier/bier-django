@@ -25,6 +25,21 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+SESSION_COOKIE_SECURE=True
+
+CSRF_COOKIE_SECURE=True
+
+CSRF_COOKIE_HTTPONLY=True
+
+SECURE_CONTENT_TYPE_NOSNIFF=True
+
+SECURE_BROWSER_XSS_FILTER=True
+
+X_FRAME_OPTIONS='DENY'
+
+# this should be set at some point
+# SECURE_SSL_REDIRECT=True
+
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -47,8 +62,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'woistbier.urls'
