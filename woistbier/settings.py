@@ -44,8 +44,7 @@ SECURE_BROWSER_XSS_FILTER=True
 
 X_FRAME_OPTIONS='DENY'
 
-# this should be set at some point
-# SECURE_SSL_REDIRECT=True
+SECURE_SSL_REDIRECT=True
 
 # List of finder classes that know how to find static files in
 # various locations.
