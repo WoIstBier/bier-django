@@ -5,10 +5,6 @@ import woistbier.secrets as secrets
 log.info('Found secrets for production settings.')
 SECRET_KEY = secrets.django_secret_key
 
-import logging
-log = logging.getLogger(__name__)
-
-
 #Never ever set this to True. Security risk.
 DEBUG = False
 
@@ -83,45 +79,18 @@ STATICFILES_DIRS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
-        },
-    },
     'handlers': {
-        'null': {
-            'level':'DEBUG',
-            'class':'django.utils.log.NullHandler',
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/home/bier/woistbier_beta__debug.log',
         },
-        'logfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': "/home/bier/" + "logfile_{}.log".format(appname),
-            'maxBytes': 150000,
-            'backupCount': 2,
-            'formatter': 'standard',
-        },
-        'console':{
-            'level':'INFO',
-            'class':'logging.StreamHandler',
-            'formatter': 'standard'
-        },
-
     },
     'loggers': {
         'django': {
-            'handlers':['console', 'logfile',],
+            'handlers': ['file'],
+            'level': 'DEBUG',
             'propagate': True,
-            'level':'INFO',
         },
-        'bier':{
-            'handlers': ['console', 'logfile',],
-            'level': 'DEBUG',
-        },
-        '': {
-            'handlers': ['logfile'],
-            'level': 'DEBUG',
-        },
-    }
+    },
 }
