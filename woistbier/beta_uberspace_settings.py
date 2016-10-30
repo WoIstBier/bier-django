@@ -1,5 +1,6 @@
 from woistbier.settings import *
 
+
 #try to import secrets. this will fail if they are not there.
 import woistbier.secrets as secrets
 log.info('Found secrets for production settings.')
@@ -8,7 +9,7 @@ SECRET_KEY = secrets.django_secret_key
 #Never ever set this to True. Security risk.
 DEBUG = False
 
-appname='woistbier_beta'
+HTML_ROOT_PATH='beta.woistbier.de'
 
 ADMINS = (
   # ('Admin', 'admin@woistbier.de'),
@@ -49,22 +50,22 @@ SERVER_EMAIL='admin@woistbier.de'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/var/www/virtual/bier/html/{}/media/'.format(appname)
+MEDIA_ROOT = '/var/www/virtual/bier/{}/html/media/'.format(HTML_ROOT_PATH)
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '{}/media/'.format(appname)
+MEDIA_URL = 'html/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/var/www/virtual/bier/html/{}/static/'.format(appname)
+STATIC_ROOT = '/var/www/virtual/bier/{}/html/static/'.format(HTML_ROOT_PATH)
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '{}/static/'.format(appname)
+STATIC_URL = 'html/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -83,7 +84,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/home/bier/woistbier_beta__debug.log',
+            'filename': '/home/bier/woistbier_beta_debug.log',
         },
     },
     'loggers': {
