@@ -1,6 +1,13 @@
+#use pymysql
+import pymysql
+pymysql.install_as_MySQLdb()
+
 #Global  Django settings for woistbier project.
 import logging
+logging.basicConfig(level=logging.DEBUG)
 log= logging.getLogger(__name__)
+log.info('Reading Settings!')
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
