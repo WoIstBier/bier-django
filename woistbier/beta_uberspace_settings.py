@@ -10,6 +10,7 @@ SECRET_KEY = secrets.django_secret_key
 DEBUG = False
 
 HTML_ROOT_PATH='beta.woistbier.de'
+ROOT_URL='beta.woistbier.de'
 
 ADMINS = (
   # ('Admin', 'admin@woistbier.de'),
@@ -29,11 +30,12 @@ USE_X_FORWARDED_HOST = True
 DATABASES = {
     'default': {
             'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'bier_woistbier',                      # Or path to database file if using sqlite3.
+            'NAME': 'bier_beta_woistbier',                      # Or path to database file if using sqlite3.
             'USER': 'bier',                      # Not used with sqlite3.
             'PASSWORD': secrets.uberspace_mysql_password,                  # Not used with sqlite3.
             'HOST': 'localhost',                     # Set to empty string for localhost. Not used with sqlite3.
             'PORT': '3306',                     # Set to empty string for default. Not used with sqlite3.
+            'TEST_NAME': 'bier_beta_woistbier_test_db',
             }
     }
 
@@ -50,26 +52,26 @@ SERVER_EMAIL='admin@woistbier.de'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/var/www/virtual/bier/{}/html/media/'.format(HTML_ROOT_PATH)
+MEDIA_ROOT = '/var/www/virtual/bier/{}/media/'.format(HTML_ROOT_PATH)
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = 'html/media/'
+MEDIA_URL = 'https://{}/media/'.format(ROOT_URL)
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/var/www/virtual/bier/{}/html/static/'.format(HTML_ROOT_PATH)
+STATIC_ROOT = '/var/www/virtual/bier/{}/static/'.format(HTML_ROOT_PATH)
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = 'html/static/'
+STATIC_URL = 'https://{}/static/'.format(ROOT_URL)
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-        '/home/bier/bier-django/woistbier_rest/static',
+ #       '/home/bier/bier-django/woistbier_rest/static',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -80,11 +82,18 @@ STATICFILES_DIRS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': '/home/bier/woistbier_beta_debug.log',
+            'formatter': 'standard',
         },
     },
     'loggers': {
