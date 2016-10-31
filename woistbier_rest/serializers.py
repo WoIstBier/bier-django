@@ -39,6 +39,7 @@ class BeerPriceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = BeerPrice 
+        fields = '__all__'
 
 class KioskDetailSerializer(serializers.Serializer):
     images = ImageSerializer(source='images', many=True)

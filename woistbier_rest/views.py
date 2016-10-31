@@ -61,9 +61,9 @@ def check_if_kiosk_exists(kiosk_id):
     
 #views for images
 class ImageList(generics.ListAPIView):
-    model = Image
     serializer_class = ImageSerializer
     filter_fields = ['kiosk']
+    queryset = Image.objects.all()
 
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg"
@@ -77,17 +77,14 @@ class ImageList(generics.ListAPIView):
 
 
 class ImageDetail(generics.RetrieveAPIView):
-    model = Image
+    queryset = Image.objects.all()
     serializer_class = ImageSerializer       
 
 
 class CommentList(generics.ListAPIView):
-    model = Comment
     serializer_class = CommentSerializer
     filter_fields = ('name', 'created', 'kiosk')
-    # def get(self, request):
-    #     kiosk_id = self.request.query_params.get('kiosk', None)
-    #     return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
+    queryset = Comment.objects.all()
     
     def post(self, request):
         serializer = CommentSerializer(data=request.DATA)
@@ -97,19 +94,18 @@ class CommentList(generics.ListAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CommentDetail(generics.CreateAPIView):
-    model = Comment
+class CommentDetail(generics.RetrieveUpdateAPIView):
     serializer_class = CommentSerializer 
-    
+    queryset = Comment.objects.all()    
   
 class BeerPriceList(generics.ListCreateAPIView):
-    model = BeerPrice
+    queryset = BeerPrice.objects.all()
     serializer_class = BeerPriceSerializer
-    filter_fields = ['kiosk']
+    filter_fields = ['kiosk', 'beer']
 
 
 class BeerPriceDetail(generics.RetrieveUpdateAPIView):
-    model = BeerPrice
+    queryset = BeerPrice.objects.all()
     serializer_class = BeerPriceSerializer
 
 
@@ -121,26 +117,16 @@ class BeerListFilter(django_filters.rest_framework.FilterSet):
         model = Beer
         fields = ['name', 'brand', 'location', 'brew']
 
-
 class BeerList(generics.ListAPIView):
-    model = Beer
     serializer_class = BeerSerializer
-    #filter_fields = ['name', 'brand', 'location', 'brew']
     queryset = Beer.objects.all()
     filter_class = BeerListFilter
-#    def get_queryset(self):
-#        kiosk_id = self.request.query_params.get('kiosk', None)
-#        if kiosk_id is not None:
-#            if not check_kiosk_args(kiosk_id):
-#                return HttpResponseBadRequest("Kiosk id arguments was malformed")
-#            return  Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
-#        else:
-#            return  Beer.objects.all()
-             
+            
     
+
     
-class BeerDetail(generics.RetrieveAPIView):
-    model = Beer
+class BeerDetail(generics.RetrieveUpdateAPIView):
+    queryset = Beer.objects.all()
     serializer_class = BeerSerializer
     
 
