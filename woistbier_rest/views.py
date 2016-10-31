@@ -13,6 +13,7 @@ import math
 import logging
 from django.conf import settings
 import os
+import django_filters
 log = logging.getLogger(__name__)
 
 
@@ -44,7 +45,7 @@ def check_kiosk_args(kiosk_id):
     if kiosk_id is None:
         return False
     try:
-        long(kiosk_id)
+        int(kiosk_id)
     except ValueError:
         return False
     return True
@@ -85,7 +86,7 @@ class CommentList(generics.ListAPIView):
     serializer_class = CommentSerializer
     filter_fields = ('name', 'created', 'kiosk')
     # def get(self, request):
-    #     kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
+    #     kiosk_id = self.request.query_params.get('kiosk', None)
     #     return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
     
     def post(self, request):
@@ -112,24 +113,30 @@ class BeerPriceDetail(generics.RetrieveUpdateAPIView):
     serializer_class = BeerPriceSerializer
 
 
+
+class BeerListFilter(django_filters.rest_framework.FilterSet):
+    kiosk = django_filters.NumberFilter(name="related_beer__kiosk__id")
+
+    class Meta:
+        model = Beer
+        fields = ['name', 'brand', 'location', 'brew']
+
+
 class BeerList(generics.ListAPIView):
     model = Beer
     serializer_class = BeerSerializer
-    filter_fields = ['name', 'brand', 'location', 'brew']
-
-    def get(self, request, *args, **kwargs):
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if kiosk_id is not None:
-            if not check_kiosk_args(kiosk_id):
-                return HttpResponseBadRequest("Kiosk id arguments was malformed")
-            beer_set = Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
-            if beer_set.count() == 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
-        else:
-            beer_set = Beer.objects.all()
+    #filter_fields = ['name', 'brand', 'location', 'brew']
+    queryset = Beer.objects.all()
+    filter_class = BeerListFilter
+#    def get_queryset(self):
+#        kiosk_id = self.request.query_params.get('kiosk', None)
+#        if kiosk_id is not None:
+#            if not check_kiosk_args(kiosk_id):
+#                return HttpResponseBadRequest("Kiosk id arguments was malformed")
+#            return  Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
+#        else:
+#            return  Beer.objects.all()
              
-        serializer = BeerSerializer(beer_set, many=True)
-        return Response(serializer.data)
     
     
 class BeerDetail(generics.RetrieveAPIView):
@@ -138,6 +145,7 @@ class BeerDetail(generics.RetrieveAPIView):
     
 
 class SimpleKioskList(generics.ListCreateAPIView):
+    queryset = Kiosk.objects.all()
     throttle_classes = (ScopedRateThrottle,)
     throttle_scope = 'kiosk_uploads'
     model = Kiosk
@@ -272,14 +280,14 @@ class KioskList(APIView):
         beer = None
         #check url parameter 
         try:
-            if request.QUERY_PARAMS.get('geo_lat', None) is not None:
-                g_lat = float(request.QUERY_PARAMS.get('geo_lat', None))
-            if request.QUERY_PARAMS.get('geo_long', None) is not None:
-                g_long = float(request.QUERY_PARAMS.get('geo_long', None))
-            if request.QUERY_PARAMS.get('radius', None) is not None:
-                radius = float(request.QUERY_PARAMS.get('radius', None))
-            if request.QUERY_PARAMS.get('beer', None) is not None:
-                beer = request.QUERY_PARAMS.get('beer', None)
+            if request.query_params.get('geo_lat', None) is not None:
+                g_lat = float(request.query_params.get('geo_lat', None))
+            if request.query_params.get('geo_long', None) is not None:
+                g_long = float(request.query_params.get('geo_long', None))
+            if request.query_params.get('radius', None) is not None:
+                radius = float(request.query_params.get('radius', None))
+            if request.query_params.get('beer', None) is not None:
+                beer = request.query_params.get('beer', None)
         except :
             return HttpResponseBadRequest('bad parameter string')
 

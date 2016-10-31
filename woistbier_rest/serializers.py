@@ -9,10 +9,12 @@ log = logging.getLogger(__name__)
 class KioskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kiosk
-        
+        fields = '__all__'
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
+        fields = '__all__'
 
 class ImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(max_length=300, allow_empty_file=True)
@@ -28,8 +30,7 @@ class ImageSerializer(serializers.ModelSerializer):
 class BeerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beer
-
-
+        fields = '__all__'
 
 class BeerPriceSerializer(serializers.ModelSerializer):
     beer_name = serializers.CharField(source='beer.name', read_only=True)

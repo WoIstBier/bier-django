@@ -113,8 +113,10 @@ THUMBNAIL_ALIASES = {
 }
 
 REST_FRAMEWORK = {
-    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend',
 
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.ScopedRateThrottle',
     ),
