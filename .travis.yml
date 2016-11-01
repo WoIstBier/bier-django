@@ -20,3 +20,7 @@ install:
 script:
   - coverage run manage.py test --settings=woistbier.local_test_settings
   - coverage report
+
+branches:
+  only:
+    - v2
