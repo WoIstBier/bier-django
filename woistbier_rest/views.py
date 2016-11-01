@@ -13,6 +13,7 @@ import math
 import logging
 from django.conf import settings
 import os
+import django_filters
 log = logging.getLogger(__name__)
 
 
@@ -44,7 +45,7 @@ def check_kiosk_args(kiosk_id):
     if kiosk_id is None:
         return False
     try:
-        long(kiosk_id)
+        int(kiosk_id)
     except ValueError:
         return False
     return True
@@ -60,9 +61,9 @@ def check_if_kiosk_exists(kiosk_id):
     
 #views for images
 class ImageList(generics.ListAPIView):
-    model = Image
     serializer_class = ImageSerializer
     filter_fields = ['kiosk']
+    queryset = Image.objects.all()
 
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg"
@@ -76,17 +77,14 @@ class ImageList(generics.ListAPIView):
 
 
 class ImageDetail(generics.RetrieveAPIView):
-    model = Image
+    queryset = Image.objects.all()
     serializer_class = ImageSerializer       
 
 
 class CommentList(generics.ListAPIView):
-    model = Comment
     serializer_class = CommentSerializer
     filter_fields = ('name', 'created', 'kiosk')
-    # def get(self, request):
-    #     kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-    #     return getSetForKioskId(Comment, CommentSerializer, kiosk_id)
+    queryset = Comment.objects.all()
     
     def post(self, request):
         serializer = CommentSerializer(data=request.DATA)
@@ -96,48 +94,44 @@ class CommentList(generics.ListAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CommentDetail(generics.CreateAPIView):
-    model = Comment
+class CommentDetail(generics.RetrieveUpdateAPIView):
     serializer_class = CommentSerializer 
-    
+    queryset = Comment.objects.all()    
   
 class BeerPriceList(generics.ListCreateAPIView):
-    model = BeerPrice
+    queryset = BeerPrice.objects.all()
     serializer_class = BeerPriceSerializer
-    filter_fields = ['kiosk']
+    filter_fields = ['kiosk', 'beer']
 
 
 class BeerPriceDetail(generics.RetrieveUpdateAPIView):
-    model = BeerPrice
+    queryset = BeerPrice.objects.all()
     serializer_class = BeerPriceSerializer
 
 
-class BeerList(generics.ListAPIView):
-    model = Beer
-    serializer_class = BeerSerializer
-    filter_fields = ['name', 'brand', 'location', 'brew']
 
-    def get(self, request, *args, **kwargs):
-        kiosk_id = self.request.QUERY_PARAMS.get('kiosk', None)
-        if kiosk_id is not None:
-            if not check_kiosk_args(kiosk_id):
-                return HttpResponseBadRequest("Kiosk id arguments was malformed")
-            beer_set = Beer.objects.filter(related_beer__kiosk__id = kiosk_id)
-            if beer_set.count() == 0:
-                return Response(status = status.HTTP_204_NO_CONTENT)
-        else:
-            beer_set = Beer.objects.all()
-             
-        serializer = BeerSerializer(beer_set, many=True)
-        return Response(serializer.data)
+class BeerListFilter(django_filters.rest_framework.FilterSet):
+    kiosk = django_filters.NumberFilter(name="related_beer__kiosk__id")
+
+    class Meta:
+        model = Beer
+        fields = ['name', 'brand', 'location', 'brew']
+
+class BeerList(generics.ListAPIView):
+    serializer_class = BeerSerializer
+    queryset = Beer.objects.all()
+    filter_class = BeerListFilter
+            
     
+
     
-class BeerDetail(generics.RetrieveAPIView):
-    model = Beer
+class BeerDetail(generics.RetrieveUpdateAPIView):
+    queryset = Beer.objects.all()
     serializer_class = BeerSerializer
     
 
 class SimpleKioskList(generics.ListCreateAPIView):
+    queryset = Kiosk.objects.all()
     throttle_classes = (ScopedRateThrottle,)
     throttle_scope = 'kiosk_uploads'
     model = Kiosk
@@ -272,14 +266,14 @@ class KioskList(APIView):
         beer = None
         #check url parameter 
         try:
-            if request.QUERY_PARAMS.get('geo_lat', None) is not None:
-                g_lat = float(request.QUERY_PARAMS.get('geo_lat', None))
-            if request.QUERY_PARAMS.get('geo_long', None) is not None:
-                g_long = float(request.QUERY_PARAMS.get('geo_long', None))
-            if request.QUERY_PARAMS.get('radius', None) is not None:
-                radius = float(request.QUERY_PARAMS.get('radius', None))
-            if request.QUERY_PARAMS.get('beer', None) is not None:
-                beer = request.QUERY_PARAMS.get('beer', None)
+            if request.query_params.get('geo_lat', None) is not None:
+                g_lat = float(request.query_params.get('geo_lat', None))
+            if request.query_params.get('geo_long', None) is not None:
+                g_long = float(request.query_params.get('geo_long', None))
+            if request.query_params.get('radius', None) is not None:
+                radius = float(request.query_params.get('radius', None))
+            if request.query_params.get('beer', None) is not None:
+                beer = request.query_params.get('beer', None)
         except :
             return HttpResponseBadRequest('bad parameter string')
 

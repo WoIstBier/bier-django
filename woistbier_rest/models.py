@@ -10,11 +10,20 @@ from easy_thumbnails.fields import ThumbnailerImageField
 import logging
 log = logging.getLogger(__name__)
 
+
+class ModifiableModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField('modified', auto_now=True, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
 '''Model for a Kiosk.
 zip_code, geo info and valid addres flag will be supplied by the client with a google lookup
 There is a custom save method in the admin model in case a kiosk will be saved from the admin page
 '''
-class Kiosk(models.Model):
+class Kiosk(ModifiableModel):
     street = models.CharField('street_name', max_length=150)
     number = models.IntegerField('building_number')
     zip_code = models.CharField(max_length=6, blank=True, null=True)
@@ -25,7 +34,6 @@ class Kiosk(models.Model):
     geo_lat = models.DecimalField('latitude', max_digits=13, decimal_places=10, blank=True, null=True)
     geo_long = models.DecimalField('longitude', max_digits=13, decimal_places=10, blank=True, null=True)
     is_valid_address = models.BooleanField('google_says_valid', default=False )
-    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -63,10 +71,9 @@ class Beer(models.Model):
         return self.name
 
 
-class Comment(models.Model):
+class Comment(ModifiableModel):
     name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
     comment = models.CharField(max_length=400)
-    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
     kiosk = models.ForeignKey(Kiosk)
 
     def __str__(self):
@@ -76,7 +83,7 @@ class Comment(models.Model):
 This class connects beers with kiosks and add information about pricing and aisze of the bottle
 the score field is basicly cents per liter which makes it possible to find the cheapest beer per liter
 '''
-class BeerPrice(models.Model):
+class BeerPrice(ModifiableModel):
     KLEIN = 0.33
     NORMAL = 0.5
     SIZE_CHOICES = (
@@ -94,8 +101,6 @@ class BeerPrice(models.Model):
     beer = models.ForeignKey(Beer, related_name='related_beer')
     price = models.IntegerField(validators=[MaxValueValidator(400), MinValueValidator(10)])
     score = models.FloatField(max_length=1, default = 1 )
-    created = models.DateTimeField(auto_now_add = True, blank=True, null=True)
-    modified = models.DateTimeField(auto_now = True, blank=True, null=True)
 
     class Meta:
         unique_together = ("beer","kiosk", "size")

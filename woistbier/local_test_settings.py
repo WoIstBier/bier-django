@@ -3,7 +3,7 @@ from woistbier.settings import *
 import logging
 log = logging.getLogger(__name__)
 
-SECRET_KEY='test_blabla_123456789'
+SECRET_KEY='pryKap1ZuB2rWCKLt913eGcb6evhiNwUQnQGvSZemnelaPtMyE'
 
 DEBUG=True
 
