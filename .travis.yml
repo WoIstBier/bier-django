@@ -7,6 +7,7 @@ env:
   - DJANGO=1.8.14
   - DJANGO=1.10.2
 
+# This comment should trigger a travis-build now
 # before_install:
   # - export DJANGO_SETTINGS_MODULE=your_project.settings
   # - export PYTHONPATH=$HOME/builds/your_github_username/your_repo
