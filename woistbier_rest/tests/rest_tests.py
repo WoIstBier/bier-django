@@ -1,8 +1,6 @@
-import os
 import logging
 import json
 from django.test import TestCase
-from django.conf import settings
 
 prefix = '/bier/rest/'
 log = logging.getLogger(__name__)
@@ -14,26 +12,20 @@ FIXTURES = ['dump_13_11_2016.json']
 def get_kiosk_id():
     from woistbier_rest.models import Kiosk
     kiosk = Kiosk.objects.all()[:1].get()
-    print(str(kiosk))
     return kiosk.id
 
-def post_kiosk(client, number):
-    return client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345',
-                                           'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
+# def post_kiosk(client, number):
+#     return client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345',
+#                                            'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
+#
 
 
-def post_image(client, kiosk_id):
-    with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'rb') as f:
-        #read_data = f.read()
-        resp = client.post(prefix + 'image/', {'kiosk': str(kiosk_id), 'image': f})
-        print(resp)
-    return resp
 
-#TODO: all of this should be replaced by temp folder inpython 3.5
-def remove_files_with_prefix_in_folder(prefix, folder):
-    for t in os.listdir(folder):
-        if t.startswith(prefix):
-            os.remove(os.path.join(folder,t))
+# #TODO: all of this should be replaced by temp folder inpython 3.5
+# def remove_files_with_prefix_in_folder(prefix, folder):
+#     for t in os.listdir(folder):
+#         if t.startswith(prefix):
+#             os.remove(os.path.join(folder,t))
 
 
 class CommentTests(TestCase):
@@ -207,93 +199,130 @@ class ImageTests(TestCase):
         log.info(response_from_server.data)
         return response_from_server
 
-    # test if the imagelist in the (images/?kiosk=bla) view is the same as the one deliverd
-    # in the kioskdetail view and the kiosklistitem
-    def test_imagelists(self):
+    def post_image(self, kiosk_id):
+        with open('./woistbier_rest/fixtures/unittest_test_image_4311.jpeg', 'rb') as f:
+            resp = self.client.post(prefix + 'image/', {'kiosk': kiosk_id, 'image': f})
+        return resp
+
+    def test_list(self):
         #post a new empty kiosk
         resp = self.post_kiosk(number=137)
         kiosk = json.loads(resp.content.decode())
         kiosk_id = kiosk['id']
-        #post a number of images
-        for num in range(1, 6):
-            post_image(self.client, kiosk_id)
-            resp = self.client.get(prefix + 'image/?kiosk=' + kiosk_id)
-            images_from_view = json.loads(resp.content.decode())
-            #log.info(str(images_from_view))
-            #thers should be the posted amount of images in here
-            self.assertTrue(len(images_from_view) == num)
 
-            resp = self.client.get(prefix + 'kioskDetails/' + kiosk_id + '/')
-            self.assertEqual(resp.status_code, 200)
-            #get the kiosk from the detaisl dict thingy
-            images_from_kiosk = json.loads(resp.content.decode()).get('images')
-            for kiosk_image, image_from_view in zip(images_from_view, images_from_kiosk):
-                log.info('comparing: {} and {}'.format(kiosk_image, image_from_view))
-                self.assertEqual(kiosk_image, image_from_view, 'Image lists in the image and the kioskdetails view were not the same')
+        #post a few images to the kiosk
+        N = 5
+        for i in range(0, N):
+            self.post_image(kiosk_id)
 
-            resp = self.client.get(prefix + 'kioskList/?radius=1000')
-            kioskListItems = json.loads(resp.content.decode())
-            #lets find the kiosk with the id we just posted
-            for listitem in kioskListItems:
-                i = listitem.get('kiosk').get('id')
-                if str(i) == str(kiosk_id):
-                    self.assertTrue(listitem.get('image') is not None, 'thumb was none!')
-                    break
 
-    def test_post_images(self):
-        #post a kiosk and get the list of images for its id. This list should be empty for a new kiosk
-        resp = post_kiosk(self.client, 137)
-        kiosk = json.loads(resp.content.decode())
+        log.info('Calling images for kiosk id: {}'.format(kiosk_id))
+        resp = self.client.get('/bier/rest/image/?kiosk={}'.format(kiosk_id))
+        data = json.loads(resp.content.decode())
+        log.info('N is: {}, there are {} images'.format(N, len(data)))
+        self.assertTrue(len(data) == N)
 
-        resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk.get('id')))
-        images = json.loads(resp.content.decode())
-        self.assertEquals(images, [])
-        #now post an image to the kiosk and check if the list contains 1 image
-        post_image(self.client, kiosk.get('id'))
-        resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk.get('id')))
-        images = json.loads(resp.content.decode())
-        #log.info(str(images))
-        self.assertTrue(len(images) == 1)
-
-    def test_missing_images(self):
-        resp = self.post_kiosk(number=145)
+    def test_image_endpoint(self):
+        resp = self.post_kiosk(number=32)
         kiosk = json.loads(resp.content.decode())
         kiosk_id = kiosk['id']
 
-        resp = post_image(self.client, kiosk_id)
-        image_response = json.loads(resp.content.decode())
-        log.info(image_response)
+        log.info('Calling images for kiosk id: {}'.format(kiosk_id))
+        resp = self.client.get('/bier/rest/image/?kiosk={}'.format(kiosk_id))
+        data = json.loads(resp.content.decode())
+        self.assertEqual(data, [])
 
-        img = image_response['image']
-        path = os.path.abspath(os.path.join(settings.MEDIA_ROOT,img))
-        log.info(path)
+        self.post_image(kiosk_id)
+        resp = self.client.get('/bier/rest/image/?kiosk={}'.format(kiosk_id))
+        data = json.loads(resp.content.decode())
+        self.assertEqual(len(data), 1)
 
-        self.fail()
-        #get some kioskdetails for that kiosk
-        resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk_id) + '/')
-        self.assertEqual(resp.status_code, 200)
 
-        log.info(resp.data)
-        #and the image list
-        resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk_id))
-        self.assertEqual(resp.status_code, 200)
+    def test_image_in_kioskdetails(self):
+        resp = self.post_kiosk(number=322)
+        kiosk = json.loads(resp.content.decode())
+        kiosk_id = kiosk['id']
 
-        #now remove the generated image files
-        folder = os.path.dirname(path)
-        filename = os.path.basename(path)
-        filename = os.path.splitext(filename)[0]
-        remove_files_with_prefix_in_folder(filename, folder)
-        #and try to load views again
-        resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk_id) + '/')
-        self.assertEqual(resp.status_code, 200)
-        resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk_id))
-        self.assertEqual(resp.status_code, 200)
+        for i in range(5):
+            self.post_image(kiosk_id)
 
-    def test_cleanup_images(self):
-        path = os.path.join(os.path.abspath(settings.MEDIA_ROOT), 'images')
-        #now remove the generated image files
-        log.info('Removing files in folder: ' +str(path))
-        remove_files_with_prefix_in_folder('unittest_test_image_4311', path)
+        resp = self.client.get('/bier/rest/image/?kiosk={}'.format(kiosk_id))
+        images = json.loads(resp.content.decode())
+
+        resp = self.client.get('/bier/rest/kioskDetails/{}/'.format(kiosk_id))
+        kiosk_details = json.loads(resp.content.decode())
+
+        log.info(images)
+        log.info(kiosk_details['images'])
+        self.assertCountEqual(kiosk_details['images'], images)
+
+    # test if the imagelist in the (images/?kiosk=bla) view is the same as the one deliverd
+    # in the kioskdetail view and the kiosklistitem
+    # def test_imagelists(self):
+    #     #post a new empty kiosk
+    #     resp = self.post_kiosk(number=137)
+    #     kiosk = json.loads(resp.content.decode())
+    #     kiosk_id = kiosk['id']
+    #     #post a number of images
+    #     for num in range(1, 6):
+    #         self.post_image( kiosk_id)
+    #         resp = self.client.get(prefix + 'image/?kiosk='.format(kiosk_id))
+    #         images_from_view = json.loads(resp.content.decode())
+    #         #log.info(str(images_from_view))
+    #         #thers should be the posted amount of images in here
+    #         self.assertTrue(len(images_from_view) == num)
+    #
+    #         resp = self.client.get(prefix + 'kioskDetails/' + kiosk_id + '/')
+    #         self.assertEqual(resp.status_code, 200)
+    #         #get the kiosk from the detaisl dict thingy
+    #         images_from_kiosk = json.loads(resp.content.decode()).get('images')
+    #         for kiosk_image, image_from_view in zip(images_from_view, images_from_kiosk):
+    #             log.info('comparing: {} and {}'.format(kiosk_image, image_from_view))
+    #             self.assertEqual(kiosk_image, image_from_view, 'Image lists in the image and the kioskdetails view were not the same')
+    #
+    #         resp = self.client.get(prefix + 'kioskList/?radius=1000')
+    #         kioskListItems = json.loads(resp.content.decode())
+    #         #lets find the kiosk with the id we just posted
+    #         for listitem in kioskListItems:
+    #             i = listitem.get('kiosk').get('id')
+    #             if str(i) == str(kiosk_id):
+    #                 self.assertTrue(listitem.get('image') is not None, 'thumb was none!')
+    #                 break
+
+    # def test_missing_images(self):
+    #     resp = self.post_kiosk(number=145)
+    #     kiosk = json.loads(resp.content.decode())
+    #     kiosk_id = kiosk['id']
+    #
+    #     resp = self.post_image(kiosk_id)
+    #     image_response = json.loads(resp.content.decode())
+    #     log.info(image_response)
+    #
+    #     img = image_response['image']
+    #     path = os.path.abspath(os.path.join(settings.MEDIA_ROOT,img))
+    #     log.info(path)
+    #
+    #     self.fail()
+    #     #get some kioskdetails for that kiosk
+    #     resp = self.client.get(prefix + 'kioskDetails/{}/'.format(kiosk_id))
+    #     self.assertEqual(resp.status_code, 200)
+    #
+    #     log.info(resp.data)
+    #     #and the image list
+    #     resp = self.client.get(prefix + 'image/?kiosk={}'.format(kiosk_id))
+    #     self.assertEqual(resp.status_code, 200)
+    #
+    #     #now remove the generated image files
+    #     folder = os.path.dirname(path)
+    #     filename = os.path.basename(path)
+    #     filename = os.path.splitext(filename)[0]
+    #     remove_files_with_prefix_in_folder(filename, folder)
+    #     #and try to load views again
+    #     resp = self.client.get(prefix + 'kioskDetails/{}/'.format(kiosk_id))
+    #     self.assertEqual(resp.status_code, 200)
+    #     resp = self.client.get(prefix + 'image/?kiosk={}'.format(kiosk_id))
+    #     self.assertEqual(resp.status_code, 200)
+
 
 '''
 A testcase to check wether the limits imposed on beerprice are working
