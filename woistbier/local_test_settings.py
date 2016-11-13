@@ -6,6 +6,10 @@ log = logging.getLogger(__name__)
 SECRET_KEY='pryKap1ZuB2rWCKLt913eGcb6evhiNwUQnQGvSZemnelaPtMyE'
 
 DEBUG=True
+SECURE_SSL_REDIRECT=False
+
+log.info('Debug is set to: {}', DEBUG)
+log.info('SSL redirection is set to: {}', SECURE_SSL_REDIRECT)
 
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
