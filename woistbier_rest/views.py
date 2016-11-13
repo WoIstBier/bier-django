@@ -11,8 +11,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from django.db.models import Avg
 import math
 import logging
-from django.conf import settings
-import os
+
 import django_filters
 log = logging.getLogger(__name__)
 
@@ -58,7 +57,7 @@ def check_if_kiosk_exists(kiosk_id):
         return False
     return True
 
-    
+
 #views for images
 class ImageList(generics.ListAPIView):
     serializer_class = ImageSerializer
@@ -69,7 +68,7 @@ class ImageList(generics.ListAPIView):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg"
         #                           http://localhost:8000/bier/rest/image/68/
         print(str(request))
-        serializer = ImageSerializer(data = request.DATA , files=request.FILES)
+        serializer = ImageSerializer(data = request.data , files=request.FILES)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -78,16 +77,16 @@ class ImageList(generics.ListAPIView):
 
 class ImageDetail(generics.RetrieveAPIView):
     queryset = Image.objects.all()
-    serializer_class = ImageSerializer       
+    serializer_class = ImageSerializer
 
 
 class CommentList(generics.ListAPIView):
     serializer_class = CommentSerializer
     filter_fields = ('name', 'created', 'kiosk')
     queryset = Comment.objects.all()
-    
+
     def post(self, request):
-        serializer = CommentSerializer(data=request.DATA)
+        serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -95,9 +94,9 @@ class CommentList(generics.ListAPIView):
 
 
 class CommentDetail(generics.RetrieveUpdateAPIView):
-    serializer_class = CommentSerializer 
-    queryset = Comment.objects.all()    
-  
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+
 class BeerPriceList(generics.ListCreateAPIView):
     queryset = BeerPrice.objects.all()
     serializer_class = BeerPriceSerializer
@@ -110,7 +109,7 @@ class BeerPriceDetail(generics.RetrieveUpdateAPIView):
 
 
 
-class BeerListFilter(django_filters.rest_framework.FilterSet):
+class BeerListFilter(django_filters.FilterSet):
     kiosk = django_filters.NumberFilter(name="related_beer__kiosk__id")
 
     class Meta:
@@ -121,14 +120,12 @@ class BeerList(generics.ListAPIView):
     serializer_class = BeerSerializer
     queryset = Beer.objects.all()
     filter_class = BeerListFilter
-            
-    
 
-    
+
 class BeerDetail(generics.RetrieveUpdateAPIView):
     queryset = Beer.objects.all()
     serializer_class = BeerSerializer
-    
+
 
 class SimpleKioskList(generics.ListCreateAPIView):
     queryset = Kiosk.objects.all()
@@ -139,14 +136,14 @@ class SimpleKioskList(generics.ListCreateAPIView):
     filter_fields = ('id', 'name', 'owner', 'street', 'city', 'zip_code')
 
     def post(self, request, *args, **kwargs):
-        serializer = KioskSerializer(data=request.DATA)
+        serializer = KioskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-          
+
         log.warn("Serializer is invalid for kiosk put. : " + str(serializer.errors))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-     
+
 
 class KioskDetail(APIView):
 
@@ -160,7 +157,7 @@ class KioskDetail(APIView):
         k = self.get_object(kiosk_id)
         serializer = KioskSerializer(k)
         return Response(serializer.data)
-    
+
 
 #An object to hold all the info the kiosk detail view on the client needs. this will be passed to the serializer
 class KioskDetailContainer(object):
@@ -172,8 +169,8 @@ class KioskDetailContainer(object):
         self.comment_count = comment_count
         self.beer_count = beer_count
         self.avg_price = avg_price
-        
-        
+
+
 # this will get the kiosk with the given id from the database and pulls all the necessary info from the connected tables
 class KioskDetailView(APIView):
 
@@ -195,8 +192,8 @@ class KioskDetailView(APIView):
                                  comment_count=comment_count, beer_count=beer_count, avg_price=avg_price)
         serializer = KioskDetailSerializer(l)
         return Response(serializer.data)
-       
-    
+
+
 #angle to radians conversion
 def radians(r):
     return r * math.pi / 180
@@ -221,8 +218,8 @@ class ListItem(object):
         self.beerPrice = beer_price
         self.image = image
         self.distance = distance
-        
-        
+
+
 #
 #   returns a listitem object  given a specific kiosk and the lat,long values of the client
 #   so it can calculate the distance between kiosk and client to write into the listitem object
@@ -250,7 +247,7 @@ def get_list_item_from_kiosk(kiosk, lat=None, lon=None, beer=None):
         return ListItem(kiosk=kiosk, beer_price=beerPrice,  image=img, distance=distance)
 
     return ListItem(kiosk=kiosk, beer_price=beerPrice, thumb=img)
-    
+
 
 #View to return a list of kioskItems where the kiosk is within a boundingbox with the length radius supplied in the url
 #in case the parameter contain bullshit values this will raise a ERROR400 bad request to the client
@@ -259,12 +256,12 @@ class KioskList(APIView):
     def get(self, request):
         #get parameters from httprequest
         #in case url contains bullshit for lat,long or radius this will throw a value exception
-        #default values 5km radius 
+        #default values 5km radius
         g_lat = 51.52
         g_long = 7.46
         radius = 5.0
         beer = None
-        #check url parameter 
+        #check url parameter
         try:
             if request.query_params.get('geo_lat', None) is not None:
                 g_lat = float(request.query_params.get('geo_lat', None))
@@ -284,24 +281,24 @@ class KioskList(APIView):
         radius = radius/R
         # now convert radians to degrees
         radius = radius*180/math.pi
-        
+
         #get all kiosk within the bounding box
         queryResult = Kiosk.objects.filter(geo_lat__lte = g_lat + radius, geo_long__lte = g_long + radius, geo_lat__gte = g_lat - radius, geo_long__gte = g_long - radius)
-  
+
         #build a kiosklistem for every kiosk we fetched and return it through the serializer
         l = list()
         for kiosk in queryResult:
             item = get_list_item_from_kiosk(kiosk, g_lat, g_long, beer)
             if item is not None and item.distance <= max_distance :
                 l.append(item)
-        
+
         serializer = KioskListItemSerializer(l, many=True)
         return Response(serializer.data)
-        
+
 
 # View for a single kiosklistitem does not take any parameter
 class KioskListItem(APIView):
-    
+
     def get_object(self, primaryKey):
         try:
             return Kiosk.objects.get(pk=primaryKey)
