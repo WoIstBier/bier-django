@@ -45,18 +45,6 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = ['--verbosity=2']
 
 
-REST_FRAMEWORK = {
-    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend',
-
-    'DEFAULT_THROTTLE_CLASSES': (
-        'rest_framework.throttling.ScopedRateThrottle',
-    ),
-    'DEFAULT_THROTTLE_RATES': {
-        'kiosk_uploads': '10/minute',
-        'image_uploads': '15/minute'
-    }
-}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
