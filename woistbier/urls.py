@@ -23,7 +23,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    
+
     #include the urls from the polls app.
     url(r'^bier/', include('woistbier_rest.urls')),
 
@@ -40,10 +40,6 @@ urlpatterns = patterns('',
     url(r'^impressum',
         TemplateView.as_view(template_name='bier/impressum.html'),
         name='impressum'),
-    url(r'^testPage',
-        TemplateView.as_view(template_name='bier/testPage/index.html'),
-        name='test_about')
-
 )
 
 handler404 = 'woistbier_rest.views.not_found_view'
