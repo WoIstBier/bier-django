@@ -67,8 +67,8 @@ class ImageList(generics.ListAPIView):
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg"
         #                           http://localhost:8000/bier/rest/image/68/
-        print(str(request))
-        serializer = ImageSerializer(data = request.data , files=request.FILES)
+        # print(str(request))
+        serializer = ImageSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

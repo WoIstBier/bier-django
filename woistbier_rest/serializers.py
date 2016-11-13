@@ -19,9 +19,9 @@ class CommentSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(max_length=300, allow_empty_file=True)
 
-    medium_url = serializers.Field(source='get_medium_url')
-    gallery_url = serializers.Field(source='get_gallery_url')
-    thumbnail_url = serializers.Field(source='get_thumbnail_url')
+    medium_url = serializers.ReadOnlyField(source='get_medium_url')
+    gallery_url = serializers.ReadOnlyField(source='get_gallery_url')
+    thumbnail_url = serializers.ReadOnlyField(source='get_thumbnail_url')
 #     kiosk = serializers.IntegerField(read_only=True)
     class Meta:
         model = Image

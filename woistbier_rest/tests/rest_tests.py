@@ -9,13 +9,6 @@ log = logging.getLogger(__name__)
 
 FIXTURES = ['dump_13_11_2016.json']
 
-def get_image_path_from_response(resp):
-    image_response = json.loads(resp.content.decode())
-    img = image_response.get('image')
-    #print(img)
-    path = os.path.abspath(os.path.join(settings.MEDIA_ROOT,img))
-    #print(path)
-    return path
 
 
 def get_kiosk_id():
@@ -161,30 +154,66 @@ class CommentTests(TestCase):
 class KioskTests(TestCase):
     fixtures = FIXTURES
 
+    def post_kiosk(self, street='Markstraße', number=137):
+        '''
+        Helper method to add a kiosk via post request.
+        '''
+        response_from_server = self.client.post('/bier/rest/kiosk/', {'street':
+            street, 'city': 'Musterstadt', 'zip_code': '12345',
+            'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
+
+        log.info(response_from_server.data)
+        return response_from_server
+
     def test_post_kiosk(self):
         #post a kiosk and check the return code
-        resp = post_kiosk(self.client, 42)
+        resp = self.post_kiosk()
         self.assertEqual(resp.status_code, 201)
+
         #check if its really there. That means getting the id of the kiosk in the response
         #and make a get reqeust for it. this wont reutrn a kiosk but a kioskdetailthingy
         kiosk = json.loads(resp.content.decode())
-        resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk.get('id')) + '/')
+        kiosk_id = kiosk['id']
+        resp = self.client.get(prefix + 'kioskDetails/{}/'.format(kiosk_id))
         self.assertEqual(resp.status_code, 200)
         #get the kiosk from the detaisl dict thingy
         kiosk = json.loads(resp.content.decode()).get('kiosk')
-        self.assertTrue(kiosk.get('id') > 0)
+        self.assertEqual(kiosk['id'], kiosk_id)
+
+
+    def test_post_invalid_number(self):
+        #post a kiosk with an incalid number check the return code
+        resp = self.post_kiosk(street='Markstraße', number='asdasdad')
+        self.assertEqual(resp.status_code, 400)
+
+    def test_invalid_street(self):
+        #post a kiosk with too long of a street name (ma 150 chars)
+        long_street_name = 'acab_'*31
+        resp = self.post_kiosk(street=long_street_name, number=12)
+        self.assertEqual(resp.status_code, 400)
 
 
 class ImageTests(TestCase):
-    fixtures = ['test_data.json']
+    fixtures =FIXTURES
+
+    def post_kiosk(self, street='Markstraße', number=137):
+        '''
+        Helper method to add a kiosk via post request.
+        '''
+        response_from_server = self.client.post('/bier/rest/kiosk/', {'street':
+            street, 'city': 'Musterstadt', 'zip_code': '12345',
+            'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
+
+        log.info(response_from_server.data)
+        return response_from_server
 
     # test if the imagelist in the (images/?kiosk=bla) view is the same as the one deliverd
     # in the kioskdetail view and the kiosklistitem
     def test_imagelists(self):
         #post a new empty kiosk
-        resp = post_kiosk(self.client, 137)
+        resp = self.post_kiosk(number=137)
         kiosk = json.loads(resp.content.decode())
-        kiosk_id = str(kiosk.get('id'))
+        kiosk_id = kiosk['id']
         #post a number of images
         for num in range(1, 6):
             post_image(self.client, kiosk_id)
@@ -199,6 +228,7 @@ class ImageTests(TestCase):
             #get the kiosk from the detaisl dict thingy
             images_from_kiosk = json.loads(resp.content.decode()).get('images')
             for kiosk_image, image_from_view in zip(images_from_view, images_from_kiosk):
+                log.info('comparing: {} and {}'.format(kiosk_image, image_from_view))
                 self.assertEqual(kiosk_image, image_from_view, 'Image lists in the image and the kioskdetails view were not the same')
 
             resp = self.client.get(prefix + 'kioskList/?radius=1000')
@@ -226,14 +256,24 @@ class ImageTests(TestCase):
         self.assertTrue(len(images) == 1)
 
     def test_missing_images(self):
-        kiosk_id = get_kiosk_id()
-        #post an image and save the path to it
-        resp = post_image(self.client, kiosk_id)
-        path = get_image_path_from_response(resp)
+        resp = self.post_kiosk(number=145)
+        kiosk = json.loads(resp.content.decode())
+        kiosk_id = kiosk['id']
 
+        resp = post_image(self.client, kiosk_id)
+        image_response = json.loads(resp.content.decode())
+        log.info(image_response)
+
+        img = image_response['image']
+        path = os.path.abspath(os.path.join(settings.MEDIA_ROOT,img))
+        log.info(path)
+
+        self.fail()
         #get some kioskdetails for that kiosk
         resp = self.client.get(prefix + 'kioskDetails/' + str(kiosk_id) + '/')
         self.assertEqual(resp.status_code, 200)
+
+        log.info(resp.data)
         #and the image list
         resp = self.client.get(prefix + 'image/?kiosk=' + str(kiosk_id))
         self.assertEqual(resp.status_code, 200)
@@ -281,11 +321,11 @@ class BeerPriceTests(TestCase):
         self.assertEqual(response.status_code, 400, msg)
 
 
-'''
-A test to check wether the throttling of the rest api works
-'''
-class RestThrottleTests(TestCase):
-    fixtures = ['test_data.json']
+class URLTests(TestCase):
+    '''
+    A test to check some URLs that have to exist
+    '''
+    fixtures = FIXTURES
 
     #test for valid url responses like 404
     def test_valid_urls(self):
@@ -317,34 +357,3 @@ class RestThrottleTests(TestCase):
         resp = self.client.get(prefix + 'nonexsitingurl/')
         log.info('REsp code is : ' + str(resp.status_code))
         self.assertEqual(resp.status_code, 404)
-
-    #post one kiosk with street and number to the db
-    def post_kiosk(self, street, number):
-        resp = self.client.post(prefix + 'kiosk/', {'street':
-            street, 'city': 'Musterstadt', 'zip_code': '12345',
-            'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
-        return resp.status_code
-
-    def test_kiosk_addition_throttle(self):
-        #print('throttle test add kiosk 1 ')
-        import time
-        from woistbier_rest.models import Kiosk
-        #lets get a count of kioske
-        number = Kiosk.objects.count()
-        statuscode = 201
-        i = 1
-        starttime = time.time()
-        #lets have a loop posting kioske and sleep for a bit each time
-        while statuscode is 201 and i <= 15:
-            statuscode = self.post_kiosk('langestraße', i)
-            # time.sleep(0.1)
-            i = i + 1
-        #elapsed time should be below the limit set by the throttle
-        elapsed = time.time() - starttime
-        #print('last statuscode was: ' +  str(statuscode))
-        number = Kiosk.objects.count() - number
-        if(number > 10 and  elapsed < 60):
-            self.fail('Too many kiosks posted. Elapsed time was: ' + str(elapsed) + ' and ' + str(number) + ' kiosk have been posted')
-        self.assertEqual(statuscode, 429 , 'Expected a too many requests statuscode (429) but its: '  + str(statuscode) + '      ' + str(number) + ' kiosks have been posted')
-        #we cant test the exact number of posted kioske here. Since other tests also post stuff.
-        #self.assertEqual(number, 10)
