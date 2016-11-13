@@ -7,6 +7,7 @@ from django.conf import settings
 prefix = '/bier/rest/'
 log = logging.getLogger(__name__)
 
+FIXTURES = ['dump_13_11_2016.json']
 
 def get_image_path_from_response(resp):
     image_response = json.loads(resp.content.decode())
@@ -22,13 +23,6 @@ def get_kiosk_id():
     kiosk = Kiosk.objects.all()[:1].get()
     print(str(kiosk))
     return kiosk.id
-
-
-def post_comment(client, kiosk_id, username, text):
-        resp = client.post(prefix + 'comment/', {'kiosk': kiosk_id, 'name': username,
-                                                 'comment': text})
-        return resp
-
 
 def post_kiosk(client, number):
     return client.post(prefix + 'kiosk/', {'street': 'Musterstrasse', 'city': 'Musterstadt', 'zip_code': '12345',
@@ -50,47 +44,102 @@ def remove_files_with_prefix_in_folder(prefix, folder):
 
 
 class CommentTests(TestCase):
-    fixtures = ['test_data.json']
+    fixtures = FIXTURES
 
-    def test_post_comment(self):
+    def post_kiosk(self, street='Markstraße', number=137):
+        '''
+        Helper method to add a kiosk via post request.
+        '''
+        response_from_server = self.client.post('/bier/rest/kiosk/', {'street':
+            street, 'city': 'Musterstadt', 'zip_code': '12345',
+            'number': number, 'geo_lat': '51.51', 'geo_long': '7.51'})
+
+        log.info(response_from_server.data)
+        return response_from_server
+
+
+
+    def post_comment(self, kiosk_id, username, text):
+        '''
+        Helper methods that adds a comment to a kiosk with the passed kiosk_id
+        '''
+        comment =  {'kiosk': kiosk_id,
+                            'name': username,
+                            'comment': text}
+        response_from_server = self.client.post('/bier/rest/comment/', comment)
+
+        log.info(response_from_server.data)
+        return response_from_server
+
+    def test_post_multiple_comments(self):
         #post a new empty kiosk
-        resp = post_kiosk(self.client, 137)
-        kiosk = json.loads(resp.content.decode())
+        resp = self.post_kiosk(street='Geilstraße', number=140)
         self.assertEqual(resp.status_code, 201)
-        #get the comments for that new kiosk
-        resp = self.client.get(prefix + 'comment/?kiosk=' + str(kiosk.get('id')))
-        self.assertEqual(resp.status_code, 200)
-        #list should be empt since the kiosk was just generated
-        self.assertEquals(json.loads(resp.content.decode()), [])
+        kiosk_id = json.loads(resp.content.decode())['id']
+
+        log.info('kiosk_id: {}'.format(kiosk_id))
 
         #post a new comment with a username and a text
         username = 'Horst der Borst'
         text = 'Welch schoener kommentar ereilt mich da? Oh neine es ist siegliende mit ihrem Netz! Gott bewahre'
-        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
+        resp = self.post_comment(kiosk_id, username, text)
         self.assertEqual(resp.status_code, 201)
-        comment = json.loads(resp.content.decode())
 
+        #post another comment
+        username = 'Der geilere Borst'
+        text = 'Noch mehr schöne Kommentare? Oh neine es ist siegliende mit ihrer Armbrust! Gott bewahre.'
+        resp = self.post_comment(kiosk_id, username, text)
+        self.assertEqual(resp.status_code, 201)
+
+        #at this point two comments should have been succesufully posted
+        #get the comments for that new kiosk
+        resp = self.client.get(prefix + 'comment/?kiosk={}'.format(kiosk_id))
+        self.assertEqual(resp.status_code, 200)
+        #list should contain 2 elements
+        comments_list = json.loads(resp.content.decode())
+        self.assertEquals(len(comments_list), 2)
+
+
+    def test_post_umlaut_comments(self):
+        #post a new empty kiosk
+        resp = self.post_kiosk(street='Geilstraße', number=142)
+        self.assertEqual(resp.status_code, 201)
+
+        kiosk_id = json.loads(resp.content.decode())['id']
+
+        #post a new comment with a username and a text
+        username = 'Klaüs die Mäus'
+        text = 'Welch schöner kommentar ereilt mich da? Äh Wat? Das Örtliche! ßßßß'
+        resp = self.post_comment(kiosk_id, username, text)
+        self.assertEqual(resp.status_code, 201)
+
+        comment = json.loads(resp.content.decode())
+        log.info(comment)
         self.assertEquals(comment.get('name'), username)
         self.assertEquals(comment.get('comment'), text)
 
-        #post another with an umlaut in the username
-        username = u'Klaüs die Mäus'
-        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
 
+    def test_too_long_username(self):
+        #post a new empty kiosk
+        resp = self.post_kiosk(street='Geilstraße', number=145)
         self.assertEqual(resp.status_code, 201)
-        comment = json.loads(resp.content.decode())
-        print(str(comment))
-        self.assertEquals(comment.get('name'), username)
-        self.assertEquals(comment.get('comment'), text)
 
+        kiosk_id = json.loads(resp.content.decode())['id']
         #post another with a really long username this should fail with code 400
         username = 'Klaüs die Mäus ist ein marzahn der königsgesselschaft. Der König folgt ihn treu.' \
                    ' Was immer der Hunnen planen'
-        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
-        print(str(resp))
+        text = 'Ein plathhalter Text. Extra für Sieglinde!'
+        resp = self.post_comment(kiosk_id, username, text)
         self.assertEqual(resp.status_code, 400)
 
-        #post another with a really long text this should fail with code 400
+    def test_too_long_text(self):
+
+        #post a new empty kiosk
+        resp = self.post_kiosk(street='Geilstraße', number=145)
+        self.assertEqual(resp.status_code, 201)
+
+        kiosk_id = json.loads(resp.content.decode())['id']
+        #post comment  with a really long text this should fail with code 400
         username = 'Klaüsi!'
         text = "Siegfried hieß der wack're Recke, und er kämpfte gut," \
                "hatte eine dicke Haut vom Bad im Drachenblut!" \
@@ -104,21 +153,13 @@ class CommentTests(TestCase):
                "und da musste jetzt der große Held, der Siegfried her!" \
                "Siegfried half dem Gunther wohl, der konnte siegreich sein" \
                "und dann führte König Gunther seine starke Brunhild heim!"
-        resp = post_comment(self.client, str(kiosk.get('id')), username, text)
+        resp = self.post_comment(kiosk_id, username, text)
         #print(str(resp))
         self.assertEqual(resp.status_code, 400)
 
-        #at this point two comments should have been succesufully posted
-        #get the comments for that new kiosk
-        resp = self.client.get(prefix + 'comment/?kiosk=' + str(kiosk.get('id')))
-        self.assertEqual(resp.status_code, 200)
-        #list should be empt since the kiosk was just generated
-        comments_list = json.loads(resp.content.decode())
-        self.assertEquals(len(comments_list), 2)
-
 
 class KioskTests(TestCase):
-    fixtures = ['test_data.json']
+    fixtures = FIXTURES
 
     def test_post_kiosk(self):
         #post a kiosk and check the return code
@@ -218,7 +259,7 @@ class ImageTests(TestCase):
 A testcase to check wether the limits imposed on beerprice are working
 '''
 class BeerPriceTests(TestCase):
-    fixtures = ['test_data.json']
+    fixtures =FIXTURES
 
     #a function for a valid beer
     def test_post_beer_price(self):
