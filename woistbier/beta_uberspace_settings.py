@@ -77,6 +77,10 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+REST_FRAMEWORK[ 'DEFAULT_THROTTLE_RATES'] =  {
+        'kiosk_uploads': '100/minute',
+        'image_uploads': '150/minute'
+}
 
 
 LOGGING = {

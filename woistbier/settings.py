@@ -4,7 +4,7 @@ pymysql.install_as_MySQLdb()
 
 #Global  Django settings for woistbier project.
 import logging
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 log= logging.getLogger(__name__)
 log.info('Reading Settings!')
 
