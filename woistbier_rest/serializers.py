@@ -57,22 +57,7 @@ Non-Modell Serializer
 We dont need to restore objects since this is a read only serializer
 '''
 class KioskListItemSerializer(serializers.Serializer):
-#     kioskId = serializers.IntegerField(source='kiosk.id', read_only=True)
-#     kioskName = serializers.CharField(source='kiosk.name', read_only=True)
-#     kioskStreet = serializers.CharField(source='kiosk.street', read_only=True)
-#     kioskCity = serializers.CharField(source='kiosk.city', read_only=True)
-#     kioskPostalCode = serializers.IntegerField(source='kiosk.zip_code', read_only=True)
-#     kioskLatitude = serializers.IntegerField(source='kiosk.geo_lat', read_only=True)
-#     kioskLongtitude = serializers.IntegerField(source='kiosk.geo_long', read_only=True)
-#     kioskNumber = serializers.IntegerField(source='kiosk.number', read_only=True)
-#     beerName = serializers.CharField(source='beerPrice.beer.name', read_only=True)
-#     beerBrew = serializers.CharField(source='beerPrice.beer.brew', read_only=True)
-#     beerSize = serializers.FloatField(source='beerPrice.size', read_only=True)
-#     beerPrice = serializers.IntegerField(source='beerPrice.price', read_only=True)
-#     thumb_path = serializers.CharField(source='thumb', read_only=True)
     distance = serializers.FloatField(read_only=True)
     kiosk = KioskSerializer()
     image = ImageSerializer()
     beerPrice = BeerPriceSerializer()
-
-#     thumb = ImageSerializer()

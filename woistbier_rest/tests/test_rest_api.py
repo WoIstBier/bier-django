@@ -139,7 +139,7 @@ class CommentTests(TestCase):
                "Siegfried half dem Gunther wohl, der konnte siegreich sein" \
                "und dann führte König Gunther seine starke Brunhild heim!"
         resp = self.post_comment(kiosk_id, username, text)
-        #print(str(resp))
+        #
         self.assertEqual(resp.status_code, 400)
 
 

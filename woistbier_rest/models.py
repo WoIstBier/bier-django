@@ -74,7 +74,7 @@ class Beer(models.Model):
 class Comment(ModifiableModel):
     name = models.CharField(max_length=25, default='Anonymer Alkoholiker')
     comment = models.CharField(max_length=400)
-    kiosk = models.ForeignKey(Kiosk)
+    kiosk = models.ForeignKey(Kiosk, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name+str(self.created)
@@ -97,8 +97,8 @@ class BeerPrice(ModifiableModel):
         (1.0, 'groß 1.0'),
     )
     size = models.FloatField(max_length=1, choices=SIZE_CHOICES, default = NORMAL )
-    kiosk = models.ForeignKey(Kiosk, related_name='related_kiosk')
-    beer = models.ForeignKey(Beer, related_name='related_beer')
+    kiosk = models.ForeignKey(Kiosk, related_name='related_kiosk', on_delete=models.CASCADE)
+    beer = models.ForeignKey(Beer, related_name='related_beer', on_delete=models.CASCADE)
     price = models.IntegerField(validators=[MaxValueValidator(400), MinValueValidator(10)])
     score = models.FloatField(max_length=1, default = 1 )
 
@@ -119,7 +119,7 @@ Model containing an image which automaticly creates a thumbnail when imagesize >
 '''
 class Image(models.Model):
     image = ThumbnailerImageField(upload_to='images/',  max_length=300,  blank=True)
-    kiosk = models.ForeignKey(Kiosk)
+    kiosk = models.ForeignKey(Kiosk, on_delete=models.CASCADE)
 
     #display image in admin view with this function
     def admin_img(self):

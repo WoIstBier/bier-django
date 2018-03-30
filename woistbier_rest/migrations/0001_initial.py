@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('score', models.FloatField(default=1, max_length=1)),
                 ('created', models.DateTimeField(null=True, auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True, null=True)),
-                ('beer', models.ForeignKey(to='woistbier_rest.Beer', related_name='related_beer')),
+                ('beer', models.ForeignKey(to='woistbier_rest.Beer', related_name='related_beer', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -74,17 +74,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='kiosk',
-            field=models.ForeignKey(to='woistbier_rest.Kiosk'),
+            field=models.ForeignKey(to='woistbier_rest.Kiosk', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='comment',
             name='kiosk',
-            field=models.ForeignKey(to='woistbier_rest.Kiosk'),
+            field=models.ForeignKey(to='woistbier_rest.Kiosk', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='beerprice',
             name='kiosk',
-            field=models.ForeignKey(to='woistbier_rest.Kiosk', related_name='related_kiosk'),
+            field=models.ForeignKey(to='woistbier_rest.Kiosk', related_name='related_kiosk', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='beerprice',

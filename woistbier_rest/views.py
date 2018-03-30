@@ -2,7 +2,7 @@
 # Create your views here.
 from woistbier_rest.models import Kiosk, BeerPrice, Image, Beer, Comment
 from woistbier_rest.serializers import KioskSerializer, ImageSerializer, BeerSerializer, CommentSerializer, BeerPriceSerializer, KioskListItemSerializer, KioskDetailSerializer
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ import django_filters
 log = logging.getLogger(__name__)
 
 
-def not_found_view(request):
+def not_found_view(request, exception, template_name='404.html'):
     response = render_to_response('bier/404.html')
     response.status_code = 404
     return response
@@ -26,6 +26,17 @@ def index(request):
     num_kiosk = Kiosk.objects.all().count()
     num_beer = Beer.objects.all().count()
     return render_to_response('bier/index.html', {'kiosk_number': num_kiosk, 'beer_number': num_beer})
+
+
+def api_index(request):
+    import json
+    num_kiosk = Kiosk.objects.all().count()
+    num_beer = Beer.objects.all().count()
+    d = {'num_beer': num_beer, 'num_kiosk': num_kiosk}
+    d['version'] = '1.0.0'
+    d['meta'] = 'Woistbier API version 1.0.0'
+    return HttpResponse(json.dumps(d))
+
 
 
 def beer_list(request):
@@ -67,7 +78,7 @@ class ImageList(generics.ListAPIView):
     def post(self, request):
         #curl -X POST -S -H 'Accept: application/json' -F "image=@/home/mackaiver/Pictures/alf2.jpg; type=image/jpg"
         #                           http://localhost:8000/bier/rest/image/68/
-        # print(str(request))
+        #
         serializer = ImageSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()

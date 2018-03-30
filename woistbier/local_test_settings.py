@@ -1,17 +1,19 @@
-from woistbier.settings import *
-
+from .settings import *
+import os
 import logging
+
 log = logging.getLogger(__name__)
 
 SECRET_KEY='pryKap1ZuB2rWCKLt913eGcb6evhiNwUQnQGvSZemnelaPtMyE'
 
-DEBUG=True
-SECURE_SSL_REDIRECT=False
-
+DEBUG = False if os.environ.get('DEBUG') == 'False' else True
+SECURE_SSL_REDIRECT = False
+print('Debug is set to: {}'.format(DEBUG))
+print(type(DEBUG))
 log.info('Debug is set to: {}'.format(DEBUG))
 log.info('SSL redirection is set to: {}'.format(SECURE_SSL_REDIRECT))
 
-import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
@@ -31,14 +33,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../woistbier_rest/static/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = 'http://127.0.0.1:8000/bier/static/'
+STATIC_URL = '/static/'
 
 
 ROOT_URLCONF = 'woistbier.urls'
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-# NOSE_ARGS = ['--verbosity=2', '--nologcapture']
-NOSE_ARGS = ['--verbosity=2']
 
 
 DATABASES = {
@@ -51,14 +50,48 @@ DATABASES = {
 INSTALLED_APPS = INSTALLED_APPS + (
     'debug_toolbar',
 )
-MIDDLEWARE_CLASSES =  MIDDLEWARE_CLASSES + (
-'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+
+MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
 INTERNAL_IPS = ('127.0.0.1',)
 
 REST_FRAMEWORK[ 'DEFAULT_THROTTLE_RATES'] =  {
         'kiosk_uploads': '100/minute',
         'image_uploads': '150/minute'
 }
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'standard': {
+#             'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+#             'datefmt' : "%d/%b/%Y %H:%M:%S"
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': os.environ.get('LEVEL', 'WARN'),
+#             'propagate': True,
+#         },
+#     },
+# }
+
+
+ALLOWED_HOSTS = [
+            '0.0.0.0',
+            '127.0.0.1',
+            # 'bier.cepheus.uberspace.de',
+            # 'cepheus.uberspace.de',
+            # 'woistbier.de',
+        ]
 
 log.info('Read local_test_settings. Using database: {}'.format(DATABASES))

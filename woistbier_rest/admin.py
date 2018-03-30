@@ -5,7 +5,7 @@ Created on Feb 17, 2013
 @author: mackaiver
 '''
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from woistbier_rest.models import Kiosk, Beer, BeerPrice, Image, Comment
 import logging
 log = logging.getLogger(__name__)
